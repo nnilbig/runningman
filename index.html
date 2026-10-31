@@ -486,12 +486,12 @@ const VENUES={
     next:'那次之後，阿傑又跑了很多次，身體一年比一年強壯。三十七歲那年夏天，他想試試看，自己一個人能跑多遠。'},
   ultra:{ch:'第七章',n:'夏天的三十公里',sub:'邊界',km:30,build:'weekend',stores:true,secs:66,age:37,width:3.2,lat:[-1.3,1.3],startLat:0,ultra:true,
     sky:['#3a4a78','#8a8aa8','#f0b890'],skies:[['#3a4a78','#8a8aa8','#f0b890'],['#5f9ad6','#a8cdec','#eef0e6'],['#79aee2','#e2e4d2','#fff0c4']],fogs:['#8a8aa8','#d6e2ea','#efe8d0'],fog:0x8a8aa8,sun:[-.6,.3,.4],sunCol:0xfff0dc,
-    desc:'三十七歲，夏天的週末。清晨一個人出發，沿著山裡大湖的環湖公路，跑一個從沒跑過的距離：三十公里。太陽越來越大，疲勞只會累積；路邊的便利商店，可以買一瓶冰水。',
+    desc:'三十七歲，夏天的週末。清晨一個人出發，沿著山裡大湖的環湖公路，跑一個從沒跑過的距離：三十公里。太陽越來越大，疲勞只會累積；路邊的飲水機，可以停下來喝口水。',
     intro:'三十七歲，跑步的第六年。夏天的週末，阿傑想試試看一個從沒跑過的距離：三十公里。一個人，不是比賽。清晨五點，他開車到山裡的大湖。天還沒全亮，空氣還有一點涼。',
-    script:[[0,'阿傑','三十七歲。今天要一個人跑三十公里。想起來有點好笑。',.5],[0,'提示','左上角是「疲勞」。只會累積，不會消失。',2.2],[0,'提示','左邊有便利商店。靠左跑過去，買一瓶冰水，疲勞會少一點。',4],
+    script:[[0,'阿傑','三十七歲。今天要一個人跑三十公里。想起來有點好笑。',.5],[0,'提示','左上角是「疲勞」。只會累積，不會消失。',2.2],[0,'提示','左邊有飲水機。靠左跑過去喝口水，疲勞會少一點。',4],
       [0,'阿傑','天亮了。湖面上起了一層薄薄的霧。',7.5],[0,'阿傑','跑長距離的訣竅，大概就是不要去想還剩下多少。',10.5],[0,'提示','太熱的時候，頭會有點暈，身體會往旁邊飄。用 L R 把自己拉回路中間。',13],
       [0,'阿傑','十五公里。太陽開始認真了。',15.3],[0,'阿傑','汗流進眼睛裡。腦袋也不太像是自己的了。',16.4],[0,'阿傑','前面那個人……穿著跟我一樣的衣服。',17.6],[0,'阿傑','……是三十二歲的我嗎？',19],
-      [0,'阿傑','二十二公里多。好像穿過了某個看不見的地方。',22.7],[0,'阿傑','身體不再說話了。腳只是一直往前移動。',24.3],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',26],[0,'阿傑','……剩下來的，就只是跑。',27.6],[0,'阿傑','中午了。便利商店的冷氣，應該開得很強吧。',29.3]],
+      [0,'阿傑','二十二公里多。好像穿過了某個看不見的地方。',22.7],[0,'阿傑','身體不再說話了。腳只是一直往前移動。',24.3],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',26],[0,'阿傑','……剩下來的，就只是跑。',27.6],[0,'阿傑','中午了。好想喝一杯冰的。',29.3]],
     end:'三十公里。從天亮以前，跑到中午。',
     next:'那之後，阿傑有好一陣子沒有再一個人跑那麼遠。那一天，好像把身體裡的某樣東西，好好地用完了。\n兩年後，三十九歲。'},
   stall:{ch:'第八章',n:'追不上的人',sub:'停滯',km:10,build:'race',secs:60,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
@@ -724,15 +724,17 @@ function buildWeekend(v){ // weekend runs out of town: between two reservoirs (a
   const stations=v.stores?addStores(v,path,hw):undefined;
   return addMoments(v,path,{path,sun,finD,startD:20,stations});
 }
-function addStores(v,path,hw){ // a plain corner store (no brand) every 5 km on the left, with a cooler of water by the road
+function addStores(v,path,hw){ // a park-style drinking fountain every 5 km on the left, right by the road
   const st=[];for(let k=5;k<v.km;k+=5){const d=20+k*1000/v.sc,g=new THREE.Group();
-    const body=box(5,3.2,7,0xf4f2ec);body.position.y=1.6;g.add(body);const band=box(5.05,.5,7.05,0x3f9a6a);band.position.y=2.6;g.add(band);const band2=box(5.06,.18,7.06,0xe8843a);band2.position.y=2.25;g.add(band2);
-    const glass=box(.06,1.8,5,0x9fc4d8);glass.position.set(2.53,1.1,0);g.add(glass);const sign=textPlane('便利商店',3,.55,'#3f9a6a','#ffffff');sign.position.set(2.56,2.6,0);sign.rotation.y=Math.PI/2;g.add(sign);
-    const lit=new THREE.Mesh(new THREE.PlaneGeometry(4.6,1.6),new THREE.MeshBasicMaterial({color:0xfff6dc,transparent:true,opacity:.35}));lit.position.set(2.6,1.1,0);lit.rotation.y=Math.PI/2;g.add(lit);
-    placeOnPath(g,path,d,-hw-6.2);scene.add(g);
-    const c=new THREE.Group(),cool=box(.7,.8,1.1,0x3f7fc8);cool.position.y=.4;c.add(cool);for(let i=0;i<5;i++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.24,6),mat(0xbfe4f0));b.position.set(rnd(-.2,.2),.92,-.4+i*.2);c.add(b);}
-    const ring=new THREE.Mesh(new THREE.RingGeometry(.55,.72,20),new THREE.MeshBasicMaterial({color:0x9fe0ff,transparent:true,opacity:.7,side:THREE.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.set(.9,.06,0);c.add(ring);
-    placeOnPath(c,path,d,-hw-1.1);scene.add(c);st.push({d,k,taken:false,gone:false,g:c});}
+    const base=box(.7,.12,.7,0xb8b2a6);base.position.y=.06;g.add(base);
+    const ped=box(.42,.86,.42,0x8a9aa6);ped.position.y=.55;g.add(ped);
+    const bowl=box(.62,.14,.62,0xc8ced2);bowl.position.y=1.03;g.add(bowl);const inner=box(.5,.04,.5,0x6f8a9a);inner.position.y=1.09;g.add(inner);
+    const spout=box(.05,.14,.05,0xd8dcdc);spout.position.set(0,1.16,.12);g.add(spout);
+    const sign=textPlane('飲水機',.6,.2,'#3f7fc8','#ffffff');sign.position.set(0,.62,-.22);sign.rotation.y=Math.PI;g.add(sign);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(.55,.72,20),new THREE.MeshBasicMaterial({color:0x9fe0ff,transparent:true,opacity:.7,side:THREE.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.set(.75,.06,0);g.add(ring);
+    placeOnPath(g,path,d,-hw-.75);scene.add(g);
+    const tree=roundTree(rnd(1.4,1.8),0x3a6a3a);placeOnPath(tree,path,d+1.5,-hw-3);scene.add(tree);
+    st.push({d,k,taken:false,gone:false,g:ring});}
   return st;}
 function lakePath(){return makePath(catmull([[0,0],[90,10],[180,-6],[270,12],[360,-4],[450,8],[540,-2],[640,4]],false),false);}
 function buildRace(v){ // closed city boulevard on race day: cones, crowds, aid stations every 5 km, km boards
@@ -1264,8 +1266,8 @@ function update(dt){
     // the sky moves from dawn to dusk over the 100 km
     skyLerp(v,frac);
     if(W.stations&&v.stores)for(const st of W.stations){if(st.taken||st.gone)continue;const rel=st.d-S.d;
-      if(rel<-2.2){st.gone=true;toast('錯過了便利商店');continue;}
-      if(Math.abs(rel)<2.1&&S.lat<v.lat[0]+1.0){st.taken=true;S.fuel=(S.fuel||0)+1;S.fat=Math.max(0,S.fat-12);st.g.visible=false;SFX.talk();toast(['冰水，從頭頂澆下去　疲勞 −12','運動飲料，一口氣喝掉一半　疲勞 −12','冰棒。……好幸福　疲勞 −12','冰水，貼在脖子上　疲勞 −12','又一瓶冰水　疲勞 −12'][(S.fuel-1)%5]);}}
+      if(rel<-2.2){st.gone=true;toast('錯過了飲水機');continue;}
+      if(Math.abs(rel)<2.1&&S.lat<v.lat[0]+1.0){st.taken=true;S.fuel=(S.fuel||0)+1;S.fat=Math.max(0,S.fat-12);st.g.visible=false;SFX.talk();toast(['飲水機的水，有點溫。……還是好喝　疲勞 −12','喝了幾口，再往臉上潑一點　疲勞 −12','水從頭頂澆下去　疲勞 −12','把帽子沾濕，戴回去　疲勞 −12','最後一台飲水機　疲勞 −12'][(S.fuel-1)%5]);}}
     const f=$('glyfill');f.style.width=S.fat.toFixed(1)+'%';f.style.background=S.beyond?'#b9d6e8':S.fat>70?'#ef7a6e':S.fat>40?'#f3bd63':'#e9a07a';}
   if(v.stall&&S.ghost){const g=S.ghost,km=(S.d-W.startD)*v.sc/1000;
     if(!S.done)cap=S.cap;
@@ -1380,7 +1382,7 @@ function showDone(){
   $('d-pace').textContent=`${Math.floor(pace/60)}'${String(Math.floor(pace%60)).padStart(2,'0')}"`;
   $('d-hr').textContent=`${Math.round(S.hrSum/Math.max(1,S.hrN))} bpm`;
   { const st={start:['最高心率',`${Math.round(S.maxHR||0)} bpm`],club:['一起跑過的人',`${S.friends?S.friends.length:0} 個`],habit:['踩到的水坑',`${S.splash||0} 個`],
-      track:['前 5K ／ 後 5K',(()=>{const f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,'0')}`,h1=S.h1||S.t/2;return `${f(h1*S.v.sc)} ／ ${f((S.t-h1)*S.v.sc)}`;})()],ultra:['便利商店',`${S.fuel||0} / ${W.stations?W.stations.length:0}`]}[S.id];
+      track:['前 5K ／ 後 5K',(()=>{const f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,'0')}`,h1=S.h1||S.t/2;return `${f(h1*S.v.sc)} ／ ${f((S.t-h1)*S.v.sc)}`;})()],ultra:['飲水機',`${S.fuel||0} / ${W.stations?W.stations.length:0}`]}[S.id];
     if(st){$('s-fuel').hidden=false;$('d-fuel-l').textContent=st[0];$('d-fuel').textContent=st[1];} }
   $('done').hidden=false;
 }
