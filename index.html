@@ -39,10 +39,13 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .spd .sub{font-size:15px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;opacity:.95}
 .pills{display:flex;gap:8px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end}
 .pill{background:var(--pill);border:1.5px solid var(--pill-line);border-radius:999px;padding:9px 18px;font-size:16px;font-weight:800;backdrop-filter:blur(6px)}
-.say{position:absolute;left:50%;top:max(118px,calc(env(safe-area-inset-top,0px) + 108px));transform:translateX(-50%);width:min(560px,calc(100% - 32px));background:#fbf7f0;color:var(--ink);border-radius:22px;padding:14px 20px 18px;box-shadow:0 10px 30px rgba(30,15,40,.35);transition:opacity .35s,transform .35s}
+.say{position:absolute;left:50%;top:max(118px,calc(env(safe-area-inset-top,0px) + 108px),24vh);transform:translateX(-50%);width:min(560px,calc(100% - 32px));background:#fbf7f0;color:var(--ink);border-radius:22px;padding:14px 20px 18px;box-shadow:0 10px 30px rgba(30,15,40,.35);transition:opacity .35s,transform .35s}
 .say.off{opacity:0;transform:translate(-50%,-8px)}
 .say.self{top:auto;width:auto;max-width:min(240px,calc(100% - 48px));padding:6px 12px 7px;border-radius:16px;background:rgba(251,247,240,.86);box-shadow:0 6px 18px rgba(30,15,40,.25);transform:translate(-50%,0)}
 .say.self{opacity:var(--fade,1)}
+.say.other{width:auto;max-width:min(260px,calc(100% - 48px));top:max(200px,34vh);padding:6px 12px 8px;border-radius:16px;background:rgba(251,247,240,.92);box-shadow:0 6px 18px rgba(30,15,40,.25)}
+.say.other .who{font-size:11px;padding:1px 7px;border-radius:6px}
+.say.other p{margin:4px 0 0;font-size:14px;font-weight:700;line-height:1.5}
 .say.self.off{transform:translate(-50%,6px);opacity:0}
 .say.self .who{display:none}
 .say.self p{margin:0;font-size:14px;font-weight:700;line-height:1.5}
@@ -1059,35 +1062,71 @@ const SFX={talk:()=>tone(880,.06,'triangle',.04),step:()=>tone(110,.05,'triangle
 addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
 $('b-snd').onclick=()=>{SND=!SND;$('b-snd').textContent='音效 '+(SND?'開':'關');};
 // generative background music: warm pads, a light arpeggio, a soft bass and a quiet beat (all WebAudio, no files)
-const MUS={on:true,timer:null,next:0,step:0,gain:null,mood:'day',drums:1};
+const MUS={on:true,timer:null,next:0,step:0,gain:null,id:'menu',drums:1};
 try{MUS.on=localStorage.getItem('shimin.music')!=='off';}catch(_){}
-const PROG={day:[[48,55,59,64],[45,52,55,60],[41,48,52,57],[43,50,55,59]],  // Cmaj7 Am7 Fmaj7 G
+const PROG={day:[[48,55,59,64],[45,52,55,60],[41,48,52,57],[43,50,55,59]],   // Cmaj7 Am7 Fmaj7 G
   night:[[45,52,55,60],[41,48,52,57],[48,55,59,64],[40,47,50,55]],             // Am7 Fmaj7 Cmaj7 Em7
-  blossom:[[53,57,60,64],[50,57,60,65],[46,53,57,62],[48,55,58,64]]};          // Fmaj7 Dm7 Bbmaj7 C7
+  blossom:[[53,57,60,64],[50,57,60,65],[46,53,57,62],[48,55,58,64]],           // Fmaj7 Dm7 Bbmaj7 C7
+  warm:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]],              // Fmaj7 Em7 Dm7 Cmaj7
+  drive:[[45,52,57,60],[41,48,53,57],[48,55,60,64],[43,50,55,59]]};            // Am F C G
+// one musical setting per chapter; musDyn() bends it with what is happening in the run
+const MCFG={menu:{prog:'warm',bpm:72,pad:.9,arp:.5,bass:.5},
+  start:{prog:'day',bpm:90,pad:1,arp:1,bass:1,kick:.7,hat:.8,cut:1700},
+  club:{prog:'warm',bpm:86,pad:1,arp:1,arp2:1,bass:1,kick:1,hat:1},
+  habit:{prog:'night',bpm:70,pad:.7,piano:1,bass:.6,rain:1,cut:1000},
+  track:{prog:'night',bpm:92,pad:.6,arp:1,bass:1,kick:1,four:1,hat:1},
+  race:{prog:'drive',bpm:96,pad:1,arp:1,arp2:1,bass:1,kick:1.2,hat:1,cut:2000},
+  summer:{prog:'blossom',bpm:84,pad:1,arp:1,bass:1,kick:1,hat:1},
+  ultra:{prog:'day',bpm:84,pad:1,arp:1,bass:1,kick:1,hat:1},
+  stall:{prog:'night',bpm:88,pad:.8,arp:1,bass:1,kick:1,four:1,hat:.6},
+  burnout:{prog:'night',bpm:74,pad:.55,sparse:1,cut:1200},
+  end:{prog:'day',bpm:68,pad:1,arp:.7,bass:.6,cut:1300}};
+function musDyn(){const c=Object.assign({},MCFG[MUS.id]||MCFG.menu),d={tempo:1,cutK:1,wob:0,vol:1};
+  if(!S||S.pre)return [c,d];const v=S.v,km=(S.d-W.startD)*v.sc/1000,frac=clamp(km/v.km,0,1);
+  if(MUS.id==='club'&&S.friends){const gone=S.friends.filter(f=>f.leaving).length; // the band thins out as friends leave
+    if(gone>=1)c.hat=0;if(gone>=2)c.arp2=0;if(gone>=3)c.kick=0;if(gone>=4)c.bass=.4;if(gone>=5)c.bass=0;if(gone>=6){c.pad=.35;c.arp=.8;}}
+  if(MUS.id==='race'){if(S.wall&&km<40.3){d.cutK=.3;d.tempo=.85;c.kick=.5;c.hat=0;c.arp2=0;}else if(S.wall){d.cutK=1.25;c.kick=1.4;}}
+  if(MUS.id==='summer'){c.kick*=MUS.drums;c.hat*=MUS.drums;}
+  if(MUS.id==='ultra'){if(frac<.22){c.kick=0;c.hat=0;c.bass=.5;d.cutK=1.3;}else if(S.beyond){c.kick=0;c.hat=0;c.bass=.4;c.arp2=1;d.cutK=1.5;}
+    if(S.hazeT>0){d.wob=.45;d.cutK*=.6;}}
+  if(MUS.id==='stall'&&S.letgo){c.prog='warm';c.kick=0;c.four=0;c.hat=.3;d.cutK=1.2;}
+  if(MUS.id==='burnout'){const k=S.seen||0;c.arp=k>=1?.6:0;c.bass=k>=2?.6:0;c.arp2=k>=3?.6:0;c.hat=k>=4?.5:0;c.kick=k>=5?.6:0;c.pad=.55+k*.07;c.sparse=k<3?1:0;}
+  if(MUS.id==='end'&&S.noWatch){d.vol=.45;c.arp=.4;c.bass=0;}
+  return [c,d];}
 const mf=n=>440*Math.pow(2,(n-69)/12);
 function musVoice(f,t,d,type,vol,cut){const o=AC.createOscillator(),g=AC.createGain(),fl=AC.createBiquadFilter();o.type=type;o.frequency.value=f;fl.type='lowpass';fl.frequency.value=cut||1800;
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.3,d*.25));g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(fl);fl.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+d+.05);}
 function musNoise(t,vol){const b=AC.createBuffer(1,AC.sampleRate*.05,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
   const src=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();src.buffer=b;f.type='highpass';f.frequency.value=6000;g.gain.value=vol;src.connect(f);f.connect(g);g.connect(MUS.gain);src.start(t);}
-function musTick(){if(!AC||!MUS.on)return;const spb=60/84/2; // eighth notes at 84 bpm
-  while(MUS.next<AC.currentTime+.25){const t=MUS.next,st=MUS.step,bar=Math.floor(st/16)%4,e=st%16,ch=PROG[MUS.mood][bar],dr=MUS.drums;
-    if(e===0)ch.forEach((n,i)=>musVoice(mf(n+12),t,spb*16,i%2?'triangle':'sine',.045,1400));
-    if(e%2===0)musVoice(mf(ch[0]-12),t,spb*1.8,'sine',e%8===0?.12:.06,600);
-    const arp=[0,1,2,3,2,1,3,2][e%8];if(e%2===1||e%4===0)musVoice(mf(ch[arp]+24),t,spb*1.6,'triangle',.028,3000);
-    if(dr>.05){if(e%8===0){const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(45,t+.15);g.gain.setValueAtTime(.18*dr,t);g.gain.exponentialRampToValueAtTime(.0001,t+.2);o.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+.22);}
-      if(e%4===2)musNoise(t,.05*dr);}
+function musTick(){if(!AC||!MUS.on)return;const [c,d]=musDyn();const spb=60/c.bpm/2/d.tempo,cut=(c.cut||1500)*d.cutK,P=PROG[c.prog];
+  if(MUS.gain)MUS.gain.gain.setTargetAtTime(.55*d.vol,AC.currentTime,.5);
+  musRain(!!c.rain);
+  const w=f=>d.wob?f*Math.pow(2,(Math.random()*2-1)*d.wob/12):f;
+  while(MUS.next<AC.currentTime+.25){const t=MUS.next,st=MUS.step,bar=Math.floor(st/16)%4,e=st%16,ch=P[bar];
+    if(e===0&&c.pad)ch.forEach((n,i)=>musVoice(w(mf(n+12)),t,spb*16,i%2?'triangle':'sine',.045*c.pad,cut*.9));
+    if(c.piano&&e%4===0)musVoice(mf(ch[(e/4)%4]+12+(e===12?12:0)),t,spb*7,'triangle',.05*c.piano,cut*1.6);
+    if(c.bass&&e%2===0)musVoice(w(mf(ch[0]-12)),t,spb*1.8,'sine',(e%8===0?.12:.06)*c.bass,600);
+    const arp=[0,1,2,3,2,1,3,2][e%8];
+    if(c.arp&&(c.sparse?e%8===0:(e%2===1||e%4===0)))musVoice(w(mf(ch[arp]+24)),t,spb*1.6,'triangle',.028*c.arp,cut*2);
+    if(c.arp2&&e%2===0)musVoice(w(mf(ch[(arp+2)%4]+36)),t,spb*.9,'sine',.014*c.arp2,cut*2.5);
+    if(c.kick&&(c.four?e%4===0:e%8===0)){const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(45,t+.15);g.gain.setValueAtTime(.18*c.kick,t);g.gain.exponentialRampToValueAtTime(.0001,t+.2);o.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+.22);}
+    if(c.hat&&e%4===2)musNoise(t,.05*c.hat);
     MUS.next+=spb;MUS.step++;}}
+let RAIN=null;
+function musRain(on){if(!AC)return;if(on&&!RAIN){const len=AC.sampleRate*2,b=AC.createBuffer(1,len,AC.sampleRate),dd=b.getChannelData(0);for(let i=0;i<len;i++)dd[i]=Math.random()*2-1;
+    const src=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();src.buffer=b;src.loop=true;f.type='bandpass';f.frequency.value=1800;f.Q.value=.4;g.gain.value=0;g.gain.setTargetAtTime(.05,AC.currentTime,1);src.connect(f);f.connect(g);g.connect(MUS.gain);src.start();RAIN={src,g};}
+  else if(!on&&RAIN){RAIN.g.gain.setTargetAtTime(0,AC.currentTime,.4);const r=RAIN;RAIN=null;setTimeout(()=>{try{r.src.stop();}catch(_){}},1500);}}
 function musicStart(){if(!AC||!MUS.on||MUS.timer)return;if(!MUS.gain){MUS.gain=AC.createGain();MUS.gain.gain.value=.55;MUS.gain.connect(AC.destination);}
   MUS.gain.gain.setTargetAtTime(.55,AC.currentTime,.4);MUS.next=AC.currentTime+.1;MUS.timer=setInterval(musTick,90);}
 function musicStop(){if(MUS.timer){clearInterval(MUS.timer);MUS.timer=null;}if(MUS.gain&&AC)MUS.gain.gain.setTargetAtTime(0,AC.currentTime,.3);}
-function musicMood(v){MUS.mood=v&&(v.build==='blossom')?'blossom':v&&(v.night||v.rain||v.dawn||v.motive||v.stall)?'night':'day';MUS.step=MUS.step-(MUS.step%16);}
+function musicMood(id){MUS.id=id;MUS.step=MUS.step-(MUS.step%16);}
 $('b-mus').textContent='音樂 '+(MUS.on?'開':'關');
 $('b-mus').onclick=()=>{MUS.on=!MUS.on;try{localStorage.setItem('shimin.music',MUS.on?'on':'off');}catch(_){}$('b-mus').textContent='音樂 '+(MUS.on?'開':'關');if(MUS.on){ac();musicStart();}else musicStop();};
 addEventListener('pointerdown',()=>{if(AC&&MUS.on)musicStart();},{passive:true});
 
 /* ================= dialogue & ribbon ================= */
 let sayT=0;
-function say(who,text,spoken){const self=who===CHAR.name;$('say').classList.toggle('self',self);$('say').classList.toggle('think',self&&!spoken); // the hero's own lines: thoughts by default, speech when said out loud
+function say(who,text,spoken){const self=who===CHAR.name,other=!self&&who!=='提示';$('say').classList.toggle('self',self);$('say').classList.toggle('other',other);$('say').classList.toggle('think',self&&!spoken); // the hero's own lines: thoughts by default, speech when said out loud
   $('who').textContent=who;$('line').textContent=text;$('say').classList.remove('off');sayT=4.2;SFX.talk();if(self)placeBubble(true);else{$('say').style.left='';$('say').style.bottom='';}}
 let toastT=0;function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('off');toastT=1.8;}
 const _bv=new THREE.Vector3();
@@ -1137,7 +1176,7 @@ function begin(){if(!S||!S.pre)return;S.pre=false;
   if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});$('recap').hidden=true;$('hud').classList.remove('pre');}
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;
 function run(id){
-  ac();disposeScene();$('recap').hidden=true;musicMood(VENUES[id]);musicStart();
+  ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
   const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb||16200)/42.195);v.secs=76*(gv*.96)/JOG;prep(v);} // keep ch6 near 76 s whatever the PB
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='oldstreet'?buildOldStreet(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):v.build==='coast'?buildCoast(v):v.build==='lake'?buildLake(v):buildCity(v);}finally{Math.random=R;}
@@ -1163,7 +1202,7 @@ function run(id){
   S.pre=true;S.preT=0;$('hud').classList.add('pre');
   if(PICK.autoBegin){PICK.autoBegin=false;S.autoT=1.6;ribbon(`${v.ch}　${v.n}`,v.sub);}else showRecap(id,v);
 }
-function toMenu(){S=null;MUS.drums=1;$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
+function toMenu(){S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function renderChapters(){
   const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.km} 公里</span><b>${v.n}</b><small>${v.desc}</small><span class="go">讀這一章</span></div></button>`;};
   const soon=SOON.map(([c,t,d])=>`<div class="venue soon" aria-disabled="true"><div class="pic"></div><div class="txt"><span class="ch">${c}・${t}</span><b>${d}</b><span class="go">準備中</span></div></div>`).join('');
