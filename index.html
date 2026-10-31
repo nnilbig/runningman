@@ -140,6 +140,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .gly{margin-top:8px;width:170px}
 .gly small{font-size:13px;font-weight:800;letter-spacing:.06em}
 .gly div{height:9px;border-radius:5px;background:rgba(251,243,230,.25);overflow:hidden;margin-top:3px}.gly i{display:block;height:100%;width:100%;border-radius:5px;background:#f3bd63;transition:width .2s,background .4s}
+.tint{position:fixed;inset:0;pointer-events:none;mix-blend-mode:soft-light;background:transparent}
 .wallfx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,transparent 35%,rgba(40,12,34,.85) 100%);opacity:0;transition:opacity .8s}
 .flowfx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(255,250,236,.38) 0%,rgba(255,250,236,.6) 55%,rgba(255,250,236,.92) 100%);opacity:0;transition:opacity 1.2s}
 #gl{transition:filter 1.2s}
@@ -189,6 +190,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 </div>
 
 
+<div class="tint" id="tint"></div>
 <div class="wallfx" id="wallfx"></div>
 <div class="flowfx" id="flowfx"></div>
 <div class="z5fx" id="z5fx"></div>
@@ -1167,7 +1169,7 @@ function run(id){
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
   S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
-  $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('gap').hidden=!v.stall;
+  $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
   if(v.club){const slots=v.follow?[[2.2,1.1],[-1.6,1.1]]:[[3,-1.2],[3,1.2],[6,0],[-3,-1.2],[-3,1.2],[-6,0]],hairs=[0x1e1a18,0x4a3424,0x2a2420,0x6a4a34];
     S.friends=v.friends.map(([name,line,at,skip],i)=>{const cv=v.follow&&ANS.club&&VENUES.club.variants[ANS.club],pp=makePerson({shirt:cv?cv.shirt:v.shirt||0xf0c060,shorts:0x2a2a33,hair:hairs[i%4],skin:[0xe8b894,0xd6a07a,0xf0c8a4][i%3],pony:i===1||i===3});scene.add(pp.g);
@@ -1188,7 +1190,25 @@ function run(id){
   S.pre=true;S.preT=0;$('hud').classList.add('pre');
   if(PICK.autoBegin){PICK.autoBegin=false;S.autoT=1.6;S.quick=true;ribbon(`${v.ch}　${v.n}`,v.sub);}else showRecap(id,v);
 }
-function toMenu(){$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
+// colour follows the state of mind: each chapter has a mood, and the run's own state moves it
+function moodTarget(v){const p=clamp((S.d-W.startD)/S.goal,0,1),m={sat:1,con:1,bri:1,t:[0,0,0,0]};
+  switch(S.id){
+    case 'start':m.sat=.88+.18*p;m.con=.95;m.bri=1+.04*p;m.t=[255,196,150,.22*(1-p)];break; // shy dawn, opening up
+    case 'club':m.sat=1.14;m.con=1.03;m.bri=1.03;m.t=[255,190,120,.16];break; // warm, together
+    case 'track':{const low=S.sta<25?1-S.sta/25:0;m.sat=1.05-.35*low;m.con=1.04+.08*low;m.t=low?[90,70,110,.25*low]:[255,210,150,.08];break;} // crisp, then heavy legs drain it
+    case 'habit':m.sat=.72+.25*p;m.con=.95;m.bri=.96+.04*p;m.t=[110,140,200,.26*(1-p)];break; // grey rain that slowly warms up
+    case 'race':if(S.wall&&!S.done){m.sat=.68;m.con=1.16;m.bri=.94;m.t=[190,50,60,.2];}else{m.sat=1.04;m.t=[255,220,170,.06];}break; // hitting the wall
+    case 'summer':m.sat=1.06;m.t=[255,200,215,.12];break; // the flow effect does the rest
+    case 'ultra':{if(S.beyond){m.sat=.92;m.con=.94;m.t=[170,205,255,.16];}else{const h=S.fat/100;m.sat=1-.18*h;m.con=1-.12*h;m.bri=1+.14*h;m.t=[255,190,110,.3*h];}break;} // heat, then a cool calm past the edge
+    case 'stall':{const r=S.letgo?1:0;m.sat=.72+.35*r;m.con=.98;m.t=r?[255,175,110,.16]:[140,145,160,.2];break;} // grey chase; colour returns when he lets go
+    case 'burnout':{const k=clamp(S.mot/100,0,1);m.sat=.32+.8*k;m.bri=.94+.08*k;m.t=[80,80,110,.3*(1-k)];break;} // colour is motivation
+    case 'end':m.sat=1;m.con=.96;m.t=[255,176,110,S.noWatch?.24:.16];break;} // golden, quiet
+  return m;}
+function moodGrade(v,dt){const m=moodTarget(v),k=Math.min(1,dt*1.2);if(!S.mood)S.mood={sat:m.sat,con:m.con,bri:m.bri,t:m.t.slice()};const g=S.mood;
+  g.sat=lerp(g.sat,m.sat,k);g.con=lerp(g.con,m.con,k);g.bri=lerp(g.bri,m.bri,k);for(let i=0;i<4;i++)g.t[i]=lerp(g.t[i],m.t[i],k);
+  const f=`saturate(${g.sat.toFixed(2)}) contrast(${g.con.toFixed(2)}) brightness(${g.bri.toFixed(2)}) ${S.fxX||''}`;if(f!==S.fxLast){$('gl').style.filter=f;S.fxLast=f;}
+  const t=`rgba(${g.t[0]|0},${g.t[1]|0},${g.t[2]|0},${g.t[3].toFixed(3)})`;if(t!==S.tLast){$('tint').style.background=t;S.tLast=t;}}
+function toMenu(){$('tint').style.background='transparent';$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function shortDesc(t){const ps=t.split('。').filter(x=>x);let o='';for(const p of ps){o+=p+'。';if(o.length>=18)break;}return o;}
 function renderCont(){const done=ANS.done||{},nx=CHAPTERS.find(id=>!done[id]);const id=nx||'start',v=VENUES[id];
   $('m-cont-l').textContent=!Object.keys(done).length?'開始':nx?'繼續':'全部跑完了・從頭再跑一次';$('m-cont-t').textContent=`${v.ch}　${v.n}`;$('m-cont').onclick=()=>start(id);}
@@ -1291,7 +1311,7 @@ function update(dt){
     // haze: between 45 and 75 km the mind wanders and the body drifts sideways
     if(!S.done&&!S.beyond&&frac>=.45){S.hazeCD-=dt;if(S.hazeT<=0&&S.hazeCD<=0){S.hazeT=3.2;S.hazeHit=false;S.hazeN=(S.hazeN||0)+1;S.hazeCD=rnd(3,6);S.drift=(Math.abs(S.lat)>.9?-Math.sign(S.lat):Math.random()<.5?-1:1)*rnd(.7,1.1);toast(v.stores?'太熱了，頭有點暈……':'意識有點模糊……');}}
     if(S.hazeT>0){S.hazeT-=dt;S.lat=clamp(S.lat+S.drift*dt,v.lat[0],v.lat[1]);if((S.lat<=v.lat[0]+.01||S.lat>=v.lat[1]-.01)&&S.bump<=0){S.bump=.7;if(!S.hazeHit){S.hazeHit=true;S.offN=(S.offN||0)+1;}S.shake=.2;SFX.bump();toast('差點跑出路面');}
-      $('gl').style.filter=`blur(${(1.6*Math.min(1,S.hazeT)).toFixed(2)}px) saturate(.75)`;}else $('gl').style.filter='';
+      S.fxX=`blur(${(1.6*Math.min(1,S.hazeT)).toFixed(2)}px) saturate(.75)`;}else S.fxX='';
     // the 32-year-old self, briefly, a few metres ahead
     if(S.young){const y=S.young;if(!y.on&&frac>=.57&&frac<.66){y.on=true;y.d=S.d+6;y.p.g.visible=true;}
       if(y.on){y.d+=S.speed*dt;const pp=at(path,y.d);y.p.g.position.set(pp.x+pp.rx*.6,0,pp.z+pp.rz*.6);y.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(y.p,dt,.9+S.speed*.22,1);if(frac>=.66){y.on=false;y.p.g.visible=false;}}}
@@ -1324,9 +1344,9 @@ function update(dt){
     S.flow=clamp(S.flow,0,100);if(S.flow>=80)S.deepT+=dt;
     const fade=1-clamp((S.flow-25)/60,0,1);$("hudtop").style.opacity=(.04+.96*fade).toFixed(2);$('say').style.setProperty('--fade',(.18+.82*fade).toFixed(2));
     const k=clamp((S.flow-40)/60,0,1);$('flowfx').style.opacity=(k*.95).toFixed(2); // the world itself fades to white along with the numbers
-    $('gl').style.filter=k>0?`saturate(${(1-.65*k).toFixed(2)}) contrast(${(1-.4*k).toFixed(2)}) brightness(${(1+.22*k).toFixed(2)})`:'';
+    S.fxX=k>0?`saturate(${(1-.65*k).toFixed(2)}) contrast(${(1-.4*k).toFixed(2)}) brightness(${(1+.22*k).toFixed(2)})`:'';
     const f=$('glyfill');f.style.width=S.flow.toFixed(1)+'%';f.style.background='#9fd8e8';MUS.drums=1-clamp((S.flow-30)/50,0,1);}
-  if(v.flow&&S.done){$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('flowfx').style.opacity=0;$('gl').style.filter='';}
+  if(v.flow&&S.done){$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('flowfx').style.opacity=0;S.fxX='';}
   const want=S.done?0:Math.min(cap,S.target*(S.bump>0?.55:1));
   S.speed=lerp(S.speed,want,Math.min(1,dt*(S.done?1.2:1.6)));
   S.d+=S.speed*dt;if(!S.done)S.t+=dt;
@@ -1338,6 +1358,7 @@ function update(dt){
   if(!S.done&&prog>=S.goal){S.done=true;SFX.done();S.endWait=Math.max(0,sayT-.3);if(!S.endWait)say(CHAR.name,endLine(v));}
   if(S.done&&S.endWait>0){S.endWait-=dt;if(S.endWait<=0){S.endWait=0;S.endLate=true;say(CHAR.name,endLine(v));}}
   if(S.done)$('z5fx').style.opacity=0;
+  moodGrade(v,dt);
   if(S.done){S.doneT+=dt;if(S.doneT>2.8&&!S.endWait&&(!S.endLate||sayT<=1.2)&&$('done').hidden&&!S.shown){S.shown=true;showDone();}}
   // npcs
   for(const n of S.npcs){
