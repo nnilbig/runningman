@@ -131,7 +131,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
     <div class="brand"><h1>市民跑者</h1><p>跑步，然後繼續生活。</p></div>
     <div class="card"><div class="avatar" aria-hidden="true"></div><div><b>阿傑</b><div class="m">32 歲</div><p class="prologue">三十二歲那年，日子就這樣過著。某個清晨，他穿起跑鞋，走到家附近的河堤。</p></div></div>
     <div class="venues" id="chapters"></div>
-    <p class="note">畫面上的距離和時間照真實配速計算，但每一章只要一分鐘左右。按 ▲ ▼ 調整配速，◀ ▶ 閃開路上的人。衝到 Zone 5 撐太久，會被迫放慢。十個章節都可以直接跑。</p>
+    <p class="note">畫面上的距離和時間照真實配速計算，但每一章只要一分鐘左右。按 ＋ － 調整配速（每按一下 5 秒），◀ ▶ 閃開路上的人。心率衝到 Zone 5，阿傑會覺得太快，自動放慢。十個章節都可以直接跑。</p>
   </div>
 </div>
 
@@ -149,7 +149,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   <div class="ribbon off" id="ribbon"><b id="rb-t"></b><small id="rb-s"></small></div>
   <div class="ctl">
     <div class="grp"><button class="cb" data-k="left" aria-label="往左">◀</button></div>
-    <div class="grp v"><button class="cb" data-k="up" aria-label="加快">▲</button><button class="cb" data-k="down" aria-label="放慢">▼</button></div>
+    <div class="grp v"><button class="cb" data-k="up" aria-label="加快">＋</button><button class="cb" data-k="down" aria-label="放慢">－</button></div>
     <div class="grp"><button class="cb" data-k="right" aria-label="往右">▶</button></div>
   </div>
 </div>
@@ -1007,14 +1007,14 @@ function spawnNPCs(id){
   }else if(id==='park'){
     for(let k=0;k<5;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(20,400),rnd(-1.4,1.4),dir*rnd(.9,1.2)));}
     for(let k=0;k<2;k++)N.push(addPerson('jog',rnd(60,400),rnd(-1.2,1.2),-rnd(2.2,2.6)));
-  }else if(id==='small'){ // a small field: a handful of runners, spread out
-    for(let k=0;k<5;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.6,1.6),rnd(2.4,3.0)));
+  }else if(id==='small'){ // a small field, but not empty
+    for(let k=0;k<14;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.6,1.6),rnd(2.4,3.0)));
   }else if(id==='lake'){
     for(let k=0;k<6;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.4,1.4),rnd(2.3,2.9)));
   }else if(id==='coast'){
     for(let k=0;k<12;k++)N.push(addPerson('jog',rnd(-20,130),rnd(-2.4,2.4),rnd(2.4,3.1)));
   }else if(id==='race'){ // a field of runners going the same way
-    for(let k=0;k<18;k++)N.push(addPerson('jog',rnd(-30,130),rnd(-3.3,3.3),rnd(2.3,3.2)));
+    for(let k=0;k<40;k++)N.push(addPerson('jog',rnd(-30,130),rnd(-3.3,3.3),rnd(2.3,3.2)));
   }else if(id==='city'||id==='rain'){
     const few=id==='city'||id==='rain';
     for(let k=0;k<(few?3:9);k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,640),rnd(-1.5,1.5),dir*rnd(.9,1.2),id==='rain'?{umbrella:true}:{}));}
@@ -1145,14 +1145,13 @@ function update(dt){
     return;}
   if(!S.done){
     const vmin=v.vmin||VMIN,ud=(keys.up?1:0)-(keys.down?1:0);
-    // pace control: a tap moves 5 s/km; holding keeps going at about 10 s/km per second
-    if(ud){const first=!S.udT;S.udT=(S.udT||0)+dt;let pc=1000/S.target;
-      if(first)pc-=ud*5;else if(S.udT>.35)pc-=ud*10*dt;
-      S.target=clamp(1000/pc,vmin,VMAX);}else S.udT=0;
-    // Zone 5 is allowed, with a warning; stay too long and the body forces a slowdown
-    if(S.zone>=5){S.z5T=(S.z5T||0)+dt;if(!S.z5warn){S.z5warn=true;toast('⚠ 心率 Zone 5，撐不了太久');}}else{S.z5T=Math.max(0,(S.z5T||0)-dt*.5);S.z5warn=false;}
-    if(S.z5T>6&&!(S.forceT>0)){S.forceT=7;S.z5T=0;S.shake=.3;say(CHAR.name,'……撐不住了。只好放慢。');}
-    if(S.forceT>0){S.forceT-=dt;S.target=Math.min(S.target,JOG*.88);}
+    // pace control: + / − move the pace 5 s/km per press (holding repeats the step every 0.3 s)
+    if(ud&&!(ud>0&&S.forceT>0)){S.udT=(S.udT||0)-dt;if(S.udT<=0){S.udT=S.udHeld?.3:.45;S.udHeld=true;const pc=1000/S.target-ud*5;S.target=clamp(1000/pc,vmin,VMAX);if(v.flow)S.flow=Math.max(0,S.flow-8);}}
+    else{S.udT=0;S.udHeld=false;}
+    // Zone 5: he notices he's going too fast and eases off by himself
+    if(S.zone>=5&&!S.z5warn&&!(S.forceT>0)){S.z5warn=true;S.forceT=4;S.target=Math.min(S.target,JOG);say(CHAR.name,['太快了……慢一點。','心跳太快了。先放慢一點。','……太快了。'][Math.floor(Math.random()*3)]);}
+    if(S.zone<5)S.z5warn=false;
+    if(S.forceT>0){S.forceT-=dt;S.target=Math.min(S.target,JOG);}
     $('z5fx').style.opacity=S.zone>=5?(.55+.35*Math.sin(S.t*7)).toFixed(2):S.forceT>0?'.25':'0';
     if(v.walkCheck){if(S.target<1.75)S.walkT+=dt;else S.walkT=0;if(S.walkT>1.5&&!S.walked){S.walked=true;say(CHAR.name,'走一下。……走一下就好。');}}
     const lr=(keys.right?1:0)-(keys.left?1:0);S.lat=clamp(S.lat+lr*1.7*dt,v.lat[0],v.lat[1]);
@@ -1216,7 +1215,7 @@ function update(dt){
       animPerson(f.p,dt,.9+f.cad*.22,clamp(f.cad/JOG,.2,1));if(f.leaving&&f.t>1.8)f.p.arms[1].rotation.x=-2.6;}
     if(v.skies)skyLerp(v,clamp(prog/S.goal,0,1));}
   if(v.flow&&!S.done){ // steady, unbothered running builds flow; the HUD fades away as it rises
-    if(keys.up||keys.down)S.flow-=12*dt;else if(S.zone>=4)S.flow-=6*dt;else if(S.t>2&&Math.abs(S.speed-S.target)<.25)S.flow+=1.7*dt;
+    if(keys.up||keys.down)S.flow-=2*dt;else if(S.zone>=4)S.flow-=6*dt;else if(S.t>2&&Math.abs(S.speed-S.target)<.25)S.flow+=1.7*dt;
     if(S.bump>1.05)S.flow-=30*dt;
     S.flow=clamp(S.flow,0,100);if(S.flow>=80)S.deepT+=dt;
     const fade=1-clamp((S.flow-25)/60,0,1);$("hudtop").style.opacity=(.04+.96*fade).toFixed(2);
