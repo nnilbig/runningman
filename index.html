@@ -1060,7 +1060,7 @@ function run(id){
   if(v.ultra||v.flow||v.motive||v.glycogen)$('glylab').textContent=v.ultra?'疲勞':$('glylab').textContent;$('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra);
   if(v.club){const slots=[[3,-1.2],[3,1.2],[6,0],[-3,-1.2],[-3,1.2],[-6,0]],hairs=[0x1e1a18,0x4a3424,0x2a2420,0x6a4a34];
     S.friends=v.friends.map(([name,line,at,skip],i)=>{const pp=makePerson({shirt:v.shirt||0xf0c060,shorts:0x2a2a33,hair:hairs[i%4],skin:[0xe8b894,0xd6a07a,0xf0c8a4][i%3],pony:i===1||i===3});scene.add(pp.g);
-      return {p:pp,name,line,at:at*S.goal,skip,dx:slots[i][0],lat:slots[i][1],d:S.d+slots[i][0],v:JOG,leaving:false,gone:false,t:0};});
+      const a=(i+.5)/6*Math.PI*2;return {p:pp,name,line,at:at*S.goal,skip,dx:slots[i][0],slat:slots[i][1],lat:Math.sin(a)*2.6,d:S.d+Math.cos(a)*2.6,ring:a,v:JOG,leaving:false,gone:false,t:0};});
     placeFriends(0);}
   if(v.buddy){const bp=makePerson({shirt:0xf0c060,shorts:0x2a2a33,hair:0x2a2420,skin:0xd6a07a});scene.add(bp.g);S.buddy={p:bp,d:S.d+1.2,lat:clamp(S.lat+1.1,v.lat[0],v.lat[1])};}
   if(v.ultra){const y=makePerson(Object.assign({},CHAR));y.g.visible=false;scene.add(y.g);S.young={p:y,d:0,on:false};}
@@ -1088,8 +1088,9 @@ $('d-again').onclick=()=>{if(S){PICK.autoBegin=true;run(S.id);}};$('d-menu').onc
 $('d-nextbtn').onclick=()=>{const i=CHAPTERS.indexOf(S.id);if(i<CHAPTERS.length-1)start(CHAPTERS[i+1]);else toMenu();};
 
 const REACT=['啊，抱歉！','差點撞到……','不好意思！','（嚇一跳）'];
-function placeFriends(dt){ // put the club where they belong (also while waiting at the start)
-  for(const f of S.friends){if(f.gone)continue;const pt=at(W.path,f.d);f.p.g.position.set(pt.x+pt.rx*f.lat,0,pt.z+pt.rz*f.lat);f.p.g.rotation.y=Math.atan2(pt.tx,pt.tz);if(dt)animPerson(f.p,dt,.4,.05);}}
+function placeFriends(dt){ // at the start: a loose ring round 阿傑, everyone facing in, chatting
+  const rp=runner.g.position;for(const f of S.friends){if(f.gone)continue;const pt=at(W.path,f.d);f.p.g.position.set(pt.x+pt.rx*f.lat,0,pt.z+pt.rz*f.lat);
+    f.p.g.rotation.y=Math.atan2(rp.x-f.p.g.position.x,rp.z-f.p.g.position.z);if(dt)animPerson(f.p,dt,.4,.05);}}
 function hw0(){return S?S.v.width/2:2;}
 function skyLerp(v,frac){ // move through v.skies (3 stops) as the chapter progresses
   const k=Math.floor(frac*24);if(k===S.skyK)return;S.skyK=k;const t=frac*2,i=Math.min(1,Math.floor(t)),u=t-i,A=v.skies[i],B=v.skies[i+1];
@@ -1173,7 +1174,7 @@ function update(dt){
   if(S.friends){const prog=S.d-W.startD;
     for(const f of S.friends){if(f.gone)continue;
       if(!f.leaving&&prog>=f.at){f.leaving=true;toast(f.skip);S.queue.push({at:S.t+.3,who:f.name,text:f.line});}
-      if(!f.leaving){const want=S.d+f.dx;f.d+=(S.speed+clamp(want-f.d,-1,1)*.8)*dt;f.cad=S.speed;}
+      if(!f.leaving){const want=S.d+f.dx;f.d+=(S.speed+clamp(want-f.d,-1.2,1.2)*.9)*dt;f.lat=lerp(f.lat,f.slat,Math.min(1,dt*1.2));f.cad=Math.max(S.speed,Math.abs(want-f.d)>.5?JOG*.6:0);}
       else{f.t+=dt;f.d+=Math.max(0,JOG*(1-f.t/1.6))*dt;f.lat=lerp(f.lat,(f.lat<0?-1:1)*(hw0()+1.2),Math.min(1,dt*.8));f.cad=Math.max(.3,JOG*(1-f.t/1.6));
         if(f.t>2.4){const pt=at(path,f.d);f.p.g.rotation.y=Math.atan2(pt.tx,pt.tz)+(f.lat<0?-Math.PI/2:Math.PI/2);}
         if(f.t>7){f.gone=true;f.p.g.visible=false;}}
