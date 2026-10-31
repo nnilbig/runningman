@@ -356,7 +356,7 @@ const NAME_M='豪明宏偉翰宇廷哲瑋凱華銘誠霖祥維'.split(''),NAME_F
 function RN(g){const pool=g==='f'?NAME_F:NAME_M;for(let k=0;k<80;k++){const c=pool[Math.floor(Math.random()*pool.length)],n=(Math.random()<.5?'小':'阿')+c;if(!USED.has(c)&&!USED.has(n)){USED.add(c);USED.add(n);return n;}}return '小'+pool[0];}
 const RIVER_SEED=1933; // chapters 1 and 8 run the very same riverbank
 const VENUES={
-  start:{ch:'第一章',n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:56,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
+  start:{ch:'第一章',n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:48,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],fog:0xdfdcdc,sun:[-.7,.22,.5],sunCol:0xffe6c8,
     ground:0x8cb46c,grass:0x84aa66,water:0x5f9ad0,leaves:[0x7fae62,0x8cba6c,0x9cc47a],crown:0xf0b6c4,reeds:[0x8aa25e,0x9aa866,0x7d9452],
     desc:'三十二歲的春天清晨，第一次在河堤上跑三公里。右手邊是河面和濕地，路邊開了幾棵櫻花，遠處有一座紅色的拱橋。',
@@ -369,7 +369,7 @@ const VENUES={
     endBy:{[WHY[0]]:'三公里。生活好像沒有變，但今天的早上，不太一樣了。',[WHY[1]]:'三公里。喘得很厲害。但跑完，有一點舒服。',[WHY[2]]:'三公里。理由還說不清楚，但腳好像知道。'},
     end:'三公里。理由還說不清楚，但腳好像知道。',
     next:'第一次跑完三公里的那天晚上，睡得特別好。隔天腿很痠，阿傑還是想，再跑一次看看。'},
-  habit:{ch:'第三章',n:'不想跑的日子',sub:'習慣',km:5,build:'boulevard',rain:true,secs:64,age:34,width:4,lat:[-1.7,1.7],startLat:.4,
+  habit:{ch:'第三章',n:'不想跑的日子',sub:'習慣',km:5,build:'boulevard',rain:true,secs:56,age:34,width:4,lat:[-1.7,1.7],startLat:.4,
     sky:['#4a5568','#6b7484','#8f95a0'],fog:0x7c8490,sun:[.3,.6,.4],sunCol:0xc9d3e0,
     desc:'下雨的早晨，昨天加班到很晚，今天不想跑。還是出門了：沿著林蔭大道的人行道跑，分隔島上是一整排大樹，到了圓環再右轉，進另一條種滿樹的大馬路。人行道上到處是水坑。',
     intro:'跑團安靜之後，課表改成自己寫，貼在冰箱上：一、三、五、六。今天是星期三，外面下著雨，昨天加班到很晚。說實話，今天不想跑。',
@@ -377,7 +377,7 @@ const VENUES={
     script:[[0,'阿傑','下雨。想了很多不跑的理由，最後還是出門了。'],[0,'阿傑','意志力像手機電量，到了晚上就不太夠用。'],[0,'阿傑','但習慣不太需要電。鞋帶一綁，腳就自己動了。'],[0,'阿傑','同一條路，同一個轉角。每天看起來都差不多。'],[0,'阿傑','但差不多，跟一模一樣，好像不太一樣。'],[0,'阿傑','在圓環右轉。噴水池在雨裡，也還在噴。'],[0,'阿傑','重複，不是原地打轉。每一次都多了一點什麼。'],[0,'阿傑','水坑、雨傘、濕掉的鞋子。都沒有什麼大不了的。'],[0,'阿傑','今天的份，快跑完了。']],
     end:'五公里。不想跑的日子，跑完最舒服。',
     next:'日子照常過。跑步像刷牙，一天不跑，反而覺得少了什麼。三十四歲那年，阿傑報名了人生第一場全程馬拉松。'},
-  club:{ch:'第二章',n:'星期六的跑團',sub:'同伴',km:8,build:'park',secs:76,age:33,width:4,lat:[-1.7,1.7],startLat:0,club:true,
+  club:{ch:'第二章',n:'星期六的跑團',sub:'同伴',km:8,build:'park',secs:64,age:33,width:4,lat:[-1.7,1.7],startLat:0,club:true,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],skies:[['#86aee0','#cfd8e8','#fbe3c8'],['#5f9ad6','#a8cdec','#f0f0e0'],['#8a929e','#b4b8be','#d8d4cc']],fogs:['#dfdcdc','#d6e2ea','#c4c6c8'],fog:0xdfdcdc,sun:[-.6,.4,.5],sunCol:0xfff0dc,
     desc:'三十三歲，加入跑團。城市裡的一片熱帶雨林，繞著一座大蓄水池跑，有一段水上木棧道，偶爾會遇到猴子。出發前選一種跑團：認真的競速團、跑完吃早餐的聊天團，或下班後的夜跑團。一季一季過去，身邊的人慢慢變少，最後只剩下自己。',
     intro:'跑了一陣子之後，同事問阿傑要不要加入跑團。公司附近剛好有三個團，風格完全不一樣。',
@@ -398,7 +398,7 @@ const VENUES={
       [0,'阿傑','人少了一點。速度反而剛剛好。',null,null,.5],[0,'阿傑','群組裡的訊息，越來越少了。',null,null,.71],[0,'阿傑','最後，只剩下我一個人。',null,null,.83],[0,'阿傑','……也許跑步，本來就是一個人的事。',null,null,.9],[0,'阿傑','一個人跑，也不覺得寂寞。',null,null,.96]],
     end:'八公里。一個人，跑完了。',
     next:'那年冬天，跑團的群組安靜了下來。阿傑決定，一個人也要繼續跑下去。'},
-  track:{ch:'第四章',n:'晚上的田徑場',sub:'練習',km:10,build:'track',secs:72,age:34,width:9.76,lat:[-4.6,4.6],startLat:-4.0,
+  track:{ch:'第四章',n:'晚上的田徑場',sub:'練習',km:10,build:'track',secs:60,age:34,width:9.76,lat:[-4.6,4.6],startLat:-4.0,
     night:true,sky:['#0c1030','#1f2452','#463a6a'],fog:0x2a2a4c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8,
     desc:'為了第一場全馬，下班後到田徑場練習。出發前選一個操場：市民運動場的藍色跑道，或體育大學的紅色跑道。外道有散步的人；第一、二道是跑得快的人，聽到後面有腳步聲，要記得閃開。',
     choose:{q:'今晚去哪裡練？',opts:[['city','市民運動場（藍色跑道）'],['uni','體育大學（紅色跑道）']]},
@@ -409,14 +409,14 @@ const VENUES={
     script:[[0,'阿傑','三十四歲。報名了全馬，開始認真練習。'],[0,'阿傑','下班後的田徑場。燈很亮，地上有好幾個影子。'],[0,'阿傑','第一道是留給跑得快的人的。聽到腳步聲，就讓開。'],[0,'阿傑','一圈四百公尺。一圈，又一圈。'],[0,'阿傑','練習不會說謊。但也不會馬上給你答案。'],[0,'阿傑','有人在數圈數，有人在聊天。我在數自己的呼吸。'],[0,'阿傑','再一圈就好。……每次都這樣說。'],[0,'阿傑','今天的課表，跑完了。']],
     end:'十公里。離全馬，又近了一點。',
     next:'練了幾個月，秋天到了。阿傑站上了人生第一場全馬的起跑線。'},
-  race:{ch:'第五章',n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:66,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
+  race:{ch:'第五章',n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:56,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
     sky:['#6f90c0','#b8c8dc','#ecdcc8'],fog:0xd6dce4,sun:[-.5,.55,.4],sunCol:0xfff1dc,
     desc:'人生第一場全程馬拉松：十二月的台北馬拉松。從市政府前出發，遠方是台北 101；穿過林蔭大道，沿著基隆河濱跑，再回到市府前。這一章多了肝醣條：每五公里有一個補給站，靠右經過就能拿。過了三十五公里，會撞牆。',
     intro:'三十四歲，跑步第三年。人生第一場全馬，是十二月的台北馬拉松。前一晚幾乎沒睡，四點就醒了，清晨有點冷。起跑線上擠滿了人，每個人看起來都比他厲害。',
     script:[[0,'阿傑','第一場全馬。起跑線前，大家看起來都比我厲害。',.4],[0,'提示','左上角多了肝醣條。跑著跑著，就會用掉。',3],[0,'提示','右邊是補給站。靠右邊跑過去，就能拿到水和能量膠。',6.5],[0,'阿傑','前十公里，身體輕得像是借來的。',10.5],[0,'阿傑','林蔭大道的樹，從兩邊把路蓋起來了。有人跑很快，一下就不見了。別跟。',14.5],[0,'路邊的人','加油——快到了！',18.5],[0,'阿傑','……還有二十幾公里。',21.2],[0,'阿傑','過了半馬，到了河濱。風好冷。從這裡開始，才是真正的馬拉松吧。',25.5],[0,'阿傑','腿開始有自己的意見了。',30.5],[0,'阿傑','痛，是免不了的。',37],[0,'阿傑','但要不要把它當成苦，好像是我自己選的。',39.2],[0,'阿傑','最後兩公里。不知道哪來的力氣。',40.5]],
     end:'四十二點一九五公里。跑完了。最後幾公里，一直在跟自己吵架。',
     next:'之後幾天，下樓梯都要扶著扶手。但阿傑已經在想下一場。兩年後的夏天，他第一次出國跑半馬。'},
-  summer:{ch:'第六章',n:'出國跑半馬',sub:'空白',km:21.0975,build:'blossom',secs:72,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
+  summer:{ch:'第六章',n:'出國跑半馬',sub:'空白',km:21.0975,build:'blossom',secs:62,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
     sky:['#8ab0dc','#d8dcec','#f6e8ea'],fog:0xe8e0e4,sun:[-.6,.4,.5],sunCol:0xfff2e8,
     desc:'三十五歲，第一次出國跑半馬。鄰國的一座古都，櫻花正好盛開。路兩旁都是櫻花，路邊是長滿草的古代王陵、韓屋和石塔。這一章只要穩穩地跑、別撞到人，畫面上的數字會慢慢淡掉。',
     intro:'三十五歲的春天。阿傑請了假，飛到鄰國的一座古都，報名了一場人不多的半馬。整座城的櫻花都開了，起跑線上大家都在拍照。',
@@ -426,7 +426,7 @@ const VENUES={
     endDeep:'回過神來，已經到終點了。好像把什麼東西，留在剛剛那片花瓣裡了。',endShallow:'一路上一直在想事情。跑到這麼遠的地方，還是在想家裡的事。',
     end:'跑完了。',
     next:'那次之後，阿傑又跑了很多場，身體一年比一年強。三十七歲那年，他報名了一百公里。'},
-  ultra:{ch:'第七章',n:'一百公里',sub:'邊界',km:100,build:'oldcity',secs:78,age:37,width:4,lat:[-1.7,1.7],startLat:0,ultra:true,
+  ultra:{ch:'第七章',n:'一百公里',sub:'邊界',km:100,build:'oldcity',secs:68,age:37,width:4,lat:[-1.7,1.7],startLat:0,ultra:true,
     sky:['#1c2448','#3a4a78','#8a8aa8'],skies:[['#1c2448','#3a4a78','#8a8aa8'],['#5f9ad6','#a8cdec','#eef0e6'],['#3a2c5c','#b0607a','#f39a5a']],fogs:['#4a5270','#d6e2ea','#c08070'],fog:0x4a5270,sun:[-.6,.3,.4],sunCol:0xfff0dc,
     desc:'三十七歲，一百公里超級馬拉松。天還沒亮就從南方的古城出發，沿著護城河、寺廟和稻田，繞進山腳下的村子，一直跑到傍晚再回到古城。這一章有「疲勞」：只會累積，不會消失。過了一半，意識會開始模糊，要用 ◀ ▶ 把自己拉回路中間。',
     intro:'三十七歲，跑步第六年。阿傑報名了南方古城的一百公里超馬。凌晨四點，古城門前擠滿了頭燈，空氣涼涼的，遠方山上的金色尖塔還亮著燈。',
@@ -440,7 +440,7 @@ const VENUES={
     script:[[0,'阿傑','三十九歲。這幾年的成績，一場比一場慢。',.5],[0,'提示','旁邊那個透明的人，是三十四歲的你，用當年的配速在跑。',3.5],[0,'提示','左上角是你跟他的差距。跟在他後面，心跳會越來越快。',7.5],[0,'阿傑','以前只要多練，數字就會變好。',12],[0,'阿傑','現在練得一樣多，數字卻往回走。',16.5],[0,'阿傑','努力不再換來數字的時候，還要努力嗎？',21],[0,'提示','追，或不追，都可以。不追的話，就往右邊靠。',24.5],[0,'阿傑','……他又跑遠了一點。',28,'河濱的落羽松紅了。以前怎麼都沒注意到。'],[0,'阿傑','心跳很快，腿很重。還是追不上。',32.5,'呼吸很穩。原來這個速度，也可以很舒服。'],[0,'阿傑','數字是真的。三十四歲的我，也是真的。',37,'三十四歲的我，應該已經到終點了吧。'],[0,'阿傑','終點快到了。',41]],
     end:'跑完了。',
     next:'之後的一年，阿傑越跑越少。不是受傷，也不是忙。只是有一天，忽然不想跑了。'},
-  burnout:{ch:'第九章',n:'沒有熱情的週末',sub:'倦怠',km:10,build:'weekend',route:'sunmoon',secs:72,age:41,width:3.2,lat:[-1.3,1.3],startLat:-.4,vmin:1.2,motive:true,
+  burnout:{ch:'第九章',n:'沒有熱情的週末',sub:'倦怠',km:10,build:'weekend',route:'sunmoon',secs:62,age:41,width:3.2,lat:[-1.3,1.3],startLat:-.4,vmin:1.2,motive:true,
     sky:['#7aa8d8','#bcd8e8','#eef0e6'],fog:0xd0d8d4,sun:[-.4,.5,.5],sunCol:0xfff0dc,
     desc:'四十一歲，成績不再進步之後，忽然什麼都不想跑。週末一個人來到山裡的大湖，沿著環湖公路隨便跑跑。這一章看的是「動機」：不知不覺就會往下掉，休息也不一定回得來，路上的小事才能把它找回來。',
     intro:'四十一歲。成績不再進步之後，好像什麼都不想跑了。鞋櫃裡的跑鞋放了好幾個月，休息了很久，熱情也沒有回來。這個週末，他一個人開車到山裡的大湖，想說，就隨便跑跑。',
@@ -451,7 +451,7 @@ const VENUES={
     endHigh:'沒有找回以前的熱情。但好像找到了別的東西。',endLow:'熱情沒有回來。但還是跑完了。這樣，也算數吧。',
     end:'跑完了。',
     next:'之後的一年，阿傑還是跑，只是跑得很慢，也很少比賽。\n四十二歲的秋天，他又回到了那條河堤。'},
-  end:{ch:'第十章',n:'秋天的河堤',sub:'終點',km:3,build:'river',seed:RIVER_SEED,secs:56,age:42,width:6,lat:[-2.7,2.7],startLat:-1.2,vmin:1.2,walkCheck:true,hair:0x5e5852,
+  end:{ch:'第十章',n:'秋天的河堤',sub:'終點',km:3,build:'river',seed:RIVER_SEED,secs:48,age:42,width:6,lat:[-2.7,2.7],startLat:-1.2,vmin:1.2,walkCheck:true,hair:0x5e5852,
     sky:['#3d2f5e','#b0607a','#f39a5a'],fog:0xd08a7e,sun:[.9,.1,.3],sunCol:0xffa870,
     ground:0xa49a62,grass:0x9a965e,water:0x5d74a6,leaves:[0xc9773a,0xd9a040,0x9a8a4a],crown:0xd0603a,reeds:[0xc8b070,0xb8a060,0xd0b878],
     desc:'四十二歲的秋天傍晚，回到第一章的那條河堤。同一條路、同一座紅色的橋，樹葉換了顏色。出發前，可以選擇摘下手錶。',
@@ -1027,7 +1027,7 @@ function recapText(id,v){const i=CHAPTERS.indexOf(id),prev=i>0?VENUES[CHAPTERS[i
 function showRecap(id,v){ // "previously…" over the live scene; the run starts after it (or after the chapter's choice)
   const ex=$('rc-extra'),gob={set hidden(h){$('rc-barbox').style.visibility=h?'hidden':'';$('rc-go').hidden=h;}};$('rc-ch').textContent=`${v.ch}・${v.sub} ・ ${v.km} 公里`;$('rc-t').textContent=v.n;
   const txt=recapText(id,v);$('rc-txt').textContent=txt;ex.innerHTML='';gob.hidden=false;$('recap').hidden=false;
-  S.autoT=clamp(txt.length/9,6,15);
+  S.autoT=clamp(txt.length/10,5,11);
   if(v.week)ex.innerHTML=`<div class="week">${v.week.map((d,i)=>`<span class="${v.weekDone.includes(i)?'ok':i===v.weekToday?'today':''}">${d}${v.weekDone.includes(i)?' ✓':i===v.weekToday?' ☂':''}</span>`).join('')}</div>`;
   const go=()=>setTimeout(begin,500);
   const watch=()=>{ex.innerHTML=`<div class="ask"><b>要戴著手錶跑嗎？</b><button class="opt" id="w-off">摘下手錶，什麼都不看</button><button class="opt" id="w-on">戴著跑</button></div>`;
@@ -1047,7 +1047,7 @@ function begin(){if(!S||!S.pre)return;S.pre=false;
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;
 function run(id){
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
-  const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb||16200)/42.195);v.secs=76*(gv*.96)/JOG;prep(v);} // keep ch6 near 76 s whatever the PB
+  const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb||16200)/42.195);v.secs=64*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
