@@ -131,7 +131,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .recap{position:fixed;left:50%;bottom:max(22px,calc(env(safe-area-inset-bottom,0px) + 16px));transform:translateX(-50%);width:min(560px,calc(100% - 32px));box-sizing:border-box;background:rgba(251,247,240,.94);color:var(--ink);border-radius:22px;padding:16px 20px;display:flex;flex-direction:column;gap:8px;box-shadow:0 14px 40px rgba(30,15,40,.35);max-height:70vh;overflow:auto;transition:opacity .5s}
 .recap small{font-size:13px;font-weight:800;color:#a0566a;letter-spacing:.08em}.recap>b{font-family:"Noto Sans TC",sans-serif;font-weight:900;font-size:26px}
 .recap p{margin:0;line-height:1.85;font-weight:500;white-space:pre-line;font-size:15px}
-.rc-go{display:flex;align-items:center;gap:12px}.rc-go i{flex:1;height:4px;border-radius:2px;background:#e9ddd0;overflow:hidden}.rc-go i b{display:block;height:100%;width:0;background:#e8857e}
+.rc-go{display:flex;align-items:center;gap:12px}.rc-go.end{justify-content:flex-end}.recap [hidden]{display:none!important}.rc-go i{flex:1;height:4px;border-radius:2px;background:#e9ddd0;overflow:hidden}.rc-go i b{display:block;height:100%;width:0;background:#e8857e}
 .hud.pre .top{opacity:0!important}.hud.pre .ctl,.hud.pre .say{opacity:0;pointer-events:none}
 .week{display:flex;gap:6px}.week span{flex:1;text-align:center;border-radius:10px;padding:6px 0;background:#f1e8dc;font-weight:800;font-size:14px;color:#7a6470}
 .week span.ok{background:#cfe6cf;color:#2f5a34}.week span.today{background:#e8857e;color:#fff}
@@ -212,9 +212,10 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 <div class="recap" id="recap" hidden>
   <small id="rc-ch"></small><b id="rc-t"></b>
   <p id="rc-txt"></p>
+  <div class="rc-go end" id="rc-s1"><button class="btn" id="rc-next">下一步</button><button class="btn alt" id="rc-menu1">回選單</button></div>
   <p id="rc-task" class="rc-task" hidden></p>
   <div id="rc-extra"></div>
-  <div class="rc-go"><i id="rc-barbox"><b id="rc-bar"></b></i><button class="btn" id="rc-go">出發</button><button class="btn alt" id="rc-menu">回選單</button></div>
+  <div class="rc-go" id="rc-s2"><i id="rc-barbox"><b id="rc-bar"></b></i><button class="btn" id="rc-go">出發</button><button class="btn alt" id="rc-menu">回選單</button></div>
 </div>
 
 <div class="screen glass" id="epi" hidden>
@@ -1091,16 +1092,19 @@ function recapText(id,v){const i=CHAPTERS.indexOf(id),prev=i>0?VENUES[CHAPTERS[i
 function showRecap(id,v){ // "previously…" over the live scene; the run starts after it (or after the chapter's choice)
   const ex=$('rc-extra'),gob={set hidden(h){$('rc-barbox').style.visibility=h?'hidden':'';$('rc-go').hidden=h;}};$('rc-ch').textContent=`${v.ch}・${v.sub} ・ ${v.km} 公里`;$('rc-t').textContent=v.n;
   const txt=recapText(id,v);$('rc-txt').textContent=txt;{const T=TASKS[id];$('rc-task').hidden=!T;if(T)$('rc-task').textContent=`子任務｜${T.t}${ANS.task&&ANS.task[id]?'　（完成過 ✓）':''}`;}ex.innerHTML='';gob.hidden=false;$('recap').hidden=false;
-  S.autoT=clamp(txt.length/6,10,20);
+  // step 1: the chapter's opening text on its own; step 2 (下一步): choices, side task, then go
+  const step=n=>{$('rc-txt').hidden=n!==1;$('rc-s1').hidden=n!==1;ex.hidden=n!==2;$('rc-s2').hidden=n!==2;if(n===2)$('rc-task').hidden=!TASKS[id];else $('rc-task').hidden=true;$('recap').scrollTop=0;};
+  step(1);S.autoT=0;let autoNext=10;
+  $('rc-next').onclick=()=>{step(2);if(autoNext){S.autoS=S.preT;S.autoT=S.preT+autoNext;}};
   if(v.week)ex.innerHTML=`<div class="week">${v.week.map((d,i)=>`<span class="${v.weekDone.includes(i)?'ok':i===v.weekToday?'today':''}">${d}${v.weekDone.includes(i)?' ✓':i===v.weekToday?' ☂':''}</span>`).join('')}</div>`;
   const go=()=>setTimeout(begin,500);
   const watch=()=>{ex.innerHTML=`<div class="ask"><b>要戴著手錶跑嗎？</b><button class="opt" id="w-off">摘下手錶，什麼都不看</button><button class="opt" id="w-on">戴著跑</button></div>`;
     $('w-off').onclick=()=>{PICK.noWatch=S.noWatch=true;$('hud').classList.add('nowatch');go();};$('w-on').onclick=()=>{PICK.noWatch=S.noWatch=false;$('hud').classList.remove('nowatch');go();};};
-  if(v.choose){gob.hidden=true;S.autoT=0;
+  if(v.choose){gob.hidden=true;autoNext=0;
     ex.innerHTML=`<div class="ask"><b>${v.choose.q}</b>${v.choose.opts.map(([k,t])=>`<button class="opt" data-k="${k}">${t}</button>`).join('')}</div>`;
     ex.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const k=b.dataset.k;ANS[id]=k;saveAns();PICK.variant=k;
       if(k===v.key)go();else{PICK.autoBegin=true;run(id);}});} // a different route: rebuild the scene, then go
-  if(v.ask){gob.hidden=true;S.autoT=0;
+  if(v.ask){gob.hidden=true;autoNext=0;
     const opts=id==='end'?[...WHY,WHY_LATE]:WHY;
     const then=id==='end'?(ANS.start?`<div class="then">三十二歲那年，你的答案是：「${ANS.start}」</div>`:`<div class="then">第一次出門跑步的理由，還記得嗎？</div>`):'';
     ex.innerHTML=`<div class="ask"><b>你為什麼跑？</b>${then}${opts.map((o,i)=>`<button class="opt${o===WHY_LATE?' new':''}" data-i="${i}">${o}</button>`).join('')}</div>`;
@@ -1108,7 +1112,7 @@ function showRecap(id,v){ // "previously…" over the live scene; the run starts
 }
 function begin(){if(!S||!S.pre)return;S.pre=false;
   if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});$('recap').hidden=true;$('hud').classList.remove('pre');}
-$('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;
+$('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;$('rc-menu1').onclick=toMenu;
 function run(id){
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
   const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb||16200)/42.195);v.secs=64*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
@@ -1135,7 +1139,7 @@ function run(id){
   $('menu').hidden=true;$('done').hidden=true;$('hud').hidden=false;$('say').classList.add('off');
   $('dist').textContent=`0.00 / ${v.km.toFixed(1)} km`;
   S.pre=true;S.preT=0;$('hud').classList.add('pre');
-  if(PICK.autoBegin){PICK.autoBegin=false;S.autoT=1.6;ribbon(`${v.ch}　${v.n}`,v.sub);}else showRecap(id,v);
+  if(PICK.autoBegin){PICK.autoBegin=false;S.autoT=1.6;S.quick=true;ribbon(`${v.ch}　${v.n}`,v.sub);}else showRecap(id,v);
 }
 function toMenu(){if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function renderChapters(){
@@ -1178,12 +1182,12 @@ function update(dt){
   if(!S)return;const v=S.v,path=W.path;
   if(S.pre){S.preT+=dt;
     const p=at(path,S.d);runner.g.position.set(p.x+p.rx*S.lat,0,p.z+p.rz*S.lat);runner.g.rotation.y=Math.atan2(p.tx,p.tz);animPerson(runner,dt,.4,.05);if(S.friends)placeFriends(dt);if(S.buddy){const b=S.buddy,pp=at(path,b.d);b.p.g.position.set(pp.x+pp.rx*b.lat,0,pp.z+pp.rz*b.lat);b.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(b.p,dt,.4,.05);}
-    const T=S.autoT||9,u=clamp(S.preT/Math.max(T,6),0,1),e=u*u*(3-2*u),a=Math.PI*(1-e)*.92+.08*Math.PI*(1-e),rp=runner.g.position,R=6.5+1.5*e;
+    const T=S.quick?1.6:12,u=clamp(S.preT/Math.max(T,6),0,1),e=u*u*(3-2*u),a=Math.PI*(1-e)*.92+.08*Math.PI*(1-e),rp=runner.g.position,R=6.5+1.5*e;
     const ox=-p.tx*Math.cos(a)+p.rx*Math.sin(a)*.8,oz=-p.tz*Math.cos(a)+p.rz*Math.sin(a)*.8;
     camPos.set(rp.x+ox*R,2.2+1.4*e,rp.z+oz*R);camLook.set(rp.x+p.tx*2*e,1.3,rp.z+p.tz*2*e);camera.position.copy(camPos);camera.lookAt(camLook);
     W.sun.position.set(rp.x+v.sun[0]*80,v.sun[1]*160+40,rp.z+v.sun[2]*80);W.sun.target.position.set(rp.x,0,rp.z);
     if(W.rain){const ar=W.rain.geometry.attributes.position,arr=ar.array;for(let i=0;i<arr.length;i+=6){arr[i+1]-=26*dt;arr[i+4]-=26*dt;if(arr[i+4]<0){arr[i+1]+=30;arr[i+4]+=30;}}ar.needsUpdate=true;W.rain.position.set(rp.x,0,rp.z);}
-    if(S.autoT){$('rc-bar').style.width=(100*clamp(S.preT/S.autoT,0,1)).toFixed(1)+'%';if(S.preT>=S.autoT)begin();}
+    if(S.autoT){const a=S.autoS||0;$('rc-bar').style.width=(100*clamp((S.preT-a)/Math.max(.1,S.autoT-a),0,1)).toFixed(1)+'%';if(S.preT>=S.autoT)begin();}
     return;}
   if(!S.done){
     const vmin=v.vmin||VMIN,ud=(keys.up?1:0)-(keys.down?1:0);
