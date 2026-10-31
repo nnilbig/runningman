@@ -171,7 +171,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
     <div id="hp-1" class="hp-step"><small class="hp-tag">跑者murmur</small>
     <p class="hp-open">這是一個關於跑步的故事。或許，也不太只是跑步。
 
-三十二歲的阿傑，某個清晨穿上跑鞋，走到家附近的河堤。之後的十年，他跑過擠滿人的 10K、下雨的人行道、旅途中的櫻花，還有夏天的三十公里。有時候跑得很快，有時候一點也不想跑。
+三十二歲的阿傑，某個清晨穿上跑鞋，走到家附近的河堤。之後的十年，他跑過擠滿人的半馬、下雨的人行道、旅途中的櫻花，還有夏天的三十公里。有時候跑得很快，有時候一點也不想跑。
 
 你不需要跑得很快。只要陪著他，一步一步跑下去就好。</p>
     <div class="foot end"><button class="btn" id="help-next">下一步</button></div></div>
@@ -458,15 +458,15 @@ const VENUES={
       [0,'阿傑','腳步聲疊在一起，像某種節拍。',null,null,.5],[0,'阿傑','不知道為什麼，大家的配速自然就對齊了。',null,null,.71],[0,'阿傑','一個人跑的時候，從來沒有注意過別人的呼吸。',null,null,.86],[0,'阿傑','……原來跑步，也可以是好幾個人的事情。',null,null,.92],[0,'阿傑','快到了。大家都還在。',null,null,.97]],
     end:'八公里。大家一起跑完了。',
     next:'跑完之後，大家又站著聊了很久才散。那是很好的一年。'},
-  track:{ch:'第三章',n:'第一場 10K',sub:'配速',km:10,build:'race',pacing:true,secs:60,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
+  track:{ch:'第三章',n:'第一場半馬',sub:'配速',km:21.0975,build:'race',pacing:true,secs:60,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
     sky:['#7aa2d6','#c4d6e8','#f2e4cc'],fog:0xd8dee6,sun:[-.5,.55,.4],sunCol:0xfff1dc,
-    desc:'三十四歲，第一場 10K 路跑。城市的大馬路封了起來，起跑線擠滿了人。槍聲一響，大家都衝了出去。左上角是「體力」：前面衝太快，後面會撐不住。',
-    intro:'跑了一年多，阿傑報名了人生第一場路跑：10K。前一晚把號碼布別在衣服上，別了三次才對齊。早上六點，城市的大馬路封了起來，起跑線擠滿了人。',
-    script:[[0,'阿傑','三十四歲。第一場 10K。起跑線前，大家都在暖身、拍照。',.25],[0,'提示','起跑時大家都會衝。按 － 把配速拉回來，左上角的「體力」才撐得到最後。',.7],
-      [0,'阿傑','人好多。每個人看起來都比我快。',2],[0,'阿傑','別跟。這是我自己的比賽。',3.3],[0,'阿傑','一半了。補給站的紙杯，有點軟。',5.2],[0,'路邊的人','加油——！',6.4],
-      [0,'阿傑','腿有點重。不過呼吸還在。',7.4],[0,'阿傑','最後一公里。……可以快一點了吧。',9],[0,'阿傑','終點的拱門，看得到了。',9.6]],
-    end:'十公里。跑完了。',
-    next:'第一面完賽獎牌，比想像中重。阿傑把它掛在書桌旁邊。秋天來了，雨也跟著來了。'},
+    desc:'三十四歲，第一場半程馬拉松。城市的大馬路封了起來，起跑線擠滿了人。槍聲一響，大家都衝了出去。左上角是「體力」：前面衝太快，後面會撐不住。',
+    intro:'跑了一年多，阿傑報名了人生第一場半馬：二十一公里。前一晚把號碼布別在衣服上，別了三次才對齊。早上六點，城市的大馬路封了起來，起跑線擠滿了人。',
+    script:[[0,'阿傑','三十四歲。第一場半馬。起跑線前，大家都在暖身、拍照。',.5],[0,'提示','起跑時大家都會衝。按 － 把配速拉回來，左上角的「體力」才撐得到最後。',1.5],
+      [0,'阿傑','人好多。每個人看起來都比我快。',4],[0,'阿傑','別跟。這是我自己的比賽。',7],[0,'阿傑','十公里。補給站的紙杯，有點軟。',10.3],[0,'路邊的人','加油——！',13.5],
+      [0,'阿傑','腿有點重。不過呼吸還在。',16],[0,'阿傑','最後兩公里。……可以快一點了吧。',19.1],[0,'阿傑','終點的拱門，看得到了。',20.6]],
+    end:'二十一公里。跑完了。',
+    next:'第一面半馬完賽獎牌，比想像中重。阿傑把它掛在書桌旁邊。秋天來了，雨也跟著來了。'},
   race:{ch:'第五章',n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:56,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
     sky:['#6f90c0','#b8c8dc','#ecdcc8'],fog:0xd6dce4,sun:[-.5,.55,.4],sunCol:0xfff1dc,
     desc:'人生第一場全程馬拉松：十二月的台北馬拉松。從市政府前出發，遠方是台北 101；穿過林蔭大道，沿著基隆河濱跑，再回到市府前。這一章多了肝醣條：每五公里有一個補給站，靠右邊經過就能拿到。過了三十五公里，會撞牆。',
@@ -494,13 +494,13 @@ const VENUES={
       [0,'阿傑','二十二公里多。好像穿過了某個看不見的地方。',22.7],[0,'阿傑','身體不再說話了。腳只是一直往前移動。',24.3],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',26],[0,'阿傑','……剩下來的，就只是跑。',27.6],[0,'阿傑','中午了。好想喝一杯冰的。',29.3]],
     end:'三十公里。從天亮以前，跑到中午。',
     next:'那之後，阿傑有好一陣子沒有再一個人跑那麼遠。那一天，好像把身體裡的某樣東西，好好地用完了。\n兩年後，三十九歲。'},
-  stall:{ch:'第八章',n:'追不上的人',sub:'停滯',km:10,build:'race',secs:60,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
+  stall:{ch:'第八章',n:'追不上的人',sub:'停滯',km:21.0975,build:'race',secs:60,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
     sky:['#8a96a8','#c2c8cf','#e8dccb'],fog:0xd2d4d4,sun:[-.5,.5,.4],sunCol:0xfff0dc,leaves:[0xd8783a,0xc8a040],
-    desc:'三十九歲，又站上了第一次跑的那場 10K。成績不再進步，速度也有了上限，再怎麼按 ＋ 都快不起來。手機 App 裡存著五年前的紀錄，變成旁邊一個透明的跑者。跟在他後面就是追；往右邊靠，就是讓他先走。',
-    intro:'三十九歲。這幾年的成績，一場比一場慢。練得跟以前一樣多，數字卻慢慢往回走。這個秋天，阿傑又報名了第一次跑的那場 10K。同一條路，同一個拱門。',
-    script:[[0,'阿傑','三十九歲。又站上了同一場 10K 的起跑線。',.25],[0,'提示','旁邊那個透明的人，是三十四歲的你。手機裡還存著那一年的紀錄。',.8],[0,'提示','左上角是你跟他的差距。跟在他後面，心跳會越來越快。',1.8],
-      [0,'阿傑','以前只要多練一點，數字就會變好。',2.8],[0,'阿傑','現在練得一樣多，數字卻往回走。',3.8],[0,'阿傑','努力不再換得到數字的時候，還要繼續努力嗎？',4.8],[0,'提示','追，或不追，都可以。不追的話，就往右邊靠。',5.6],
-      [0,'阿傑','……他又跑遠了一點。',6.6,'路邊的行道樹黃了。以前怎麼都沒有注意到。'],[0,'阿傑','心跳很快，腿很重。還是追不上。',7.6,'呼吸很穩。原來這個速度，也可以跑得很舒服。'],[0,'阿傑','數字是真的。三十四歲的我，也是真的。',8.6,'三十四歲的我，現在大概已經到終點了吧。'],[0,'阿傑','終點快到了。',9.6]],
+    desc:'三十九歲，又站上了第一次跑的那場半馬。成績不再進步，速度也有了上限，再怎麼按 ＋ 都快不起來。手機 App 裡存著五年前的紀錄，變成旁邊一個透明的跑者。跟在他後面就是追；往右邊靠，就是讓他先走。',
+    intro:'三十九歲。這幾年的成績，一場比一場慢。練得跟以前一樣多，數字卻慢慢往回走。這個秋天，阿傑又報名了第一次跑的那場半馬。同一條路，同一個拱門。',
+    script:[[0,'阿傑','三十九歲。又站上了同一場半馬的起跑線。',.5],[0,'提示','旁邊那個透明的人，是三十四歲的你。手機裡還存著那一年的紀錄。',1.7],[0,'提示','左上角是你跟他的差距。跟在他後面，心跳會越來越快。',3.8],
+      [0,'阿傑','以前只要多練一點，數字就會變好。',5.9],[0,'阿傑','現在練得一樣多，數字卻往回走。',8],[0,'阿傑','努力不再換得到數字的時候，還要繼續努力嗎？',10.1],[0,'提示','追，或不追，都可以。不追的話，就往右邊靠。',11.8],
+      [0,'阿傑','……他又跑遠了一點。',13.9,'路邊的行道樹黃了。以前怎麼都沒有注意到。'],[0,'阿傑','心跳很快，腿很重。還是追不上。',16,'呼吸很穩。原來這個速度，也可以跑得很舒服。'],[0,'阿傑','數字是真的。三十四歲的我，也是真的。',18.1,'三十四歲的我，現在大概已經到終點了吧。'],[0,'阿傑','終點快到了。',20.3]],
     end:'跑完了。',
     next:'之後的一年，阿傑越跑越少。不是受傷，也不是太忙。只是某一天，忽然不想跑了。就像雨停了一樣自然。'},
   burnout:{ch:'第九章',n:'沒有熱情的日子',sub:'倦怠',km:5,build:'park',secs:62,age:41,width:4,lat:[-1.7,1.7],startLat:-.4,vmin:1.2,motive:true,
@@ -1130,7 +1130,7 @@ function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.target=JOG*1.
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;$('rc-menu1').onclick=toMenu;
 function run(id){
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
-  const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb10||3300)/10);v.secs=60*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
+  const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb21||7200)/v.km);v.secs=60*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
@@ -1143,7 +1143,7 @@ function run(id){
     placeFriends(0);}
   if(v.buddy){const bp=makePerson({shirt:0xf0c060,shorts:0x2a2a33,hair:0x2a2420,skin:0xd6a07a});scene.add(bp.g);S.buddy={p:bp,d:S.d+1.2,lat:clamp(S.lat+1.1,v.lat[0],v.lat[1])};}
   if(v.ultra){const y=makePerson(Object.assign({},CHAR));y.g.visible=false;scene.add(y.g);S.young={p:y,d:0,on:false};}
-  if(v.stall){const pb=ANS.pb10||3300,gv=1000/(pb/10);S.cap=gv*.96;S.target=S.cap;
+  if(v.stall){const pb=ANS.pb21||7200,gv=1000/(pb/v.km);S.cap=gv*.96;S.target=S.cap;
     const gp=makePerson(Object.assign({},CHAR));gp.g.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.transparent=true;o.material.opacity=.42;o.material.depthWrite=false;o.castShadow=false;}});scene.add(gp.g);
     S.ghost={p:gp,d:W.startD,v:gv,lat:-1.9,op:.42,pb};}
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);$('glylab').textContent=v.pacing?'體力':v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';S.sta=100;$('wallfx').style.opacity=0;
@@ -1368,10 +1368,10 @@ function update(dt){
   if(sayT>0){sayT-=dt;if(sayT<=0)$('say').classList.add('off');}
   if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.add('off');}
 }
-function endLine(v){if(v.pacing){const h1=S.h1||S.t/2,h2=S.t-h1;return h2<=h1*1.01?'十公里。後半段越跑越輕。原來，前面忍住是對的。':'十公里。前面衝太快了。最後那幾公里，好長。';}if(v.stall){if(S.letgo)return '比以前慢了。但今天的風景，好像比以前清楚。';const g=S.ghost,m=Math.max(1,Math.round(Math.max(0,(g.d-S.d)/g.v*v.sc)/60));return `比三十四歲慢了 ${m} 分鐘。數字不會說謊。不過，我還是跑完了。`;}
+function endLine(v){if(v.pacing){const h1=S.h1||S.t/2,h2=S.t-h1;return h2<=h1*1.01?'二十一公里。後半段越跑越輕。原來，前面忍住是對的。':'二十一公里。前面衝太快了。最後那幾公里，好長。';}if(v.stall){if(S.letgo)return '比以前慢了。但今天的風景，好像比以前清楚。';const g=S.ghost,m=Math.max(1,Math.round(Math.max(0,(g.d-S.d)/g.v*v.sc)/60));return `比三十四歲慢了 ${m} 分鐘。數字不會說謊。不過，我還是跑完了。`;}
   if(v.flow)return S.deepT/Math.max(1,S.t)>=.2?v.endDeep:v.endShallow;if(v.motive)return S.mot>=60?v.endHigh:v.endLow;return (v.endBy&&S.why&&v.endBy[S.why])||v.end;}
 function showDone(){
-  if(S.id==='race'){ANS.pb=Math.round(S.t*S.v.sc);saveAns();}if(S.id==='track'){ANS.pb10=Math.round(S.t*S.v.sc);saveAns();}
+  if(S.id==='race'){ANS.pb=Math.round(S.t*S.v.sc);saveAns();}if(S.id==='track'){ANS.pb21=Math.round(S.t*S.v.sc);saveAns();}
   const gt=S.t*S.v.sc,km=S.v.km,pace=gt/km;
   ANS.done=ANS.done||{};ANS.done[S.id]=S.noWatch?'沒看錶':`${Math.floor(gt/3600)?Math.floor(gt/3600)+':':''}${String(Math.floor(gt/60)%60).padStart(Math.floor(gt/3600)?2:1,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;saveAns();
   $('d-line').textContent=endLine(S.v);if(S.v.variants)$('d-km').textContent='';$('d-next').textContent=S.v.next;$('d-next').style.whiteSpace='pre-line';
@@ -1382,7 +1382,7 @@ function showDone(){
   $('d-pace').textContent=`${Math.floor(pace/60)}'${String(Math.floor(pace%60)).padStart(2,'0')}"`;
   $('d-hr').textContent=`${Math.round(S.hrSum/Math.max(1,S.hrN))} bpm`;
   { const st={start:['最高心率',`${Math.round(S.maxHR||0)} bpm`],club:['一起跑過的人',`${S.friends?S.friends.length:0} 個`],habit:['踩到的水坑',`${S.splash||0} 個`],
-      track:['前 5K ／ 後 5K',(()=>{const f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,'0')}`,h1=S.h1||S.t/2;return `${f(h1*S.v.sc)} ／ ${f((S.t-h1)*S.v.sc)}`;})()],ultra:['飲水機',`${S.fuel||0} / ${W.stations?W.stations.length:0}`]}[S.id];
+      track:['前半 ／ 後半',(()=>{const f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,'0')}`,h1=S.h1||S.t/2;return `${f(h1*S.v.sc)} ／ ${f((S.t-h1)*S.v.sc)}`;})()],ultra:['飲水機',`${S.fuel||0} / ${W.stations?W.stations.length:0}`]}[S.id];
     if(st){$('s-fuel').hidden=false;$('d-fuel-l').textContent=st[0];$('d-fuel').textContent=st[1];} }
   $('done').hidden=false;
 }
