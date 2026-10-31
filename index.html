@@ -137,8 +137,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .week span.ok{background:#cfe6cf;color:#2f5a34}.week span.today{background:#e8857e;color:#fff}
 .hud.nowatch .spd{display:none}
 .gly{margin-top:8px;width:170px}
-.task{margin-top:8px;display:inline-block;max-width:220px;font-size:12px;font-weight:800;line-height:1.45;padding:4px 10px;border-radius:12px;background:rgba(251,243,230,.2);border:1px solid rgba(251,243,230,.35)}.task.ok{background:rgba(127,207,149,.35);border-color:#7fcf95}.task.fail{opacity:.55;text-decoration:line-through}
-.rc-task{font-size:14px!important;font-weight:800!important;color:#a0566a;background:#f6ece2;border-radius:12px;padding:6px 12px}.gly small{font-size:13px;font-weight:800;letter-spacing:.06em}
+.gly small{font-size:13px;font-weight:800;letter-spacing:.06em}
 .gly div{height:9px;border-radius:5px;background:rgba(251,243,230,.25);overflow:hidden;margin-top:3px}.gly i{display:block;height:100%;width:100%;border-radius:5px;background:#f3bd63;transition:width .2s,background .4s}
 .wallfx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,transparent 35%,rgba(40,12,34,.85) 100%);opacity:0;transition:opacity .8s}
 .flowfx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(255,250,236,.38) 0%,rgba(255,250,236,.6) 55%,rgba(255,250,236,.92) 100%);opacity:0;transition:opacity 1.2s}
@@ -178,13 +177,11 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
     <h3>怎麼玩</h3>
     <div class="hp-ctl">
       <span class="hp-k">＋　－</span><span>調整配速。每按一下快或慢 5 秒，按住會連續調。</span>
-      <span class="hp-k">L　R</span><span>往左、往右，閃開路上的人和水坑，靠過去拿補給。</span>
+      <span class="hp-k">L　R</span><span>往左、往右移動。靠過去拿補給，或看看路邊的東西。</span>
       <span class="hp-k">鍵盤</span><span>↑ ↓ 或 W S 調配速，← → 或 A D 左右移動。</span>
       <span class="hp-k">心率</span><span>衝進 Zone 5 超過兩秒，阿傑會覺得太快，自己慢下來。</span>
       <span class="hp-k">時間</span><span>距離和時間照真實配速計算，但每一章只要一分鐘左右。十個章節都可以直接跑。</span>
     </div>
-    <h4 id="help-tc">每一章的子任務</h4>
-    <ol id="help-tasks"></ol>
     <div class="foot"><label><input type="checkbox" id="help-skip">下次不要自動跳出</label><button class="btn" id="help-ok">知道了</button></div></div>
   </div>
 </div>
@@ -195,7 +192,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 <div class="z5fx" id="z5fx"></div>
 <div class="hud" id="hud" hidden>
   <div class="top" id="hudtop">
-    <div class="spd"><small>配速</small><div class="row"><b id="pace">6'00"</b><span class="unit">/km</span></div><div class="sub" id="dist">0.00 / 4.0 km</div><div class="sub" id="clock">00:00</div><div class="sub" id="gap" hidden></div><div class="hrbox"><span class="bpm"><i>♥</i><b id="bpm" style="font-size:24px">120</b><span>bpm</span></span><span class="zone" id="zone">ZONE 2 燃脂</span></div><div class="zbar" id="zbar"><i></i><i></i><i></i><i></i><i></i></div><div class="gly" id="glybox" hidden><small id="glylab">肝醣</small><div><i id="glyfill"></i></div></div><div class="task" id="task" hidden></div></div>
+    <div class="spd"><small>配速</small><div class="row"><b id="pace">6'00"</b><span class="unit">/km</span></div><div class="sub" id="dist">0.00 / 4.0 km</div><div class="sub" id="clock">00:00</div><div class="sub" id="gap" hidden></div><div class="hrbox"><span class="bpm"><i>♥</i><b id="bpm" style="font-size:24px">120</b><span>bpm</span></span><span class="zone" id="zone">ZONE 2 燃脂</span></div><div class="zbar" id="zbar"><i></i><i></i><i></i><i></i><i></i></div><div class="gly" id="glybox" hidden><small id="glylab">肝醣</small><div><i id="glyfill"></i></div></div></div>
     <div class="pills"><button class="pill" id="b-menu">選單</button><button class="pill" id="b-retry">重來</button><button class="pill" id="b-mus">音樂 開</button><button class="pill" id="b-snd">音效 開</button></div>
   </div>
   <div class="say off" id="say" aria-live="polite"><span class="who" id="who">L</span><p id="line"></p></div>
@@ -213,7 +210,6 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   <small id="rc-ch"></small><b id="rc-t"></b>
   <p id="rc-txt"></p>
   <div class="rc-go end" id="rc-s1"><button class="btn" id="rc-next">下一步</button><button class="btn alt" id="rc-menu1">回選單</button></div>
-  <p id="rc-task" class="rc-task" hidden></p>
   <div id="rc-extra"></div>
   <div class="rc-go" id="rc-s2"><i id="rc-barbox"><b id="rc-bar"></b></i><button class="btn" id="rc-go">出發</button><button class="btn alt" id="rc-menu">回選單</button></div>
 </div>
@@ -239,7 +235,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
     <h2>跑完了</h2>
     <p id="d-line" style="margin:0;font-weight:800"></p>
     <p id="d-next" style="margin:0;line-height:1.75;font-weight:500;color:#5c4d58"></p>
-    <div class="stats"><div><small>距離</small><b id="d-km"></b></div><div id="s-walk" hidden><small>從頭到尾</small><b id="d-walk"></b></div><div id="s-time"><small>時間</small><b id="d-time"></b></div><div id="s-pace"><small>平均配速</small><b id="d-pace"></b></div><div id="s-hr"><small>平均心率</small><b id="d-hr"></b></div><div id="s-fuel" hidden><small id="d-fuel-l">補給站</small><b id="d-fuel"></b></div><div id="s-task"><small id="d-task-l">子任務</small><b id="d-task"></b></div></div>
+    <div class="stats"><div><small>距離</small><b id="d-km"></b></div><div id="s-walk" hidden><small>從頭到尾</small><b id="d-walk"></b></div><div id="s-time"><small>時間</small><b id="d-time"></b></div><div id="s-pace"><small>平均配速</small><b id="d-pace"></b></div><div id="s-hr"><small>平均心率</small><b id="d-hr"></b></div><div id="s-fuel" hidden><small id="d-fuel-l">補給站</small><b id="d-fuel"></b></div></div>
     <div class="btns"><button class="btn" id="d-nextbtn">下一章</button><button class="btn alt" id="d-again">再跑一次</button><button class="btn alt" id="d-menu">回選單</button></div>
   </div>
 </div>
@@ -413,10 +409,10 @@ const NAME_M='豪明宏偉翰宇廷哲瑋凱華銘誠霖祥維'.split(''),NAME_F
 function RN(g){const pool=g==='f'?NAME_F:NAME_M;for(let k=0;k<80;k++){const c=pool[Math.floor(Math.random()*pool.length)],n=(Math.random()<.5?'小':'阿')+c;if(!USED.has(c)&&!USED.has(n)){USED.add(c);USED.add(n);return n;}}return '小'+pool[0];}
 const RIVER_SEED=1933; // chapters 1 and 8 run the very same riverbank
 const VENUES={
-  start:{ch:'第一章',n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:48,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,bikes:true,
+  start:{ch:'第一章',n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:48,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],fog:0xdfdcdc,sun:[-.7,.22,.5],sunCol:0xffe6c8,
     ground:0x8cb46c,grass:0x84aa66,water:0x5f9ad0,leaves:[0x7fae62,0x8cba6c,0x9cc47a],crown:0xf0b6c4,reeds:[0x8aa25e,0x9aa866,0x7d9452],
-    desc:'三十二歲那年春天的清晨，第一次在河堤上跑三公里。右手邊是河和濕地，路邊有幾棵櫻花，遠處有一座紅色的橋。河濱的自行車騎得比人快很多，聽到鈴聲，記得閃開。',
+    desc:'三十二歲那年春天的清晨，第一次在河堤上跑三公里。右手邊是河和濕地，路邊有幾棵櫻花，遠處有一座紅色的橋。就這樣而已。',
     intro:'三十二歲，一個普通的星期六早上。阿傑走到家附近的河堤，手腕上戴著剛買的運動錶，錶帶還有新塑膠的味道。蹲下來綁鞋帶的時候，他問了自己一個問題。',
     ask:true,
     whyLines:{[WHY[0]]:[[0,'三十二歲。想換一種生活。總之，先從換一雙鞋開始。'],[2,'生活要怎麼換，其實還不知道。不過至少今天早上，換了一條路。']],
@@ -457,7 +453,7 @@ const VENUES={
     next:'那年冬天，跑團的群組安靜了下來。沒有誰做錯了什麼，事情就只是這樣發生了。阿傑決定，一個人也要繼續跑下去。'},
   track:{ch:'第四章',n:'晚上的田徑場',sub:'練習',km:10,build:'track',secs:60,age:34,width:9.76,lat:[-4.6,4.6],startLat:-4.0,
     night:true,sky:['#0c1030','#1f2452','#463a6a'],fog:0x2a2a4c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8,
-    desc:'為了第一場全馬，下班後到田徑場練習。出發前選一個操場：市民運動場的藍色跑道，或體育大學的紅色跑道。外圈有散步的人；第一、二道是跑得快的人。聽到後面有腳步聲，記得讓開。',
+    desc:'為了第一場全馬，下班後到田徑場練習。出發前選一個操場：市民運動場的藍色跑道，或體育大學的紅色跑道。外圈有散步的人；第一、二道是跑得快的人，他們會從旁邊超過去。',
     choose:{q:'今晚去哪裡練？',opts:[['city','市民運動場（藍色跑道）'],['uni','體育大學（紅色跑道）']]},
     variants:{
       city:{n:'市民運動場的夜晚',track:0x3f6fb0,trackOut:0x355f9a,first:'三十四歲。報名了全馬，下班後來市民運動場練習。藍色的跑道在燈下很亮，像一條安靜的河。'},
@@ -925,7 +921,7 @@ function buildBoulevard(v){ // Dunhua-style avenue: wide road on the left with a
   const cars=[];const carCols=[0xd9dde0,0x2b2f36,0xb23a3a,0x3a5fa8,0xe3e0d6,0x6b6f75,0xc9a23a];
   for(let k=0;k<10;k++){const same=k%2===0,g=makeCar(carCols[k%7],true);scene.add(g);cars.push({g,d:rnd(-60,200),lat:same?(k%4===0?-4.6:-7.8):(k%4===1?-19:-22.2),v:same?rnd(8,11):-rnd(8,11)});}
   const puddles=[];
-  for(let d=30;d<END;d+=rnd(12.7,25.5)){const r=rnd(.45,.95),lat=rnd(-hw+r*.6,hw-r*.6);
+  for(let d=30;d<END;d+=rnd(14,28)){const r=rnd(.45,.95),lat=rnd(-hw+r*.6,hw-r*.6);
     const m=new THREE.Mesh(new THREE.CircleGeometry(1,14),new THREE.MeshPhongMaterial({color:0x8fa2b6,shininess:120,specular:0xaab6c4}));
     m.rotation.order='YXZ';m.scale.set(r,r*1.6,1);placeOnPath(m,path,d,lat);m.rotation.x=-Math.PI/2;m.position.y=.055;scene.add(m);puddles.push({d,lat,r,hit:false});}
   const n=1400,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-40,40),y=rnd(0,30),z=rnd(-40,40);pos.set([x,y,z,x-.15,y-.9,z],i*6);}
@@ -951,35 +947,31 @@ function spawnNPCs(id){
   const N=[];
   if(id==='track'){
     // lane 1: six runners at 3'20"–3'40"/km; lane 2: six at 3'40"–4'20"/km. They come from behind and don't give way.
-    for(let k=0;k<6;k++)N.push(addPerson('fast',-8-k*24,-4.27+rnd(-.08,.08),1000/rnd(200,220),{polite:false}));
-    for(let k=0;k<6;k++)N.push(addPerson('fast',-18-k*16,-3.05+rnd(-.08,.08),1000/rnd(220,260),{polite:false}));
-    for(let k=0;k<10;k++)N.push(addPerson('walker',rnd(20,420),rnd(2.2,4.4),rnd(.9,1.2)));
-    for(let k=0;k<5;k++)N.push(addPerson('jog',rnd(60,400),rnd(-1.5,1.5),rnd(2.1,2.4)));
+    for(let k=0;k<6;k++)N.push(addPerson('fast',-8-k*24,-4.27+rnd(-.08,.08),1000/rnd(200,220),{polite:true}));
+    for(let k=0;k<6;k++)N.push(addPerson('fast',-18-k*16,-3.05+rnd(-.08,.08),1000/rnd(220,260),{polite:true}));
+    for(let k=0;k<9;k++)N.push(addPerson('walker',rnd(20,420),rnd(2.2,4.4),rnd(.9,1.2)));
+    for(let k=0;k<4;k++)N.push(addPerson('jog',rnd(60,400),rnd(-1.5,1.5),rnd(2.1,2.4)));
   }else if(id==='hike'){
     for(let k=0;k<3;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,300),rnd(-.7,.7),dir*rnd(.8,1.1)));}
     N.push(addPerson('jog',rnd(80,300),rnd(-.6,.6),-rnd(2.2,2.6)));
   }else if(id==='park'){
-    for(let k=0;k<6;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(20,400),rnd(-1.4,1.4),dir*rnd(.9,1.2)));}
-    for(let k=0;k<3;k++)N.push(addPerson('jog',rnd(60,400),rnd(-1.2,1.2),-rnd(2.2,2.6)));
+    for(let k=0;k<5;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(20,400),rnd(-1.4,1.4),dir*rnd(.9,1.2)));}
+    for(let k=0;k<2;k++)N.push(addPerson('jog',rnd(60,400),rnd(-1.2,1.2),-rnd(2.2,2.6)));
   }else if(id==='small'){ // a small field, but not empty
-    for(let k=0;k<15;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.6,1.6),rnd(2.4,3.0)));
+    for(let k=0;k<14;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.6,1.6),rnd(2.4,3.0)));
   }else if(id==='lake'){
-    for(let k=0;k<7;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.4,1.4),rnd(2.3,2.9)));
+    for(let k=0;k<6;k++)N.push(addPerson('jog',rnd(-20,140),rnd(-1.4,1.4),rnd(2.3,2.9)));
   }else if(id==='race'){ // a field of runners going the same way
-    for(let k=0;k<44;k++)N.push(addPerson('jog',rnd(-30,130),rnd(-3.3,3.3),rnd(2.3,3.2)));
+    for(let k=0;k<40;k++)N.push(addPerson('jog',rnd(-30,130),rnd(-3.3,3.3),rnd(2.3,3.2)));
   }else if(id==='city'||id==='rain'){
     const few=id==='city'||id==='rain';
-    for(let k=0;k<(few?4:9);k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,640),rnd(-1.5,1.5),dir*rnd(.9,1.2),id==='rain'?{umbrella:true}:{}));}
+    for(let k=0;k<(few?3:9);k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,640),rnd(-1.5,1.5),dir*rnd(.9,1.2),id==='rain'?{umbrella:true}:{}));}
     for(let k=0;k<(few?2:4);k++)N.push(addPerson('jog',rnd(60,640),rnd(-1.3,1.3),-rnd(2.2,2.6)));
     for(let k=0;k<(few?1:2);k++){const dir=Math.random()<.5?1:-1;N.push(addBike(rnd(60,640),dir>0?-.8:.8,dir*rnd(3.6,4.4)));}
   }else if(id==='quiet'){ // chapter 10: an autumn evening, almost nobody on the riverbank
     N.push(addBike(rnd(120,500),1.1,rnd(4,5)));
     N.push(addPerson('walker',rnd(60,400),rnd(-2.4,-.6),(Math.random()<.5?1:-1)*rnd(.9,1.2)));
     N.push(addPerson('jog',rnd(90,400),rnd(-2,-.4),-rnd(2.2,2.5)));
-  }else if(id==='bikes'){ // chapter 1: riverside cyclists ride anywhere on the path, much faster than runners, and not all of them swerve
-    for(let k=0;k<9;k++){const dir=Math.random()<.5?1:-1,b=addBike(rnd(25,560),rnd(-2.2,2.2),dir*rnd(5,6.5));b.free=true;b.polite=Math.random()<.3;N.push(b);}
-    for(let k=0;k<5;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,560),rnd(-2.4,-.6),dir*rnd(.9,1.2)));}
-    for(let k=0;k<3;k++)N.push(addPerson('jog',rnd(80,560),rnd(-2,-.4),-rnd(2.2,2.6)));
   }else{
     for(let k=0;k<6;k++){const dir=Math.random()<.5?1:-1;N.push(addBike(rnd(30,560),dir>0?1.1:2.1,dir*rnd(4,5.2)));}
     for(let k=0;k<7;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,560),rnd(-2.4,-.6),dir*rnd(.9,1.2)));}
@@ -1091,9 +1083,9 @@ function buddyName(){const c=VENUES.club.variants,cv=c[ANS.club]||c.chat;return 
 function recapText(id,v){const i=CHAPTERS.indexOf(id),prev=i>0?VENUES[CHAPTERS[i-1]].next:'';return ((prev?prev+'\n\n':'')+v.intro).replace(/\{F\}/g,buddyName());}
 function showRecap(id,v){ // "previously…" over the live scene; the run starts after it (or after the chapter's choice)
   const ex=$('rc-extra'),gob={set hidden(h){$('rc-barbox').style.visibility=h?'hidden':'';$('rc-go').hidden=h;}};$('rc-ch').textContent=`${v.ch}・${v.sub} ・ ${v.km} 公里`;$('rc-t').textContent=v.n;
-  const txt=recapText(id,v);$('rc-txt').textContent=txt;{const T=TASKS[id];$('rc-task').hidden=!T;if(T)$('rc-task').textContent=`子任務｜${T.t}${ANS.task&&ANS.task[id]?'　（完成過 ✓）':''}`;}ex.innerHTML='';gob.hidden=false;$('recap').hidden=false;
+  const txt=recapText(id,v);$('rc-txt').textContent=txt;ex.innerHTML='';gob.hidden=false;$('recap').hidden=false;
   // step 1: the chapter's opening text on its own; step 2 (下一步): choices, side task, then go
-  const step=n=>{$('rc-txt').hidden=n!==1;$('rc-s1').hidden=n!==1;ex.hidden=n!==2;$('rc-s2').hidden=n!==2;if(n===2)$('rc-task').hidden=!TASKS[id];else $('rc-task').hidden=true;$('recap').scrollTop=0;};
+  const step=n=>{$('rc-txt').hidden=n!==1;$('rc-s1').hidden=n!==1;ex.hidden=n!==2;$('rc-s2').hidden=n!==2;$('recap').scrollTop=0;};
   step(1);S.autoT=0;let autoNext=10;
   $('rc-next').onclick=()=>{step(2);if(autoNext){S.autoS=S.preT;S.autoT=S.preT+autoNext;}};
   if(v.week)ex.innerHTML=`<div class="week">${v.week.map((d,i)=>`<span class="${v.weekDone.includes(i)?'ok':i===v.weekToday?'today':''}">${d}${v.weekDone.includes(i)?' ✓':i===v.weekToday?' ☂':''}</span>`).join('')}</div>`;
@@ -1119,7 +1111,7 @@ function run(id){
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.bikes?'bikes':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'small':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'small':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('gap').hidden=!v.stall;
   if(v.ultra||v.flow||v.motive||v.glycogen)$('glylab').textContent=v.ultra?'疲勞':$('glylab').textContent;$('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra);
   if(v.club){const slots=[[3,-1.2],[3,1.2],[6,0],[-3,-1.2],[-3,1.2],[-6,0]],hairs=[0x1e1a18,0x4a3424,0x2a2420,0x6a4a34];
@@ -1134,7 +1126,7 @@ function run(id){
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra);$('glylab').textContent=v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';$('wallfx').style.opacity=0;
   $('hud').classList.toggle('nowatch',S.noWatch);
   S.script=v.script.map(l=>l.slice());
-  if(id==='start'&&!(ANS.done&&ANS.done.start)&&S.script.length>1)S.script.splice(1,0,[(S.script[0][0]+S.script[1][0])/2,'提示','左上角是配速和心率，顏色代表心率區間。按 ＋ － 調整配速，L R 閃開路上的人。']);if(v.buddy)S.script.forEach(l=>{if(l[1]==='{F}')l[1]=buddyName();});
+  if(id==='start'&&!(ANS.done&&ANS.done.start)&&S.script.length>1)S.script.splice(1,0,[(S.script[0][0]+S.script[1][0])/2,'提示','左上角是配速和心率，顏色代表心率區間。按 ＋ － 調整配速，L R 左右移動。']);if(v.buddy)S.script.forEach(l=>{if(l[1]==='{F}')l[1]=buddyName();});
   const p=at(W.path,S.d);camPos.set(p.x-p.tx*7,4,p.z-p.tz*7);camLook.set(p.x,1.2,p.z);
   $('menu').hidden=true;$('done').hidden=true;$('hud').hidden=false;$('say').classList.add('off');
   $('dist').textContent=`0.00 / ${v.km.toFixed(1)} km`;
@@ -1143,31 +1135,17 @@ function run(id){
 }
 function toMenu(){if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function renderChapters(){
-  const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.km} 公里</span><b>${v.n}</b><small>${v.desc}</small>${ANS.done&&ANS.done[id]?`<span class="donebadge">✓ 跑過・${ANS.done[id]}${ANS.task&&ANS.task[id]?'・子任務 ★':''}</span>`:''}<span class="go">讀這一章</span></div></button>`;};
+  const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.km} 公里</span><b>${v.n}</b><small>${v.desc}</small>${ANS.done&&ANS.done[id]?`<span class="donebadge">✓ 跑過・${ANS.done[id]}</span>`:''}<span class="go">讀這一章</span></div></button>`;};
   $('chapters').innerHTML=card('start')+card('club')+card('habit')+card('track')+card('race')+card('summer')+card('ultra')+card('stall')+card('burnout')+card('end');
   CHAPTERS.forEach(id=>{$('v-'+id).onclick=()=>start(id);paintPreview($('pic-'+id),VENUES[id].build==='boulevard'?'boulevard':VENUES[id].build==='track'?'track':VENUES[id].build==='park'?'park':VENUES[id].build==='race'?'race':VENUES[id].build==='weekend'?'trail':VENUES[id].build==='coast'?'coast':VENUES[id].build==='lake'?'lake':VENUES[id].build==='blossom'?'lava':VENUES[id].build==='oldcity'?'nightrun':'river',VENUES[id]);});
 }
 $('b-menu').onclick=toMenu;$('b-retry').onclick=()=>{if(S){PICK.autoBegin=true;run(S.id);}};
 $('d-again').onclick=()=>{if(S){PICK.autoBegin=true;run(S.id);}};$('d-menu').onclick=toMenu;
 $('d-nextbtn').onclick=()=>{const i=CHAPTERS.indexOf(S.id);if(i<CHAPTERS.length-1)start(CHAPTERS[i+1]);else showEpi();};
-function showEpi(){const d=CHAPTERS.filter(id=>ANS.done&&ANS.done[id]).length,t=CHAPTERS.filter(id=>TASKS[id]&&ANS.task&&ANS.task[id]).length,tn=CHAPTERS.filter(id=>TASKS[id]).length;
-  $('epi-s').textContent=`跑完的章節 ${d} / ${CHAPTERS.length}　・　完成的子任務 ${t} / ${tn}`;$('done').hidden=true;$('epi').hidden=false;musicMood('menu');}
+function showEpi(){const d=CHAPTERS.filter(id=>ANS.done&&ANS.done[id]).length;
+  $('epi-s').textContent=`跑完的章節 ${d} / ${CHAPTERS.length}`;$('done').hidden=true;$('epi').hidden=false;musicMood('menu');}
 $('epi-menu').onclick=()=>{$('epi').hidden=true;toMenu();};
 
-// side task per chapter: state() 1 done / -1 failed / 0 going; ok() decides at the finish
-const TASKS={
-  start:{s:'閃過自行車',t:'閃過河濱的自行車（被撞 ≤ 2 次）',p:()=>`被撞 ${S.bikeBumps||0} / 2`,state:()=>(S.bikeBumps||0)>2?-1:0,ok:()=>(S.bikeBumps||0)<=2},
-  club:{s:'閃過路人',t:'閃過迎面而來的人（碰撞 ≤ 1 次）',p:()=>`碰撞 ${S.bumpN||0} / 1`,state:()=>(S.bumpN||0)>1?-1:0,ok:()=>(S.bumpN||0)<=1},
-  habit:{s:'閃過水坑',t:'閃過水坑（踩到 ≤ 2 個）',p:()=>`踩到 ${S.splash||0} / 2`,state:()=>(S.splash||0)>2?-1:0,ok:()=>(S.splash||0)<=2},
-  track:{s:'閃過快跑者',t:'閃過後方來的快跑者（被撞 ≤ 1 次）',p:()=>`被撞 ${S.fastBumps||0} / 1`,state:()=>(S.fastBumps||0)>1?-1:0,ok:()=>(S.fastBumps||0)<=1},
-  race:{s:'拿補給',t:'拿到至少 6 個補給站',p:()=>`補給 ${S.fuel} / 6`,state:()=>S.fuel>=6?1:S.fuel+W.stations.filter(s=>!s.taken&&!s.gone).length<6?-1:0,ok:()=>S.fuel>=6},
-  summer:{s:'進入心流',t:'進入心流，忘我 10 秒以上',p:()=>`忘我 ${Math.floor(S.deepT)} / 10 秒`,state:()=>S.deepT>=10?1:0,ok:()=>S.deepT>=10},
-  ultra:{s:'別跑出路面',t:'意識模糊時，不跑出路面（≤ 1 次）',p:()=>`跑出路面 ${S.offN||0} / 1`,state:()=>(S.offN||0)>1?-1:0,ok:()=>(S.offN||0)<=1},
-  stall:{s:'讓他先走',t:'過了 24K，往右靠，讓三十四歲的自己先走',p:()=>S.letgo?'讓他先走了':'還在追',state:()=>S.letgo?1:0,ok:()=>S.letgo},
-  burnout:{s:'看見小事',t:'看到至少 4 件路上的小事',p:()=>`小事 ${S.seen} / 4`,state:()=>S.seen>=4?1:S.seen+W.moments.filter(m=>!m.done).length<4?-1:0,ok:()=>S.seen>=4}};
-function taskTick(){const T=TASKS[S.id];if(!T)return;const e=$('task'),st=T.state(),txt=`子任務・${T.s}　${T.p()}`;
-  if(e.textContent!==txt)e.textContent=txt;if(st!==S.taskSt){S.taskSt=st;e.classList.toggle('ok',st===1);e.classList.toggle('fail',st===-1);
-    if(st===1){toast('子任務完成 ✓');SFX.talk();}else if(st===-1)toast('子任務沒有完成。沒關係，繼續跑。');}}
 const REACT=['啊，抱歉。','差一點就撞到了……','不好意思。','（嚇了一跳。）'];
 function placeFriends(dt){ // at the start: a loose ring round 阿傑, everyone facing in, chatting
   const rp=runner.g.position;for(const f of S.friends){if(f.gone)continue;const pt=at(W.path,f.d);f.p.g.position.set(pt.x+pt.rx*f.lat,0,pt.z+pt.rz*f.lat);
@@ -1206,7 +1184,7 @@ function update(dt){
   S.bump=Math.max(0,S.bump-dt);S.capCD=Math.max(0,(S.capCD||0)-dt);
   let cap=99;
   if(v.glycogen){const km=(S.d-W.startD)*v.sc/1000,frac=clamp(km/v.km,0,1);
-    if(!S.done)S.gly=Math.max(0,S.gly-(128/v.secs)*Math.pow(S.speed/JOG,2)*(1+.6*frac)*dt);
+    if(!S.done)S.gly=Math.max(0,S.gly-(116/v.secs)*Math.pow(S.speed/JOG,2)*(1+.6*frac)*dt);
     for(const st of W.stations){if(st.taken||st.gone)continue;const rel=st.d-S.d;
       if(rel<-2.2){st.gone=true;toast(`錯過了 ${st.k}K 補給站`);continue;}
       if(Math.abs(rel)<2.1&&S.lat>v.lat[1]-1.1){st.taken=true;S.fuel++;S.gly=Math.min(100,S.gly+7);SFX.talk();toast(['拿到水了','能量膠，黏黏的甜','喝了一口運動飲料','香蕉，吞下去了'][S.fuel%4]+'　肝醣 +7');}}
@@ -1220,7 +1198,7 @@ function update(dt){
     if(!S.done&&S.buddy){const b=S.buddy,rel=b.d-S.d,bv=rel>2.5?JOG*.82:rel<-2?JOG*1.02:JOG*.95;b.d+=bv*dt;b.lat=lerp(b.lat,S.lat>0?S.lat-1.1:S.lat+1.1,Math.min(1,dt*1.5));b.lat=clamp(b.lat,v.lat[0],v.lat[1]);
       S.near=Math.abs(rel)<4;S.mot+=(S.near?1.1:-1.6)*dt;S.mot=clamp(S.mot,0,100);if(!S.near&&!S.farWarn&&rel<-6){S.farWarn=true;toast('跑太快了，朋友被甩在後面');}if(S.near)S.farWarn=false;}
     else if(!S.done){const r=S.target/JOG;
-      if(r>1.04)S.mot-=5.5*dt;else if(r<.9){if(S.mot<50)S.mot=Math.min(50,S.mot+1.8*dt);}else S.mot-=.66*dt;
+      if(r>1.04)S.mot-=5*dt;else if(r<.9){if(S.mot<50)S.mot=Math.min(50,S.mot+2*dt);}else S.mot-=.6*dt;
       S.mot=clamp(S.mot,0,100);}
     if(S.buddy){const b=S.buddy,pp=at(path,b.d);b.p.g.position.set(pp.x+pp.rx*b.lat,0,pp.z+pp.rz*b.lat);b.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(b.p,dt,.9+JOG*.22,S.done?.2:1);}
     for(const m of W.moments){if(m.done)continue;const rel=m.d-S.d;
@@ -1233,11 +1211,11 @@ function update(dt){
     $('wallfx').style.opacity=S.done?0:(.5*(1-clamp(S.mot/50,0,1))).toFixed(2);
     const f=$('glyfill');f.style.width=S.mot.toFixed(1)+'%';f.style.background=S.mot>60?'#f3bd63':S.mot>30?'#b9a9d6':'#8a8fa8';}
   if(v.ultra){const km=(S.d-W.startD)*v.sc/1000,frac=clamp(km/v.km,0,1);
-    if(!S.done&&!S.beyond)S.fat=Math.min(100,S.fat+(110/(v.secs*.78))*Math.pow(S.speed/JOG,1.6)*dt);
+    if(!S.done&&!S.beyond)S.fat=Math.min(100,S.fat+(100/(v.secs*.78))*Math.pow(S.speed/JOG,1.6)*dt);
     if(!S.beyond&&km>=75){S.beyond=true;S.hazeT=0;toast('疲勞不再增加了');}
     if(!S.done)cap=S.beyond?JOG*.92:VMAX-(VMAX-1.9)*S.fat/100;
     // haze: between 45 and 75 km the mind wanders and the body drifts sideways
-    if(!S.done&&!S.beyond&&km>=45){S.hazeCD-=dt;if(S.hazeT<=0&&S.hazeCD<=0){S.hazeT=3.2;S.hazeHit=false;S.hazeN=(S.hazeN||0)+1;S.hazeCD=rnd(2.7,5.4);S.drift=(Math.abs(S.lat)>.9?-Math.sign(S.lat):Math.random()<.5?-1:1)*rnd(.77,1.21);toast('意識有點模糊……');}}
+    if(!S.done&&!S.beyond&&km>=45){S.hazeCD-=dt;if(S.hazeT<=0&&S.hazeCD<=0){S.hazeT=3.2;S.hazeHit=false;S.hazeN=(S.hazeN||0)+1;S.hazeCD=rnd(3,6);S.drift=(Math.abs(S.lat)>.9?-Math.sign(S.lat):Math.random()<.5?-1:1)*rnd(.7,1.1);toast('意識有點模糊……');}}
     if(S.hazeT>0){S.hazeT-=dt;S.lat=clamp(S.lat+S.drift*dt,v.lat[0],v.lat[1]);if((S.lat<=v.lat[0]+.01||S.lat>=v.lat[1]-.01)&&S.bump<=0){S.bump=.7;if(!S.hazeHit){S.hazeHit=true;S.offN=(S.offN||0)+1;}S.shake=.2;SFX.bump();toast('差點跑出路面');}
       $('gl').style.filter=`blur(${(1.6*Math.min(1,S.hazeT)).toFixed(2)}px) saturate(.75)`;}else $('gl').style.filter='';
     // the 32-year-old self, briefly, a few metres ahead
@@ -1249,7 +1227,7 @@ function update(dt){
   if(v.stall&&S.ghost){const g=S.ghost,km=(S.d-W.startD)*v.sc/1000;
     if(!S.done)cap=S.cap;
     if(!S.done)g.d+=g.v*dt;
-    if(!S.letgo&&!S.done&&km>=24){if(S.lat>=1.6)S.easyT+=dt;else S.easyT=0;if(S.easyT>5.5){S.letgo=true;toast('讓他先走了');$('gap').hidden=true;}}
+    if(!S.letgo&&!S.done&&km>=24){if(S.lat>=1.6)S.easyT+=dt;else S.easyT=0;if(S.easyT>5){S.letgo=true;toast('讓他先走了');$('gap').hidden=true;}}
     g.op=lerp(g.op,S.letgo?0:.42,Math.min(1,dt*.8));g.p.g.traverse(o=>{if(o.isMesh)o.material.opacity=g.op;});g.p.g.visible=g.op>.02;
     const pp=at(path,Math.min(g.d,path.L-1));g.p.g.position.set(pp.x+pp.rx*g.lat,0,pp.z+pp.rz*g.lat);g.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(g.p,dt,.9+g.v*.22,1);
     if(!S.letgo){const gapS=Math.max(0,(g.d-S.d)/g.v*v.sc);$('gap').textContent=`34 歲的自己 +${Math.floor(gapS/60)}:${String(Math.floor(gapS%60)).padStart(2,'0')}`;}}
@@ -1265,7 +1243,7 @@ function update(dt){
       animPerson(f.p,dt,.9+f.cad*.22,clamp(f.cad/JOG,.2,1));if(f.leaving&&f.t>1.8)f.p.arms[1].rotation.x=-2.6;}
     if(v.skies)skyLerp(v,clamp(prog/S.goal,0,1));}
   if(v.flow&&!S.done){ // steady, unbothered running builds flow; the HUD fades away as it rises
-    if(keys.up||keys.down)S.flow-=2*dt;else if(S.zone>=4)S.flow-=4*dt;else if(S.t>2&&Math.abs(S.speed-S.target)<.6)S.flow+=1.64*dt;
+    if(keys.up||keys.down)S.flow-=2*dt;else if(S.zone>=4)S.flow-=4*dt;else if(S.t>2&&Math.abs(S.speed-S.target)<.6)S.flow+=1.8*dt;
     S.flow=clamp(S.flow,0,100);if(S.flow>=80)S.deepT+=dt;
     const fade=1-clamp((S.flow-25)/60,0,1);$("hudtop").style.opacity=(.04+.96*fade).toFixed(2);$('say').style.setProperty('--fade',(.18+.82*fade).toFixed(2));
     const k=clamp((S.flow-40)/60,0,1);$('flowfx').style.opacity=(k*.95).toFixed(2); // the world itself fades to white along with the numbers
@@ -1280,7 +1258,6 @@ function update(dt){
   // story
   const prog=S.d-W.startD;
   if(S.line<S.script.length&&prog>=S.script[S.line][0]&&sayT<=1.0){const [,w,t,,alt,,spk]=S.script[S.line];say(w,(alt&&((v.flow&&S.flow>=80)||(v.stall&&S.letgo)))?alt:t,spk);S.line++;}
-  if(!S.done){$('task').hidden=!TASKS[S.id];taskTick();}
   if(!S.done&&prog>=S.goal){S.done=true;say(CHAR.name,endLine(v));SFX.done();}
   if(S.done)$('z5fx').style.opacity=0;
   if(S.done){S.doneT+=dt;if(S.doneT>2.8&&$('done').hidden&&!S.shown){S.shown=true;showDone();}}
@@ -1288,24 +1265,19 @@ function update(dt){
   for(const n of S.npcs){
     n.d+=n.v*dt;n.cool=Math.max(0,n.cool-dt);
     let rel=relDist(path,S.d,n.d);
-    if(v.hello&&n.hello&&!S.done&&n.prev!==undefined&&Math.sign(rel)!==Math.sign(n.prev)&&Math.abs(rel)<3){
-      if(!n.greeted&&Math.abs(n.lat-S.lat)<1.0){n.greeted=true;S.hiN=(S.hiN||0)+1;const g=[['嗨。','嗨。'],['晚安。','晚安。'],['加油。','你也是。'],['天氣真好。','嗯，真好。'],['你好。','你好。']][(S.hiN-1)%5];
-        say('跑者',g[0]);S.queue.push({at:S.t+1.8,who:CHAR.name,text:g[1],spoken:true});SFX.talk();if(S.hiN<3)toast(`打招呼 ${S.hiN} / 3`);}}
-    if(v.hello&&n.hello&&!path.closed&&rel<-25){n.greeted=false;n.prev=undefined;n.d=S.d+rnd(32,50);{const o=S.lat>0?-1:S.lat<-.6?1:(Math.random()<.5?-1:1);n.lat=clamp(S.lat+o*rnd(1.3,2.4),-2.2,2.2);}rel=n.d-S.d;}
-    if(!v.hello&&n.prev!==undefined&&Math.sign(rel)!==Math.sign(n.prev)&&Math.abs(rel)<3&&!n.greeted&&n.kind==='jog'&&GREET[S.id].length&&!S.done&&S.greetCD<=0&&S.greetN<2&&sayT<=.6&&Math.abs(n.lat-S.lat)<(S.id==='track'?8:2.4)&&Math.random()<.3){
+    if(n.prev!==undefined&&Math.sign(rel)!==Math.sign(n.prev)&&Math.abs(rel)<3&&!n.greeted&&n.kind==='jog'&&GREET[S.id].length&&!S.done&&S.greetCD<=0&&S.greetN<2&&sayT<=.6&&Math.abs(n.lat-S.lat)<(S.id==='track'?8:2.4)&&Math.random()<.3){
       n.greeted=true;S.greetCD=16;S.greetN++;const g=GREET[S.id][Math.floor(Math.random()*GREET[S.id].length)];
       say('跑者',g[0]);S.queue.push({at:S.t+2.3,who:CHAR.name,text:g[1],spoken:true});}
-    if(n.free&&!S.done){if(rel>2||rel<-12)n.warned=false;else if(!n.warned&&n.v>0&&rel<-2&&rel>-10&&Math.abs(n.lat-S.lat)<1.2){n.warned=true;toast('後面：「叮叮——」');SFX.talk();}}
     if(n.kind==='fast'&&!S.done){if(rel>2)n.warned=false;else if(!n.warned&&rel<-1.5&&rel>-8){n.warned=true;if(Math.abs(n.lat-S.lat)<1.1){toast('後面：「借過——」');SFX.step();}}}
     n.prev=rel;
     if(!path.closed&&(rel>140||rel<-60)){ // recycle around the runner on open paths
-      const ahead=n.v<0||rel<-60;n.d=S.d+(ahead?rnd(90,140):-rnd(30,50));if(n.d<2||n.d>path.L-2)n.d=clamp(S.d+rnd(60,120),2,path.L-2);rel=relDist(path,S.d,n.d);n.lat=n.kind==='bike'?(n.free?rnd(-2.2,2.2):n.v>0?1.1:2.1):n.lat;}
+      const ahead=n.v<0||rel<-60;n.d=S.d+(ahead?rnd(90,140):-rnd(30,50));if(n.d<2||n.d>path.L-2)n.d=clamp(S.d+rnd(60,120),2,path.L-2);rel=relDist(path,S.d,n.d);n.lat=n.kind==='bike'?(n.v>0?1.1:2.1):n.lat;}
     const closing=(n.v-S.speed)*Math.sign(rel)<0;
-    if((n.polite||v.flow)&&closing&&Math.abs(rel)<(v.flow?10:7)&&Math.abs(n.lat-S.lat)<(v.flow?1.1:.9)){const dir=n.lat>=S.lat?1:-1;n.lat=clamp(n.lat+dir*(n.kind==='bike'?1.4:.6)*dt,v.lat[0]-.2,v.lat[1]+.2);}
+    if(closing&&Math.abs(rel)<9&&Math.abs(n.lat-S.lat)<1.1){const dir=n.lat>=S.lat?1:-1;n.lat=clamp(n.lat+dir*(n.kind==='bike'?1.4:.6)*dt,v.lat[0]-.2,v.lat[1]+.2);}
     // bodies don't pass through each other: when close, both get nudged sideways (the NPC a bit more)
-    if(Math.abs(rel)<.8&&!n.free){const dl=S.lat-n.lat,ov=.62-Math.abs(dl);if(ov>0){const dir=dl!==0?Math.sign(dl):(Math.random()<.5?-1:1);
+    if(Math.abs(rel)<.8){const dl=S.lat-n.lat,ov=.62-Math.abs(dl);if(ov>0){const dir=dl!==0?Math.sign(dl):(Math.random()<.5?-1:1);
       const sh=v.flow?.08:.4;S.lat=clamp(S.lat+dir*ov*sh,v.lat[0],v.lat[1]);n.lat=clamp(n.lat-dir*ov*(1-sh),v.lat[0]-.3,v.lat[1]+.3);}}
-    if(!S.done&&!v.flow&&n.cool<=0&&Math.abs(rel)<(n.free?1:.6)&&Math.abs(n.lat-S.lat)<(n.free?.6:.55)){n.cool=2.5;if(n.kind==='fast')S.fastBumps=(S.fastBumps||0)+1;if(n.kind==='bike')S.bikeBumps=(S.bikeBumps||0)+1;S.bump=1.1;S.bumpN=(S.bumpN||0)+1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
+    if(!S.done&&!v.flow&&n.cool<=0&&Math.abs(rel)<.6&&Math.abs(n.lat-S.lat)<.55){n.cool=2.5;if(n.kind==='fast')S.fastBumps=(S.fastBumps||0)+1;S.bumpN=(S.bumpN||0)+1;S.shake=.12;SFX.bump();if(Math.random()<.4)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
     const p=at(path,n.d),obj=n.p?n.p.g:n.b.g;obj.position.set(p.x+p.rx*n.lat,0,p.z+p.rz*n.lat);obj.rotation.y=Math.atan2(p.tx,p.tz)+(n.v<0?Math.PI:0);
     if(n.p)animPerson(n.p,dt,n.kind==='walker'?.9:1.35,n.kind==='walker'?.5:1);
     else{n.b.wheels.forEach(w=>w.rotation.x+=dt*Math.abs(n.v)*3);n.b.phase+=dt*5;n.b.rider.legs.forEach((l,i)=>l.rotation.x=-1.1+Math.sin(n.b.phase+(i?Math.PI:0))*.4);}
@@ -1316,7 +1288,7 @@ function update(dt){
       if(arr[i+4]<0){const x=rnd(-40,40),y=rnd(24,32),z=rnd(-40,40);arr[i]=x;arr[i+1]=y;arr[i+2]=z;arr[i+3]=x-.15;arr[i+4]=y-.9;arr[i+5]=z;}}
     a.needsUpdate=true;W.rain.position.set(rp0.x,0,rp0.z);}
   if(W.puddles&&!S.done)for(const q of W.puddles){if(q.hit)continue;const rel=q.d-S.d;if(rel<-1){q.hit=true;continue;}
-    if(Math.abs(rel)<q.r*1.2&&Math.abs(q.lat-S.lat)<q.r){q.hit=true;S.splash=(S.splash||0)+1;S.bump=.8;S.shake=.2;SFX.bump();if(Math.random()<.5)say(CHAR.name,['鞋子濕了。……算了。','啪的一聲，踩進了水坑。','反正已經濕了，也沒什麼好在意的。'][Math.floor(Math.random()*3)]);}}
+    if(Math.abs(rel)<q.r*1.2&&Math.abs(q.lat-S.lat)<q.r){q.hit=true;S.splash=(S.splash||0)+1;S.shake=.1;SFX.bump();if(Math.random()<.5)say(CHAR.name,['鞋子濕了。……算了。','啪的一聲，踩進了水坑。','反正已經濕了，也沒什麼好在意的。'][Math.floor(Math.random()*3)]);}}
   if(W.tick)W.tick(dt);
   if(W.boats)for(const b of W.boats){b.ph+=dt;b.g.position.y=.05+Math.sin(b.ph*1.3)*.08;b.g.rotation.z=Math.sin(b.ph)*.05;}
   // runner
@@ -1361,10 +1333,9 @@ function showDone(){
   $('d-pace').textContent=`${Math.floor(pace/60)}'${String(Math.floor(pace%60)).padStart(2,'0')}"`;
   $('d-hr').textContent=`${Math.round(S.hrSum/Math.max(1,S.hrN))} bpm`;
   { const st={start:['最高心率',`${Math.round(S.maxHR||0)} bpm`],club:['一起跑過的人',`${S.friends?S.friends.length:0} 個`],habit:['踩到的水坑',`${S.splash||0} 個`],
-      track:['被快跑者撞到',`${S.fastBumps||0} 次`],ultra:['意識模糊',`${S.hazeN||0} 次`]}[S.id];
+      track:['跑了幾圈',`${Math.round(S.v.km/.4)} 圈`],ultra:['意識模糊',`${S.hazeN||0} 次`]}[S.id];
     if(st){$('s-fuel').hidden=false;$('d-fuel-l').textContent=st[0];$('d-fuel').textContent=st[1];} }
-  {const T=TASKS[S.id],ok=T&&T.ok();$('s-task').hidden=!T;if(T){$('d-task').textContent=ok?'✓ 完成':'✗ 沒完成';$('d-task-l').textContent='子任務';if(ok){ANS.task=ANS.task||{};ANS.task[S.id]=true;saveAns();}}}
-  $('task').hidden=true;$('done').hidden=false;
+  $('done').hidden=false;
 }
 
 /* ================= menu previews (static mini paintings) ================= */
@@ -1425,10 +1396,8 @@ if(typeof document!=='undefined'&&document.addEventListener){
   let lastTap=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<350&&!e.target.closest('.screen,.recap,.help'))e.preventDefault();lastTap=n;},{passive:false});
   document.addEventListener('touchmove',e=>{if(e.touches.length>1||!e.target.closest('.screen,.recap,.help'))e.preventDefault();},{passive:false});}
 renderChapters();
-function showHelp(step){$('hp-1').hidden=step===2;$('hp-2').hidden=step!==2;const ids=CHAPTERS.filter(id=>TASKS[id]),done=ids.filter(id=>ANS.task&&ANS.task[id]).length;
-  $('help-tc').textContent=`每一章的子任務　已完成 ${done} / ${ids.length}`;
-  $('help-tasks').innerHTML=ids.map(id=>`<li class="${ANS.task&&ANS.task[id]?'ok':''}"><i>${VENUES[id].ch}</i><span>${TASKS[id].t}</span></li>`).join('');
-  let skip=false;try{skip=localStorage.getItem('shimin.help')==='skip';}catch(_){}$('help-skip').checked=skip;$('help').hidden=false;}
+function showHelp(step){$('hp-1').hidden=step===2;$('hp-2').hidden=step!==2;
+    let skip=false;try{skip=localStorage.getItem('shimin.help')==='skip';}catch(_){}$('help-skip').checked=skip;$('help').hidden=false;}
 $('help-ok').onclick=()=>{try{localStorage.setItem('shimin.help',$('help-skip').checked?'skip':'show');}catch(_){}$('help').hidden=true;};
 $('help').onclick=e=>{if(e.target===$('help'))$('help-ok').onclick();};
 $('m-help').onclick=()=>showHelp(1);$('help-next').onclick=()=>{$('hp-1').hidden=true;$('hp-2').hidden=false;$('help').querySelector('.box').scrollTop=0;};
