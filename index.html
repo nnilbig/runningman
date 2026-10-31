@@ -1127,8 +1127,7 @@ const TASKS={
   summer:{s:'進入心流',t:'進入心流，忘我 10 秒以上',p:()=>`忘我 ${Math.floor(S.deepT)} / 10 秒`,state:()=>S.deepT>=10?1:0,ok:()=>S.deepT>=10},
   ultra:{s:'別跑出路面',t:'意識模糊時，不跑出路面（≤ 1 次）',p:()=>`跑出路面 ${S.offN||0} / 1`,state:()=>(S.offN||0)>1?-1:0,ok:()=>(S.offN||0)<=1},
   stall:{s:'讓他先走',t:'過了 24K，往右靠，讓三十四歲的自己先走',p:()=>S.letgo?'讓他先走了':'還在追',state:()=>S.letgo?1:0,ok:()=>S.letgo},
-  burnout:{s:'看見小事',t:'看到至少 4 件路上的小事',p:()=>`小事 ${S.seen} / 4`,state:()=>S.seen>=4?1:S.seen+W.moments.filter(m=>!m.done).length<4?-1:0,ok:()=>S.seen>=4},
-  end:{s:'走一小段',t:'慢下來，中途走一小段路',p:()=>S.walked?'走過了':'按 － 放慢到用走的',state:()=>S.walked?1:0,ok:()=>S.walked}};
+  burnout:{s:'看見小事',t:'看到至少 4 件路上的小事',p:()=>`小事 ${S.seen} / 4`,state:()=>S.seen>=4?1:S.seen+W.moments.filter(m=>!m.done).length<4?-1:0,ok:()=>S.seen>=4}};
 function taskTick(){const T=TASKS[S.id];if(!T)return;const e=$('task'),st=T.state(),txt=`子任務・${T.s}　${T.p()}`;
   if(e.textContent!==txt)e.textContent=txt;if(st!==S.taskSt){S.taskSt=st;e.classList.toggle('ok',st===1);e.classList.toggle('fail',st===-1);
     if(st===1){toast('子任務完成 ✓');SFX.talk();}else if(st===-1)toast('子任務沒有完成。沒關係，繼續跑。');}}
