@@ -61,15 +61,18 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .ribbon small{display:block;font-size:clamp(15px,3.8vw,20px);font-weight:800;color:#fff;margin-top:4px}
 .ribbon.off{transform:translateX(-105%);opacity:0}
 .ctl{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:18px;align-items:center;pointer-events:none}
-.ctl .grp{display:flex;gap:10px;pointer-events:auto}
-.ctl .grp.v{flex-direction:column;gap:10px}
+.ctl .cb{pointer-events:auto}
+/* portrait: L | +/− stacked in the middle | R ; landscape (below): L − ...runner... + R */
+.ctl{display:grid!important;grid-template-columns:auto 1fr auto;grid-template-areas:"l p r" "l m r";row-gap:10px;justify-items:center;align-items:center}
+.kL{grid-area:l}.kR{grid-area:r}.kP{grid-area:p}.kM{grid-area:m}
 .cb{width:74px;height:74px;border-radius:50%;background:var(--pill);border:1.5px solid var(--pill-line);font-size:24px;touch-action:none;backdrop-filter:blur(6px)}
 .cb.on{background:rgba(233,160,122,.85);color:var(--ink)}
 .cb.lr{width:min(120px,28vw);height:min(120px,28vw);border-radius:50%;font-size:34px;font-weight:800;letter-spacing:.04em}
 .ctl{justify-content:space-between!important;gap:12px}
 .hint{position:absolute;left:50%;bottom:max(140px,calc(env(safe-area-inset-bottom,0px) + 134px));transform:translateX(-50%);font-size:13px;font-weight:800;opacity:.85;text-align:center;white-space:nowrap;text-shadow:0 1px 6px rgba(30,15,40,.6)}
 @media (orientation:landscape) and (max-height:500px){
-  .cb{width:46px;height:42px;font-size:20px}.cb.lr{width:24vh;height:24vh;font-size:26px}.ctl .grp.v{gap:6px}
+  .ctl{grid-template-columns:auto auto 1fr auto auto;grid-template-areas:"l m . p r";column-gap:10px}
+  .cb{width:46px;height:42px;font-size:20px}.cb.lr{width:24vh;height:24vh;font-size:26px}
   .spd b{font-size:26px}.spd small{font-size:12px}.spd .sub{font-size:12px;margin-top:2px}.hrbox{margin-top:4px}.hrbox .bpm{font-size:18px}.zone{font-size:12px;padding:2px 8px}.zbar,.gly{width:120px}
   .pill{padding:5px 10px;font-size:12px}.pills{gap:5px}
   .say{top:16vh;padding:8px 14px 10px;width:min(460px,calc(100% - 32px))}.say p{font-size:15px;margin-top:6px}.say .who{font-size:12px}.say.other{top:22vh}.toast{bottom:calc(24vh + 30px)}
@@ -164,9 +167,10 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   <div class="toast off" id="toast"></div>
   <div class="ribbon off" id="ribbon"><b id="rb-t"></b><small id="rb-s"></small></div>
   <div class="ctl">
-    <div class="grp"><button class="cb lr" data-k="left" aria-label="往左">L</button></div>
-    <div class="grp v"><button class="cb" data-k="up" aria-label="加快">＋</button><button class="cb" data-k="down" aria-label="放慢">－</button></div>
-    <div class="grp"><button class="cb lr" data-k="right" aria-label="往右">R</button></div>
+    <button class="cb lr kL" data-k="left" aria-label="往左">L</button>
+    <button class="cb kP" data-k="up" aria-label="加快">＋</button>
+    <button class="cb kM" data-k="down" aria-label="放慢">－</button>
+    <button class="cb lr kR" data-k="right" aria-label="往右">R</button>
   </div>
 </div>
 
