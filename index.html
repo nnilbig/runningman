@@ -103,7 +103,15 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .card{align-items:flex-start}
 .venue .ch{font-size:13px;font-weight:800;color:#a0566a;letter-spacing:.08em}
 .donebadge{align-self:flex-start;font-size:12px;font-weight:800;color:#3f7a4a;background:#dcefd8;border-radius:999px;padding:2px 9px}
-.menurow{display:flex;gap:8px;flex-wrap:wrap}
+.menurow{display:flex;gap:8px;flex-wrap:wrap}.menurow.top{justify-content:flex-end;margin-bottom:-6px}.menurow.top .pill{padding:6px 12px;font-size:13px}
+.help{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(30,15,40,.55);padding:16px;box-sizing:border-box}
+.help .box{background:#fbf7f0;color:var(--ink);border-radius:22px;width:min(520px,100%);max-height:88vh;overflow:auto;padding:18px 20px;box-sizing:border-box;box-shadow:0 14px 40px rgba(30,15,40,.4);display:flex;flex-direction:column;gap:10px}
+.help h3{margin:0;font-family:"Noto Sans TC",sans-serif;font-weight:900;font-size:22px}.help h4{margin:4px 0 0;font-size:14px;font-weight:900;color:#a0566a;letter-spacing:.06em}
+.help .hp-ctl{position:static;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:14px;line-height:1.5;font-weight:500}
+.help .hp-k{justify-self:start;font-weight:900;background:#efe4d8;border-radius:10px;padding:3px 10px;white-space:nowrap}
+.help ol{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13.5px;line-height:1.45}
+.help li{display:flex;gap:8px;align-items:baseline}.help li i{font-style:normal;flex:0 0 auto;font-weight:900;color:#8a7a84;min-width:3.2em}.help li.ok i{color:#3f7a4a}.help li.ok span::after{content:'  ✓';color:#3f7a4a;font-weight:900}
+.help .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}.help label{font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
 .note{font-size:13px;opacity:.85;line-height:1.6;font-weight:500}
 .done{width:min(440px,100%);background:#fbf7f0;color:var(--ink);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 14px 40px rgba(30,15,40,.4)}
 .done h2{margin:0;font-family:"Noto Sans TC",sans-serif;font-weight:900;font-size:34px}
@@ -147,12 +155,27 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 
 <div class="screen" id="menu">
   <div class="inner">
+    <div class="menurow top"><button class="pill" id="m-help">怎麼玩</button><button class="pill" id="m-q">畫質：自動</button><button class="pill" id="m-reset">清除進度</button></div>
     <div class="brand"><h1>跑者murmur</h1><p>跑步，然後繼續生活。</p></div>
     <div class="card"><div class="avatar" aria-hidden="true"></div><div><b>阿傑</b><div class="m">32 歲</div><p class="prologue">三十二歲那年，日子就這樣過著。某個清晨，他穿起跑鞋，走到家附近的河堤。</p></div></div>
     <div class="venues" id="chapters"></div>
-    <div class="menurow"><button class="pill" id="m-q">畫質：自動</button><button class="pill" id="m-reset">清除進度</button></div>
     <p class="note" id="iosnote" hidden>沒有聲音的話：iPhone 請把側邊的靜音開關打開，網頁才會出聲。</p>
-    <p class="note">畫面上的距離和時間照真實配速計算，但每一章只要一分鐘左右。按 ＋ － 調整配速（每按一下 5 秒），◀ ▶ 閃開路上的人。心率衝到 Zone 5，阿傑會覺得太快，自動放慢。十個章節都可以直接跑。</p>
+  </div>
+</div>
+
+<div class="help" id="help" hidden>
+  <div class="box">
+    <h3>怎麼玩</h3>
+    <div class="hp-ctl">
+      <span class="hp-k">＋　－</span><span>調整配速。每按一下快或慢 5 秒，按住會連續調。</span>
+      <span class="hp-k">L　R</span><span>往左、往右，閃開路上的人和水坑，靠過去拿補給。</span>
+      <span class="hp-k">鍵盤</span><span>↑ ↓ 或 W S 調配速，← → 或 A D 左右移動。</span>
+      <span class="hp-k">心率</span><span>衝進 Zone 5 超過兩秒，阿傑會覺得太快，自己慢下來。</span>
+      <span class="hp-k">時間</span><span>距離和時間照真實配速計算，但每一章只要一分鐘左右。十個章節都可以直接跑。</span>
+    </div>
+    <h4 id="help-tc">每一章的子任務</h4>
+    <ol id="help-tasks"></ol>
+    <div class="foot"><label><input type="checkbox" id="help-skip">下次不要自動跳出</label><button class="btn" id="help-ok">知道了</button></div>
   </div>
 </div>
 
@@ -168,7 +191,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   <div class="say off" id="say" aria-live="polite"><span class="who" id="who">L</span><p id="line"></p></div>
   <div class="toast off" id="toast"></div>
   <div class="ribbon off" id="ribbon"><b id="rb-t"></b><small id="rb-s"></small></div>
-  <div class="ctl">
+  <div class="hp-ctl">
     <button class="cb lr kL" data-k="left" aria-label="往左">L</button>
     <button class="cb kP" data-k="up" aria-label="加快">＋</button>
     <button class="cb kM" data-k="down" aria-label="放慢">－</button>
@@ -1352,6 +1375,14 @@ function paintPreview(el,kind,v){
   el.appendChild(c);
 }
 renderChapters();
+function showHelp(){const ids=CHAPTERS.filter(id=>TASKS[id]),done=ids.filter(id=>ANS.task&&ANS.task[id]).length;
+  $('help-tc').textContent=`每一章的子任務　已完成 ${done} / ${ids.length}`;
+  $('help-tasks').innerHTML=ids.map(id=>`<li class="${ANS.task&&ANS.task[id]?'ok':''}"><i>${VENUES[id].ch}</i><span>${TASKS[id].t}</span></li>`).join('');
+  let skip=false;try{skip=localStorage.getItem('shimin.help')==='skip';}catch(_){}$('help-skip').checked=skip;$('help').hidden=false;}
+$('help-ok').onclick=()=>{try{localStorage.setItem('shimin.help',$('help-skip').checked?'skip':'show');}catch(_){}$('help').hidden=true;};
+$('help').onclick=e=>{if(e.target===$('help'))$('help-ok').onclick();};
+$('m-help').onclick=showHelp;
+{let skip=false;try{skip=localStorage.getItem('shimin.help')==='skip';}catch(_){}if(!skip)showHelp();}
 if(typeof navigator!=='undefined'&&/iPhone|iPad|iPod/.test(navigator.userAgent||''))$('iosnote').hidden=false;
 { const qn={auto:'自動',low:'省電',high:'高'},qb=$('m-q');const qt=()=>{qb.textContent='畫質：'+qn[QUAL]+(QUAL==='auto'?(isPhone()?'（省電）':'（高）'):'');};qt();
   qb.onclick=()=>{QUAL=QUAL==='auto'?'low':QUAL==='low'?'high':'auto';try{localStorage.setItem('shimin.quality',QUAL);}catch(_){}applyQuality();resize();qt();};
