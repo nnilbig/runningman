@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>市民跑者</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,6 +15,7 @@
   --display:"M PLUS Rounded 1c","Noto Sans TC","PingFang TC",sans-serif;
   color-scheme:dark;
 }
+[hidden]{display:none!important} /* .screen/.recap set display, which would otherwise override the hidden attribute */
 html,body{height:100%;margin:0}
 body{background:var(--plum);color:var(--cream);font-family:var(--display);overflow:hidden;-webkit-user-select:none;user-select:none}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -104,6 +110,9 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .toast.off{opacity:0}
 @media (prefers-reduced-motion:reduce){.say,.ribbon{transition:none}}
 </style>
+</head>
+<body>
+
 
 <canvas id="gl"></canvas>
 
@@ -1360,3 +1369,6 @@ function frame(now){
 }
 requestAnimationFrame(frame);
 </script>
+
+</body>
+</html>
