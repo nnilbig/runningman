@@ -132,6 +132,8 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .recap{position:fixed;left:50%;bottom:max(22px,calc(env(safe-area-inset-bottom,0px) + 16px));transform:translateX(-50%);width:min(560px,calc(100% - 32px));box-sizing:border-box;background:rgba(251,247,240,.94);color:var(--ink);border-radius:22px;padding:16px 20px;display:flex;flex-direction:column;gap:8px;box-shadow:0 14px 40px rgba(30,15,40,.35);max-height:70vh;overflow:auto;transition:opacity .5s}
 .recap small{font-size:13px;font-weight:800;color:#a0566a;letter-spacing:.08em}.recap>b{font-family:"Noto Sans TC",sans-serif;font-weight:900;font-size:26px}
 .recap p{margin:0;line-height:1.85;font-weight:500;white-space:pre-line;font-size:15px}
+.rc-pic{aspect-ratio:32/15;border-radius:14px;overflow:hidden;margin:-4px -6px 2px;background:#e9ddd0}.rc-pic[hidden]{display:none}
+@media (orientation:landscape) and (max-height:500px){.rc-pic{display:none}}
 .rc-go{display:flex;align-items:center;gap:12px}.rc-go.end{justify-content:flex-end}.recap [hidden]{display:none!important}.rc-go i{flex:1;height:4px;border-radius:2px;background:#e9ddd0;overflow:hidden}.rc-go i b{display:block;height:100%;width:0;background:#e8857e}
 .hud.pre .top{opacity:0!important}.hud.pre .ctl,.hud.pre .say{opacity:0;pointer-events:none}
 .week{display:flex;gap:6px}.week span{flex:1;text-align:center;border-radius:10px;padding:6px 0;background:#f1e8dc;font-weight:800;font-size:14px;color:#7a6470}
@@ -209,6 +211,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 </div>
 
 <div class="recap" id="recap" hidden>
+  <div class="rc-pic" id="rc-pic"></div>
   <small id="rc-ch"></small><b id="rc-t"></b>
   <p id="rc-txt"></p>
   <div class="rc-go end" id="rc-s1"><button class="btn" id="rc-next">下一步</button><button class="btn alt" id="rc-menu1">回選單</button></div>
@@ -1108,7 +1111,8 @@ function showRecap(id,v){ // "previously…" over the live scene; the run starts
   const ex=$('rc-extra'),gob={set hidden(h){$('rc-barbox').style.visibility=h?'hidden':'';$('rc-go').hidden=h;}};$('rc-ch').textContent=`${v.ch}・${v.sub} ・ ${v.km} 公里`;$('rc-t').textContent=v.n;
   const txt=recapText(id,v);$('rc-txt').textContent=txt;ex.innerHTML='';gob.hidden=false;$('recap').hidden=false;
   // step 1: the chapter's opening text on its own; step 2 (下一步): choices, side task, then go
-  const step=n=>{$('rc-txt').hidden=n!==1;$('rc-s1').hidden=n!==1;ex.hidden=n!==2;$('rc-s2').hidden=n!==2;$('recap').scrollTop=0;};
+  $('rc-pic').innerHTML='';try{$('rc-pic').appendChild(vignette(id));}catch(_){}
+  const step=n=>{$('rc-pic').hidden=n!==1;$('rc-txt').hidden=n!==1;$('rc-s1').hidden=n!==1;ex.hidden=n!==2;$('rc-s2').hidden=n!==2;$('recap').scrollTop=0;};
   step(1);S.autoT=0;let autoNext=10;
   $('rc-next').onclick=()=>{step(2);if(autoNext){S.autoS=S.preT;S.autoT=S.preT+autoNext;}};
   if(v.week)ex.innerHTML=`<div class="week">${v.week.map((d,i)=>`<span class="${v.weekDone.includes(i)?'ok':i===v.weekToday?'today':''}">${d}${v.weekDone.includes(i)?' ✓':i===v.weekToday?' ☂':''}</span>`).join('')}</div>`;
@@ -1388,6 +1392,58 @@ function showDone(){
 }
 
 /* ================= menu previews (static mini paintings) ================= */
+/* ================= chapter vignettes (a small flat picture on the opening card) ================= */
+function vignette(id){
+  const c=document.createElement('canvas');c.width=640;c.height=300;const x=c.getContext('2d');
+  const rr=(X,Y,w,h,r,f)=>{x.fillStyle=f;x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();x.fill();};
+  const poly=(pts,f)=>{x.fillStyle=f;x.beginPath();pts.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.closePath();x.fill();};
+  const circ=(X,Y,r,f)=>{x.fillStyle=f;x.beginPath();x.arc(X,Y,r,0,Math.PI*2);x.fill();};
+  const grad=(a,b)=>{const g=x.createLinearGradient(0,0,0,300);g.addColorStop(0,a);g.addColorStop(1,b);x.fillStyle=g;x.fillRect(0,0,640,300);};
+  const txt=(t,X,Y,size,f,al)=>{x.fillStyle=f;x.font=`900 ${size}px "Noto Sans TC",sans-serif`;x.textAlign=al||'center';x.textBaseline='middle';x.fillText(t,X,Y);};
+  const shoe=(X,Y,s,up,sole,dull)=>{x.save();x.translate(X,Y);x.scale(s,s);
+    poly([[0,40],[150,40],[158,30],[150,22],[0,22]],sole);
+    poly([[4,22],[40,-18],[70,-24],[96,-6],[140,6],[152,22]],up);
+    x.strokeStyle=dull?'rgba(255,255,255,.35)':'#ffffff';x.lineWidth=4;for(let i=0;i<4;i++){x.beginPath();x.moveTo(56+i*12,-14+i*4);x.lineTo(72+i*12,-4+i*4);x.stroke();}
+    poly([[20,22],[60,4],[110,10],[140,22]],'rgba(255,255,255,'+(dull?.12:.25)+')');x.restore();};
+  const person=(X,Y,s,shirt,arms)=>{x.save();x.translate(X,Y);x.scale(s,s);rr(-14,-10,28,40,8,shirt);rr(-11,28,9,34,4,'#33323c');rr(2,28,9,34,4,'#33323c');
+    circ(0,-26,14,'#e8b894');x.fillStyle='#2a2420';x.beginPath();x.arc(0,-30,14.5,Math.PI,0);x.fill();
+    x.strokeStyle='#e8b894';x.lineWidth=7;x.lineCap='round';x.beginPath();if(arms){x.moveTo(-12,-4);x.lineTo(-24,-34);x.moveTo(12,-4);x.lineTo(24,-34);}else{x.moveTo(-14,-2);x.lineTo(-18,24);x.moveTo(14,-2);x.lineTo(18,24);}x.stroke();x.restore();};
+  ({
+  start(){grad('#86aee0','#fbe3c8');rr(0,190,640,110,0,'#8cb46c');rr(0,170,640,26,0,'#5f9ad0');
+    x.strokeStyle='#c8423a';x.lineWidth=6;x.beginPath();x.arc(470,250,150,Math.PI*1.12,Math.PI*1.88);x.stroke();
+    shoe(120,190,1,'#3f6fa8','#f4efe6');shoe(250,205,1,'#3f6fa8','#f4efe6');
+    rr(450,150,26,110,10,'#33323c');circ(463,205,36,'#2b2f36');circ(463,205,30,'#14181e');txt("6'00\"",463,205,18,'#9fe0b8');},
+  club(){grad('#86aee0','#fbe3c8');circ(320,170,70,'#fff0c8');rr(0,210,640,90,0,'#8cb46c');
+    const sh=[0xf0c060,0xe8574a,0x5fa6c8];for(let i=0;i<7;i++)person(110+i*70,175+(i%2)*10,1.2,'#'+(sh[i%3]).toString(16).padStart(6,'0'),i%3!==1);},
+  track(){grad('#4a7ac0','#3f6fb0');poly([[120,0],[520,0],[600,300],[40,300]],'#2f5aa8');poly([[250,0],[390,0],[360,40],[280,40]],'#4a7ac0');
+    rr(170,70,300,190,10,'#ffffff');rr(170,70,300,44,10,'#e8574a');rr(170,100,300,14,0,'#e8574a');txt('半程馬拉松　21.0975K',320,92,22,'#ffffff');txt('2108',320,185,96,'#2b2f36');
+    for(const [a,b] of [[188,126],[452,126],[188,244],[452,244]]){x.strokeStyle='#c8ced2';x.lineWidth=4;x.beginPath();x.ellipse(a,b,14,5,-.3,0,Math.PI*2);x.stroke();circ(a-12,b+3,4,'#9aa4aa');}},
+  habit(){grad('#4a5568','#8f95a0');rr(330,30,280,240,6,'#e6e8ea');rr(345,45,250,210,4,'#5f6d80');
+    x.strokeStyle='rgba(220,230,240,.55)';x.lineWidth=2;for(let i=0;i<40;i++){const a=350+Math.random()*240,b=50+Math.random()*190;x.beginPath();x.moveTo(a,b);x.lineTo(a-6,b+22);x.stroke();}
+    rr(30,10,250,290,14,'#e9ecee');rr(30,150,250,6,0,'#c8ced2');rr(70,40,170,120,4,'#fbf7f0');circ(155,40,12,'#e8574a');
+    ['一','二','三','四','五','六','日'].forEach((d,i)=>{const X=90+(i%4)*40,Y=78+Math.floor(i/4)*50;txt(d,X,Y,20,'#4a3d48');if(i===0)txt('✓',X,Y+22,18,'#3f7a4a');if(i===2)txt('☂',X,Y+22,18,'#3f6fa8');});},
+  race(){grad('#1c2448','#3a4a78');rr(0,220,640,80,0,'#4a3d48');rr(120,120,180,110,30,'#e8e2d0');rr(140,140,140,70,10,'#14181e');txt('4:00',210,175,52,'#ef7a6e');
+    circ(150,112,16,'#e8e2d0');circ(270,112,16,'#e8e2d0');rr(380,150,40,80,6,'#f3bd63');rr(430,160,40,70,6,'#7fcf95');rr(480,150,40,80,6,'#ef7a6e');txt('GEL',400,190,14,'#4a3d48');txt('GEL',450,195,14,'#4a3d48');txt('GEL',500,190,14,'#4a3d48');},
+  summer(){grad('#f6e8ea','#d8dcec');for(let i=0;i<40;i++){x.fillStyle='rgba(240,182,196,.8)';x.beginPath();x.ellipse(Math.random()*640,Math.random()*300,7,4,Math.random()*3,0,Math.PI*2);x.fill();}
+    rr(110,150,420,130,14,'#3f6fa8');rr(120,160,400,110,10,'#e9eef4');rr(110,40,420,110,14,'#35609a');rr(140,170,160,40,8,'#f0c060');rr(140,215,160,40,8,'#e8857e');
+    shoe(330,205,.9,'#e8574a','#f4efe6');},
+  ultra(){grad('#79aee2','#fff0c4');circ(500,70,46,'#fff6cc');rr(0,200,640,100,0,'#3f8aa0');poly([[0,300],[260,190],[330,190],[200,300]],'#6a6c70');
+    x.strokeStyle='rgba(255,240,200,.6)';x.lineWidth=3;for(let i=0;i<5;i++){x.beginPath();x.moveTo(120+i*30,120);x.bezierCurveTo(130+i*30,105,110+i*30,95,120+i*30,80);x.stroke();}
+    rr(400,160,46,100,4,'#8a9aa6');rr(388,150,70,18,4,'#c8ced2');rr(426,138,6,14,2,'#d8dcdc');x.strokeStyle='#9fe0ff';x.lineWidth=3;x.beginPath();x.arc(440,150,16,Math.PI*1.1,Math.PI*1.9);x.stroke();},
+  stall(){grad('#c2c8cf','#e8dccb');rr(220,10,200,290,26,'#2b2f36');rr(232,40,176,250,10,'#f4f2ec');
+    const f=s=>`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`,pb=(typeof ANS!=='undefined'&&ANS.pb21)||7200;
+    txt('半程馬拉松',320,70,18,'#4a3d48');txt('五年前',320,115,15,'#8a7a84');txt(f(pb),320,145,34,'#9aa4aa');txt('今天',320,195,15,'#8a7a84');txt('— : — : —',320,225,30,'#2b2f36');
+    x.globalAlpha=.35;person(520,170,1.6,'#3f6fa8',false);x.globalAlpha=1;},
+  burnout(){grad('#5a4a3e','#3a3028');rr(140,20,360,280,8,'#8a6a4a');rr(156,36,328,250,4,'#4a3a2e');rr(156,120,328,10,0,'#8a6a4a');rr(156,205,328,10,0,'#8a6a4a');
+    shoe(175,95,.55,'#6a5a4e','#9a8a7a',true);shoe(330,95,.55,'#4a4a58','#8a8a90',true);shoe(175,182,.55,'#5a6a7a','#9aa0a6',true);shoe(240,252,.82,'#7a8a9a','#c8c0b0',true);
+    x.fillStyle='rgba(225,215,195,.22)';for(let i=0;i<45;i++)x.fillRect(255+Math.random()*110,232+Math.random()*12,2,2);
+    x.strokeStyle='rgba(230,230,230,.5)';x.lineWidth=1.5;for(let i=0;i<5;i++){x.beginPath();x.moveTo(470,40);x.lineTo(470-20-i*10,40+i*14);x.stroke();}
+    poly([[500,20],[620,0],[640,300],[500,300]],'#6a5240');},
+  end(){grad('#3d2f5e','#f39a5a');circ(470,190,60,'#ffc47a');rr(0,200,640,40,0,'#5d74a6');rr(0,240,640,60,0,'#a49a62');
+    rr(130,200,300,20,4,'#8a5a3a');rr(130,175,300,14,4,'#8a5a3a');rr(150,220,14,40,2,'#4d4552');rr(396,220,14,40,2,'#4d4552');
+    rr(250,192,70,12,5,'#33323c');circ(285,198,18,'#2b2f36');circ(285,198,14,'#14181e');}
+  }[id]||(()=>grad('#86aee0','#fbe3c8')))();
+  c.style.width='100%';c.style.height='100%';c.style.display='block';return c;}
 function paintPreview(el,kind,v){
   const c=document.createElement('canvas');c.width=600;c.height=300;c.style.width='100%';c.style.height='100%';c.style.display='block';const x=c.getContext('2d');
   const g=x.createLinearGradient(0,0,0,300);const N=kind==='track';const SK=v&&v.sky?v.sky:kind==='city'?['#1b2444','#3f4e78','#c99a86']:kind==='rain'?['#4a5568','#6b7484','#8f95a0']:null;g.addColorStop(0,SK?SK[0]:N?'#0c1030':'#4f3d78');g.addColorStop(.55,SK?SK[1]:N?'#1f2452':'#a8708e');g.addColorStop(1,SK?SK[2]:N?'#463a6a':'#f1b48a');x.fillStyle=g;x.fillRect(0,0,600,300);
