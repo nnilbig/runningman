@@ -311,6 +311,11 @@ function coneTree(scale,leaf){
   const cone=new THREE.Mesh(new THREE.ConeGeometry(1.1*s,3.6*s,6),mat(leaf||0x7c9a6a));cone.position.y=2.9*s;g.add(cone);
   g.traverse(o=>{if(o.isMesh){o.castShadow=true;}});return g;
 }
+function palmTree(scale){ // a tall southern palm: thin trunk, a crown of drooping fronds
+  const g=new THREE.Group(),h=6.5*scale;const tr=new THREE.Mesh(new THREE.CylinderGeometry(.13*scale,.2*scale,h,6),mat(0x8a7a5e));tr.position.y=h/2;tr.castShadow=true;g.add(tr);
+  const fm=mat([0x4f8a3e,0x5a9444,0x467e38][Math.floor(Math.random()*3)]);
+  for(let i=0;i<7;i++){const f=new THREE.Mesh(new THREE.ConeGeometry(.28*scale,2.6*scale,4),fm);const a=i/7*Math.PI*2+Math.random()*.3;f.position.set(Math.cos(a)*.9*scale,h-.25*scale,Math.sin(a)*.9*scale);f.rotation.set(Math.sin(a)*1.9,0,-Math.cos(a)*1.9);g.add(f);}
+  const c=new THREE.Mesh(new THREE.IcosahedronGeometry(.32*scale,0),mat(0x6a5a3a));c.position.y=h;g.add(c);return g;}
 function roundTree(scale,leaf){
   const g=new THREE.Group(),s=scale||1;
   const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14*s,.2*s,1.6*s,5),mat(0x6b4a34));trunk.position.y=.8*s;g.add(trunk);
@@ -461,20 +466,20 @@ const VENUES={
       [0,'阿傑','腳步聲疊在一起，像某種節拍。',null,null,.5],[0,'阿傑','不知道為什麼，大家的配速自然就對齊了。',null,null,.71],[0,'阿傑','一個人跑的時候，從來沒有注意過別人的呼吸。',null,null,.86],[0,'阿傑','……原來跑步，也可以是好幾個人的事情。',null,null,.92],[0,'阿傑','快到了。大家都還在。',null,null,.97]],
     end:'八公里。大家一起跑完了。',
     next:'跑完之後，大家又站著聊了很久才散。那是很好的一年。'},
-  track:{ch:'第三章',n:'第一場半馬',sub:'配速',km:21.0975,build:'race',pacing:true,secs:60,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
-    sky:['#7aa2d6','#c4d6e8','#f2e4cc'],fog:0xd8dee6,sun:[-.5,.55,.4],sunCol:0xfff1dc,
-    desc:'三十四歲，第一場半程馬拉松。城市的大馬路封了起來，起跑線擠滿了人。槍聲一響，大家都衝了出去。左上角是「體力」：前面衝太快，後面會撐不住。',
-    intro:'跑了一年多，阿傑報名了人生第一場半馬：二十一公里。前一晚把號碼布別在衣服上，別了三次才對齊。早上六點，城市的大馬路封了起來，起跑線擠滿了人。',
+  track:{ch:'第三章',n:'第一場半馬',sub:'配速',km:21.0975,build:'race',khh:true,pacing:true,secs:60,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
+    sky:['#5f9ee0','#b8d8ee','#fbe8c8'],fog:0xdce6ea,sun:[-.5,.55,.4],sunCol:0xfff1dc,
+    desc:'三十四歲，第一場半程馬拉松，在南部的港都。從體育場旁出發，椰子樹排在大馬路兩邊，經過港邊的摩天輪，沿著河岸跑，遠方是那棟高高的大樓。起跑線擠滿了人。槍聲一響，大家都衝了出去。左上角是「體力」：前面衝太快，後面會撐不住。',
+    intro:'跑了一年多，阿傑報名了人生第一場半馬：二十一公里。前一晚把號碼布別在衣服上，別了三次才對齊。清晨的港都，空氣已經有一點暖。起跑線擠滿了人。',
     script:[[0,'阿傑','三十四歲。第一場半馬。起跑線前，大家都在暖身、拍照。',.5],[0,'提示','起跑時大家都會衝。按 － 把配速拉回來，左上角的「體力」才撐得到最後。',1.5],
-      [0,'阿傑','人好多。每個人看起來都比我快。',4],[0,'阿傑','別跟。這是我自己的比賽。',7],[0,'阿傑','十公里。補給站的紙杯，有點軟。',10.3],[0,'路邊的人','加油——！',13.5],
+      [0,'阿傑','人好多。每個人看起來都比我快。',4],[0,'阿傑','別跟。這是我自己的比賽。',7],[0,'阿傑','十公里。補給站的紙杯，有點軟。',10.3],[0,'阿傑','河邊的風吹過來，有一點鹹。',12.5],
       [0,'阿傑','腿有點重。不過呼吸還在。',16],[0,'阿傑','最後兩公里。……可以快一點了吧。',19.1],[0,'阿傑','終點的拱門，看得到了。',20.6]],
     end:'二十一公里。跑完了。',
     next:'第一面半馬完賽獎牌，比想像中重。阿傑把它掛在書桌旁邊。秋天來了，雨也跟著來了。'},
   race:{ch:'第五章',n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:56,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
     sky:['#6f90c0','#b8c8dc','#ecdcc8'],fog:0xd6dce4,sun:[-.5,.55,.4],sunCol:0xfff1dc,
-    desc:'人生第一場全程馬拉松：十二月的台北馬拉松。從市政府前出發，遠方是台北 101；穿過林蔭大道，沿著基隆河濱跑，再回到市府前。這一章多了肝醣條：每五公里有一個補給站，靠右邊經過就能拿到。過了三十五公里，會撞牆。',
+    desc:'人生第一場全程馬拉松：十二月的台北馬拉松。從市政府前出發，遠方是台北 101；穿過林蔭大道，沿著基隆河濱跑，再回到市府前。這一章多了肝醣條：每五公里有一個補給站，左右交替出現，靠過去經過就能拿到。過了三十五公里，會撞牆。',
     intro:'三十四歲，跑步的第三年。人生第一場全馬，是十二月的台北馬拉松。前一晚幾乎沒睡，四點就醒了。清晨的空氣有點冷。起跑線上擠滿了人，每個人看起來都比他厲害。',
-    script:[[0,'阿傑','第一場全馬。起跑線前，每個人看起來都比我厲害。不過，這也沒辦法。',.4],[0,'提示','左上角多了肝醣條。跑著跑著，就會用掉。',3],[0,'提示','右邊是補給站。靠右邊跑過去，就能拿到水和能量膠。',6.5],[0,'阿傑','前十公里，身體輕得像是跟誰借來的。',10.5],[0,'阿傑','林蔭大道的樹，從兩邊把路輕輕蓋住。有人一下子就跑不見了。別跟。',14.5],[0,'路邊的人','加油——你很棒喔！',18.5],[0,'阿傑','……還有二十幾公里。想這件事，沒有什麼意義。',21.2],[0,'阿傑','過了半馬，到了河濱。風很冷。從這裡開始，才是真正的馬拉松吧。',25.5],[0,'阿傑','腿開始有自己的意見了。',30.5],[0,'阿傑','痛，是免不了的。',37],[0,'阿傑','不過要不要把它當成苦，好像可以自己選。',39.2],[0,'阿傑','最後兩公里。不知道從哪裡來的力氣。',40.5]],
+    script:[[0,'阿傑','第一場全馬。起跑線前，每個人看起來都比我厲害。不過，這也沒辦法。',.4],[0,'提示','左上角多了肝醣條。跑著跑著，就會用掉。',3],[0,'提示','補給站會左右交替出現。靠過去跑，就能拿到水和能量膠。',6.5],[0,'阿傑','前十公里，身體輕得像是跟誰借來的。',10.5],[0,'阿傑','林蔭大道的樹，從兩邊把路輕輕蓋住。有人一下子就跑不見了。別跟。',14.5],[0,'路邊的人','加油——你很棒喔！',18.5],[0,'阿傑','……還有二十幾公里。想這件事，沒有什麼意義。',21.2],[0,'阿傑','過了半馬，到了河濱。風很冷。從這裡開始，才是真正的馬拉松吧。',25.5],[0,'阿傑','腿開始有自己的意見了。',30.5],[0,'阿傑','痛，是免不了的。',37],[0,'阿傑','不過要不要把它當成苦，好像可以自己選。',39.2],[0,'阿傑','最後兩公里。不知道從哪裡來的力氣。',40.5]],
     end:'四十二點一九五公里。跑完了。最後那幾公里，一直在跟自己吵架。不過，總算吵完了。',
     next:'之後幾天，下樓梯都要扶著扶手。即使如此，阿傑已經開始想，下一次要跑去哪裡了。'},
   summer:{ch:'第六章',n:'旅行的早晨',sub:'空白',km:8,build:'blossom',secs:62,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
@@ -497,7 +502,7 @@ const VENUES={
       [0,'阿傑','二十二公里多。好像穿過了某個看不見的地方。',22.7],[0,'阿傑','身體不再說話了。腳只是一直往前移動。',24.3],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',26],[0,'阿傑','……剩下來的，就只是跑。',27.6],[0,'阿傑','中午了。好想喝一杯冰的。',29.3]],
     end:'三十公里。從天亮以前，跑到中午。',
     next:'那之後，阿傑有好一陣子沒有再一個人跑那麼遠。那一天，好像把身體裡的某樣東西，好好地用完了。\n兩年後，三十九歲。'},
-  stall:{ch:'第八章',n:'追不上的人',sub:'停滯',km:21.0975,build:'race',secs:60,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
+  stall:{ch:'第八章',n:'追不上的人',sub:'停滯',km:21.0975,build:'race',khh:true,secs:60,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
     sky:['#8a96a8','#c2c8cf','#e8dccb'],fog:0xd2d4d4,sun:[-.5,.5,.4],sunCol:0xfff0dc,leaves:[0xd8783a,0xc8a040],
     desc:'三十九歲，又站上了第一次跑的那場半馬。成績不再進步，速度也有了上限，再怎麼按 ＋ 都快不起來。手機 App 裡存著五年前的紀錄，變成旁邊一個透明的跑者。跟在他後面就是追；往右邊靠，就是讓他先走。',
     intro:'三十九歲。這幾年的成績，一場比一場慢。練得跟以前一樣多，數字卻慢慢往回走。這個秋天，阿傑又報名了第一次跑的那場半馬。同一條路，同一個拱門。',
@@ -742,18 +747,18 @@ function addStores(v,path,hw){ // a park-style drinking fountain every 5 km on t
 function lakePath(){return makePath(catmull([[0,0],[90,10],[180,-6],[270,12],[360,-4],[450,8],[540,-2],[640,4]],false),false);}
 function buildRace(v){ // closed city boulevard on race day: cones, crowds, aid stations every 5 km, km boards
   const sun=baseScene(v),path=cityPath(),hw=v.width/2,END=Math.min(path.L,20+v.km*1000/v.sc+60);
-  scene.fog=new THREE.Fog(v.fog,40,v.taipei?620:420);
+  scene.fog=new THREE.Fog(v.fog,40,v.taipei||v.khh?680:420);
   const ground=new THREE.Mesh(new THREE.PlaneGeometry(3000,3000),mat(0x9a9890));ground.rotation.x=-Math.PI/2;ground.position.set(350,0,0);ground.receiveShadow=true;scene.add(ground);
   scene.add(strip(path,-hw,hw,0x5a5c62,.03,{step:2}));
   scene.add(strip(path,-.06,.06,0xf2efe6,.05,{step:2,dash:3}));
   scene.add(strip(path,-hw,-hw+.14,0xf2efe6,.05,{step:2}));scene.add(strip(path,hw-.14,hw,0xf2efe6,.05,{step:2}));
   scene.add(strip(path,hw,hw+4.5,0xc9c0b2,.06,{step:2}));scene.add(strip(path,-hw-4.5,-hw,0xc9c0b2,.06,{step:2}));
-  const Lr=v.km*1000/v.sc,tun=d=>v.taipei&&d>20+Lr*.24&&d<20+Lr*.5,riv=d=>v.taipei&&d>20+Lr*.52&&d<20+Lr*.8; // tree tunnel / riverside stretches of the Taipei course
+  const Lr=v.km*1000/v.sc,tun=d=>v.taipei&&d>20+Lr*.24&&d<20+Lr*.5,riv=d=>(v.taipei&&d>20+Lr*.52&&d<20+Lr*.8)||(v.khh&&d>20+Lr*.45&&d<20+Lr*.72); // tree tunnel / riverside stretches of the Taipei course
   const facade=v.taipei?[0x8a9aa6,0x9aa8b2,0xd9c2b2,0x7d8e9a,0xc9c4bc,0xb9c4c8]:[0xe6d3bd,0xd9c2b2,0xc9b29f,0xbfb3c9,0xe8ddcf,0xb9c4c8];
-  for(const side of [-1,1])for(let d=-10;d<END+20;d+=rnd(9,15)){if(side>0&&riv(d))continue;const p=at(path,clamp(d,0,path.L-1)),h=v.taipei&&!tun(d)?rnd(24,60):rnd(14,40),b=building(rnd(8,12),h,rnd(8,12),facade[Math.floor(Math.random()*facade.length)],false);
+  for(const side of [-1,1])for(let d=-10;d<END+20;d+=rnd(9,15)){if(side>0&&riv(d))continue;if(v.khh&&side<0&&d<80)continue;const p=at(path,clamp(d,0,path.L-1)),h=v.taipei&&!tun(d)?rnd(24,60):v.khh?rnd(7,15):rnd(14,40),b=building(rnd(8,12),h,rnd(8,12),facade[Math.floor(Math.random()*facade.length)],false);
     const lat=side*(hw+4.5+rnd(5,7));b.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);b.rotation.y=Math.atan2(p.tx,p.tz);scene.add(b);}
   for(const side of [-1,1])for(let d=2;d<END;d+=tun(d)?rnd(3.5,5):rnd(7,10)){if(side>0&&riv(d))continue;
-    const t=roundTree(tun(d)?rnd(2.1,2.6):rnd(1,1.3),(tun(d)?[0x3f5f3c,0x4a6b44]:(v.leaves||[0x6f9458,0x7ea062]))[Math.floor(Math.random()*2)]);placeOnPath(t,path,d,side*(tun(d)?hw+2.4:hw+3.6));scene.add(t);}
+    const t=v.khh?palmTree(rnd(.9,1.15)):roundTree(tun(d)?rnd(2.1,2.6):rnd(1,1.3),(tun(d)?[0x3f5f3c,0x4a6b44]:(v.leaves||[0x6f9458,0x7ea062]))[Math.floor(Math.random()*2)]);placeOnPath(t,path,d,side*(tun(d)?hw+2.4:hw+3.6));scene.add(t);}
   if(v.taipei){
     // the river on the right for the riverside stretch, with a grassy bank, and the red palace hotel on the hill across
     const a=20+Lr*.52,b=20+Lr*.8;scene.add(strip(path,hw+4.5,hw+12,0x7fa060,.04,{from:a,to:b,step:2}));
@@ -771,6 +776,33 @@ function buildRace(v){ // closed city boulevard on race day: cones, crowds, aid 
       for(let i=0;i<3;i++){const t=new THREE.Mesh(new THREE.CylinderGeometry(6-i*1.5,7-i*1.5,4,4),gm);t.rotation.y=Math.PI/4;t.position.y=120+i*4;g.add(t);}
       const sp=box(.8,20,.8,0xd8dcdc);sp.position.y=142;g.add(sp);g.scale.setScalar(1.1);
       const lat=-120;g.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);scene.add(g); }}
+  if(v.khh){
+    // a river through the city on the right, lit bridges across it
+    const a=20+Lr*.45,b=20+Lr*.72;scene.add(strip(path,hw+4.5,hw+9,0x7fa060,.04,{from:a,to:b,step:2}));
+    const w=strip(path,hw+9,hw+70,0x4f86a0,.045,{from:a,to:b,step:2});w.material=new THREE.MeshPhongMaterial({color:0x4f86a0,shininess:90,specular:0xc8dce8,side:THREE.DoubleSide});scene.add(w);
+    for(let d=a+6;d<b;d+=rnd(6,9)){const t=palmTree(rnd(.9,1.1));placeOnPath(t,path,d,hw+rnd(5.5,8));scene.add(t);}
+    for(let d=a+15;d<b;d+=38){const p=at(path,d),g=new THREE.Group();const deck=box(64,1,6,0xe8e2d6);deck.position.y=2.4;g.add(deck);
+      for(let k=0;k<=12;k++){const x0=-30+k*5,y=2.9+5*Math.sin(Math.PI*k/12);const post=box(.3,y-2.9+.3,.3,0xd8dce0);post.position.set(x0,2.9+(y-2.9)/2,2.8);g.add(post);}
+      const arc=new THREE.Mesh(new THREE.TorusGeometry(30,.35,6,24,Math.PI),mat(0xf0f0f0));arc.position.set(0,2.4,2.8);arc.scale.y=.18;g.add(arc);
+      g.position.set(p.x+p.rx*(hw+40),0,p.z+p.rz*(hw+40));g.rotation.y=Math.atan2(p.tx,p.tz)+Math.PI/2;scene.add(g);}
+    // landmarks on the skyline far down the avenue (no fog, so they read as the city's silhouette)
+    const F=c=>mat(c,{fog:false}),far=(d,lat,g)=>{const p=at(path,Math.min(path.L-1,d));g.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);g.rotation.y=Math.atan2(p.tx,p.tz);scene.add(g);return g;};
+    { const g=new THREE.Group();for(let k=0;k<26;k++){const t=k/25,ang=-1.4+t*2.8,R2=60,h=10+18*Math.sin(Math.PI*t),seg=new THREE.Mesh(new THREE.BoxGeometry(14,h,5),F(k%2?0xe8ecee:0xd0d8dc));
+        seg.position.set(Math.cos(ang)*R2,h/2,Math.sin(ang)*R2);seg.rotation.y=-ang;g.add(seg);} far(300,-95,g); } // the dragon-backed stadium
+    for(let i=0;i<5;i++){const g=new THREE.Group(),c=i%2?0xd84a3a:0xe8e2d6; // harbour cranes
+      for(const z of [-6,6])for(const x0 of [-8,8]){const l=new THREE.Mesh(new THREE.BoxGeometry(1.4,36,1.4),F(c));l.position.set(x0,18,z);g.add(l);}
+      const beam=new THREE.Mesh(new THREE.BoxGeometry(60,3,4),F(c));beam.position.set(14,38,0);g.add(beam);far(520+i*30,120+i*10,g);}
+    { const g=new THREE.Group();const ring=new THREE.Mesh(new THREE.TorusGeometry(30,.9,6,36),F(0xe8574a));ring.position.y=38;g.add(ring); // Ferris wheel
+      for(let k=0;k<14;k++){const a2=k/14*Math.PI*2,sp=new THREE.Mesh(new THREE.BoxGeometry(.6,30,.6),F(0xf4f4f4));sp.position.set(Math.cos(a2)*15,38+Math.sin(a2)*15,0);sp.rotation.z=a2+Math.PI/2;g.add(sp);
+        const cab=new THREE.Mesh(new THREE.BoxGeometry(3,3,3),F([0x3f6fa8,0xf0c060,0x7fcf95][k%3]));cab.position.set(Math.cos(a2)*30,38+Math.sin(a2)*30-2,0);g.add(cab);}
+      for(const x0 of [-9,9]){const leg=new THREE.Mesh(new THREE.BoxGeometry(1.2,40,1.2),F(0xd8dcdc));leg.position.set(x0,19,0);leg.rotation.z=x0>0?-.22:.22;g.add(leg);}
+      far(430,70,g).rotation.y+=Math.PI/2; }
+    { const g=new THREE.Group(),gm=F(0x7f98a8),dk=F(0x5f7a8a); // the tall split-top tower, straight ahead at the end of the avenue
+      for(const x0 of [-14,14]){const leg=new THREE.Mesh(new THREE.BoxGeometry(16,90,20),gm);leg.position.set(x0,45,0);g.add(leg);}
+      const br=new THREE.Mesh(new THREE.BoxGeometry(44,18,20),dk);br.position.y=99;g.add(br);const top=new THREE.Mesh(new THREE.BoxGeometry(20,80,18),gm);top.position.y=148;g.add(top);
+      const top2=new THREE.Mesh(new THREE.BoxGeometry(14,30,12),dk);top2.position.y=203;g.add(top2);const sp=new THREE.Mesh(new THREE.BoxGeometry(1,34,1),F(0xd8dcdc));sp.position.y=235;g.add(sp);
+      far(path.L-1,-28,g); }
+  }
   // cones along both kerbs
   const coneG=new THREE.ConeGeometry(.18,.55,6),coneM=mat(0xf07a2e);
   for(const side of [-1,1])for(let d=0;d<END;d+=4){const c=new THREE.Mesh(coneG,coneM);placeOnPath(c,path,d,side*(hw+.25));c.position.y=.27;scene.add(c);}
@@ -779,17 +811,17 @@ function buildRace(v){ // closed city boulevard on race day: cones, crowds, aid 
     for(let i=0;i<n;i++){const f=fan(Math.random()<.5),lat=side*(hw+1+rnd(0,1.4)),p=at(path,d+i*.8);f.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);f.rotation.y=Math.atan2(-side*p.rx,-side*p.rz);scene.add(f);}}
   // aid stations on the right every 5 km: table, cups, banner, volunteers
   const stations=[],cupG=new THREE.CylinderGeometry(.06,.05,.14,6),cupM=mat(0xf6f2ea);
-  for(let k=5;k<v.km;k+=5){const d=20+k*1000/v.sc,g=new THREE.Group();
+  for(let k=5;k<v.km;k+=5){const d=20+k*1000/v.sc,g=new THREE.Group(),side=(k/5)%2?1:-1; // alternate right / left
     const top=box(.7,.08,4.2,0x3f7fc8);top.position.y=.78;g.add(top);for(const z of [-1.9,1.9]){const leg=box(.06,.78,.06,0xd8d8d8);leg.position.set(0,.39,z);g.add(leg);}
     for(let i=0;i<14;i++){const c=new THREE.Mesh(cupG,cupM);c.position.set(rnd(-.25,.25),.89,-1.9+i*.29);g.add(c);}
     const ban=textPlane('補給站 '+k+'K',3.2,.8,'#3f7fc8','#ffffff');ban.position.set(.55,2.4,0);ban.rotation.y=-Math.PI/2;g.add(ban);
     for(const z of [-1.9,1.9]){const pole=box(.07,2.4,.07,0xd8d8d8);pole.position.set(.55,1.2,z*.8);g.add(pole);}
-    placeOnPath(g,path,d,hw+.65);scene.add(g);
-    for(let i=0;i<2;i++){const vol=makePerson({shirt:0xf0c060,shorts:0x30303a,legs:0x30303a,hair:0x1e1a18,skin:0xe2b48f});const p=at(path,d-1+i*2),lat=hw+1.35;vol.g.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);vol.g.rotation.y=Math.atan2(-p.rx,-p.rz);vol.arms[0].rotation.x=-1.4;scene.add(vol.g);}
-    stations.push({d,k,taken:false,gone:false});}
+    placeOnPath(g,path,d,side*(hw+.65),side>0?0:Math.PI);scene.add(g);
+    for(let i=0;i<2;i++){const vol=makePerson({shirt:0xf0c060,shorts:0x30303a,legs:0x30303a,hair:0x1e1a18,skin:0xe2b48f});const p=at(path,d-1+i*2),lat=side*(hw+1.35);vol.g.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);vol.g.rotation.y=Math.atan2(-side*p.rx,-side*p.rz);vol.arms[0].rotation.x=-1.4;scene.add(vol.g);}
+    stations.push({d,k,side,taken:false,gone:false});}
   // km boards on the left
   for(const k of [5,10,15,20,21.1,25,30,35,40,42].filter(k=>k<v.km)){const d=20+k*1000/v.sc,g=new THREE.Group();const post=box(.1,2.4,.1,0xd8d8d8);post.position.y=1.2;g.add(post);
-    const t=textPlane(k===21.1?'半馬':k+'K',1.4,.7,k>=35?'#e8574a':'#2f5aa8','#ffffff');t.position.y=2.6;g.add(t);placeOnPath(g,path,d,-hw-.7);scene.add(g);}
+    const t=textPlane(k===21.1?'半馬':k+'K',1.4,.7,k>=35?'#e8574a':'#2f5aa8','#ffffff');t.position.y=2.6;g.add(t);placeOnPath(g,path,d+3.5,-hw-.7);scene.add(g);}
   const finD=20+v.km*1000/v.sc;
   { const p=at(path,finD),g=new THREE.Group();const a=box(.45,5.4,.45,0xe8574a),b=a.clone();a.position.set(-hw-.4,2.7,0);b.position.set(hw+.4,2.7,0);g.add(a,b);
     const banner=textPlane('終點 FINISH',v.width+1.2,1.3,'#e8574a','#ffffff');banner.position.set(0,5,0);g.add(banner);
@@ -1225,7 +1257,7 @@ function update(dt){
     if(!S.done)S.gly=Math.max(0,S.gly-(116/v.secs)*Math.pow(S.speed/JOG,2)*(1+.6*frac)*dt);
     for(const st of W.stations){if(st.taken||st.gone)continue;const rel=st.d-S.d;
       if(rel<-2.2){st.gone=true;toast(`錯過了 ${st.k}K 補給站`);continue;}
-      if(Math.abs(rel)<2.1&&S.lat>v.lat[1]-1.1){st.taken=true;S.fuel++;S.gly=Math.min(100,S.gly+7);SFX.talk();toast(['拿到水了','能量膠，黏黏的甜','喝了一口運動飲料','香蕉，吞下去了'][S.fuel%4]+'　肝醣 +7');}}
+      if(Math.abs(rel)<2.1&&(st.side<0?S.lat<v.lat[0]+1.1:S.lat>v.lat[1]-1.1)){st.taken=true;S.fuel++;S.gly=Math.min(100,S.gly+7);SFX.talk();toast(['拿到水了','能量膠，黏黏的甜','喝了一口運動飲料','香蕉，吞下去了'][S.fuel%4]+'　肝醣 +7');}}
     if(!S.wall&&!S.done&&(km>=35||S.gly<=0)){S.wall=true;S.wallAt=km;S.shake=.5;SFX.bump();say(CHAR.name,km<35?'……能量用完了。腿像灌了鉛一樣。':'……撞牆了。腿像灌了鉛一樣。');}
     const inWall=S.wall&&!S.done&&km<40.3;
     if(inWall)cap=1.5+1.1*clamp(S.gly/70,0,1); // fuelled well: ~8'30"; empty: ~11'00"
@@ -1236,7 +1268,7 @@ function update(dt){
     if(!S.done)S.sta=Math.max(0,S.sta-(60/v.secs)*Math.pow(S.speed/JOG,4)*(S.speed>JOG*1.15?1.8:1)*dt);
     if(!S.h1&&km>=v.km/2)S.h1=S.t;
     if(W.stations)for(const st of W.stations){if(st.taken||st.gone)continue;const rel=st.d-S.d;if(rel<-2.2){st.gone=true;continue;}
-      if(Math.abs(rel)<2.1&&S.lat>v.lat[1]-1.1){st.taken=true;S.sta=Math.min(100,S.sta+6);SFX.talk();toast('喝了一口水　體力 +6');}}
+      if(Math.abs(rel)<2.1&&(st.side<0?S.lat<v.lat[0]+1.1:S.lat>v.lat[1]-1.1)){st.taken=true;S.sta=Math.min(100,S.sta+6);SFX.talk();toast('喝了一口水　體力 +6');}}
     if(!S.heavy&&!S.done&&S.sta<12){S.heavy=true;say(CHAR.name,'腿開始重了。……前面衝太快了吧。');}
     if(!S.done&&S.sta<12)cap=JOG*(.72+.28*S.sta/12);
     const f=$('glyfill');f.style.width=S.sta.toFixed(1)+'%';f.style.background=S.sta>45?'#7fcf95':S.sta>12?'#f3bd63':'#ef7a6e';}
