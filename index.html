@@ -28,8 +28,8 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .spd{display:flex;flex-direction:column;line-height:1;text-shadow:0 2px 10px rgba(30,15,40,.45)}
 .spd small{font-size:15px;font-weight:800;letter-spacing:.08em}
 .spd .row{display:flex;align-items:baseline;gap:6px}
-.spd b{font-size:clamp(52px,12vw,84px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.spd .unit{font-size:20px;font-weight:800}
+.spd b{font-size:clamp(32px,8vw,48px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.spd .unit{font-size:15px;font-weight:800}
 .hrbox{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
 .hrbox .bpm{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
 .hrbox .bpm i{font-style:normal;color:#ff8a8a;margin-right:4px}
@@ -63,8 +63,10 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .ctl .grp.v{flex-direction:column;gap:10px}
 .cb{width:74px;height:74px;border-radius:50%;background:var(--pill);border:1.5px solid var(--pill-line);font-size:24px;touch-action:none;backdrop-filter:blur(6px)}
 .cb.on{background:rgba(233,160,122,.85);color:var(--ink)}
+.cb.lr{width:min(150px,30vw);height:118px;border-radius:30px;font-size:34px;font-weight:800;letter-spacing:.04em}
+.ctl{justify-content:space-between!important;gap:12px}
 .hint{position:absolute;left:50%;bottom:max(140px,calc(env(safe-area-inset-bottom,0px) + 134px));transform:translateX(-50%);font-size:13px;font-weight:800;opacity:.85;text-align:center;white-space:nowrap;text-shadow:0 1px 6px rgba(30,15,40,.6)}
-@media (max-width:520px){.cb{width:60px;height:60px}}
+@media (max-width:520px){.cb{width:58px;height:54px}.cb.lr{width:30vw;height:112px}.pill{padding:6px 11px;font-size:13px}.pills{gap:6px}.hrbox .bpm{font-size:20px}}
 
 /* ---------- menu & finish ---------- */
 .screen{position:fixed;inset:0;overflow:auto;background:linear-gradient(180deg,#4a3560 0%,#7a4f6e 42%,#e9a07a 100%);padding-block:max(24px,env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
@@ -143,15 +145,15 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 <div class="hud" id="hud" hidden>
   <div class="top" id="hudtop">
     <div class="spd"><small>配速</small><div class="row"><b id="pace">6'00"</b><span class="unit">/km</span></div><div class="sub" id="dist">0.00 / 4.0 km</div><div class="sub" id="clock">00:00</div><div class="sub" id="gap" hidden></div><div class="hrbox"><span class="bpm"><i>♥</i><b id="bpm" style="font-size:24px">120</b><span>bpm</span></span><span class="zone" id="zone">ZONE 2 燃脂</span></div><div class="zbar" id="zbar"><i></i><i></i><i></i><i></i><i></i></div><div class="gly" id="glybox" hidden><small id="glylab">肝醣</small><div><i id="glyfill"></i></div></div></div>
-    <div class="pills"><button class="pill" id="b-menu">選單</button><button class="pill" id="b-retry">重來</button><button class="pill" id="b-snd">音效 開</button></div>
+    <div class="pills"><button class="pill" id="b-menu">選單</button><button class="pill" id="b-retry">重來</button><button class="pill" id="b-mus">音樂 開</button><button class="pill" id="b-snd">音效 開</button></div>
   </div>
   <div class="say off" id="say" aria-live="polite"><span class="who" id="who">L</span><p id="line"></p></div>
   <div class="toast off" id="toast"></div>
   <div class="ribbon off" id="ribbon"><b id="rb-t"></b><small id="rb-s"></small></div>
   <div class="ctl">
-    <div class="grp"><button class="cb" data-k="left" aria-label="往左">◀</button></div>
+    <div class="grp"><button class="cb lr" data-k="left" aria-label="往左">L</button></div>
     <div class="grp v"><button class="cb" data-k="up" aria-label="加快">＋</button><button class="cb" data-k="down" aria-label="放慢">－</button></div>
-    <div class="grp"><button class="cb" data-k="right" aria-label="往右">▶</button></div>
+    <div class="grp"><button class="cb lr" data-k="right" aria-label="往右">R</button></div>
   </div>
 </div>
 
@@ -1056,6 +1058,32 @@ const SFX={talk:()=>tone(880,.06,'triangle',.04),step:()=>tone(110,.05,'triangle
   done:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.4,'triangle',.06,i*.14))};
 addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
 $('b-snd').onclick=()=>{SND=!SND;$('b-snd').textContent='音效 '+(SND?'開':'關');};
+// generative background music: warm pads, a light arpeggio, a soft bass and a quiet beat (all WebAudio, no files)
+const MUS={on:true,timer:null,next:0,step:0,gain:null,mood:'day',drums:1};
+try{MUS.on=localStorage.getItem('shimin.music')!=='off';}catch(_){}
+const PROG={day:[[48,55,59,64],[45,52,55,60],[41,48,52,57],[43,50,55,59]],  // Cmaj7 Am7 Fmaj7 G
+  night:[[45,52,55,60],[41,48,52,57],[48,55,59,64],[40,47,50,55]],             // Am7 Fmaj7 Cmaj7 Em7
+  blossom:[[53,57,60,64],[50,57,60,65],[46,53,57,62],[48,55,58,64]]};          // Fmaj7 Dm7 Bbmaj7 C7
+const mf=n=>440*Math.pow(2,(n-69)/12);
+function musVoice(f,t,d,type,vol,cut){const o=AC.createOscillator(),g=AC.createGain(),fl=AC.createBiquadFilter();o.type=type;o.frequency.value=f;fl.type='lowpass';fl.frequency.value=cut||1800;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.3,d*.25));g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(fl);fl.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+d+.05);}
+function musNoise(t,vol){const b=AC.createBuffer(1,AC.sampleRate*.05,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+  const src=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();src.buffer=b;f.type='highpass';f.frequency.value=6000;g.gain.value=vol;src.connect(f);f.connect(g);g.connect(MUS.gain);src.start(t);}
+function musTick(){if(!AC||!MUS.on)return;const spb=60/84/2; // eighth notes at 84 bpm
+  while(MUS.next<AC.currentTime+.25){const t=MUS.next,st=MUS.step,bar=Math.floor(st/16)%4,e=st%16,ch=PROG[MUS.mood][bar],dr=MUS.drums;
+    if(e===0)ch.forEach((n,i)=>musVoice(mf(n+12),t,spb*16,i%2?'triangle':'sine',.045,1400));
+    if(e%2===0)musVoice(mf(ch[0]-12),t,spb*1.8,'sine',e%8===0?.12:.06,600);
+    const arp=[0,1,2,3,2,1,3,2][e%8];if(e%2===1||e%4===0)musVoice(mf(ch[arp]+24),t,spb*1.6,'triangle',.028,3000);
+    if(dr>.05){if(e%8===0){const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(45,t+.15);g.gain.setValueAtTime(.18*dr,t);g.gain.exponentialRampToValueAtTime(.0001,t+.2);o.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+.22);}
+      if(e%4===2)musNoise(t,.05*dr);}
+    MUS.next+=spb;MUS.step++;}}
+function musicStart(){if(!AC||!MUS.on||MUS.timer)return;if(!MUS.gain){MUS.gain=AC.createGain();MUS.gain.gain.value=.55;MUS.gain.connect(AC.destination);}
+  MUS.gain.gain.setTargetAtTime(.55,AC.currentTime,.4);MUS.next=AC.currentTime+.1;MUS.timer=setInterval(musTick,90);}
+function musicStop(){if(MUS.timer){clearInterval(MUS.timer);MUS.timer=null;}if(MUS.gain&&AC)MUS.gain.gain.setTargetAtTime(0,AC.currentTime,.3);}
+function musicMood(v){MUS.mood=v&&(v.build==='blossom')?'blossom':v&&(v.night||v.rain||v.dawn||v.motive||v.stall)?'night':'day';MUS.step=MUS.step-(MUS.step%16);}
+$('b-mus').textContent='音樂 '+(MUS.on?'開':'關');
+$('b-mus').onclick=()=>{MUS.on=!MUS.on;try{localStorage.setItem('shimin.music',MUS.on?'on':'off');}catch(_){}$('b-mus').textContent='音樂 '+(MUS.on?'開':'關');if(MUS.on){ac();musicStart();}else musicStop();};
+addEventListener('pointerdown',()=>{if(AC&&MUS.on)musicStart();},{passive:true});
 
 /* ================= dialogue & ribbon ================= */
 let sayT=0;
@@ -1109,7 +1137,7 @@ function begin(){if(!S||!S.pre)return;S.pre=false;
   if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});$('recap').hidden=true;$('hud').classList.remove('pre');}
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;
 function run(id){
-  ac();disposeScene();$('recap').hidden=true;
+  ac();disposeScene();$('recap').hidden=true;musicMood(VENUES[id]);musicStart();
   const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;if(v.stall){const gv=1000/((ANS.pb||16200)/42.195);v.secs=76*(gv*.96)/JOG;prep(v);} // keep ch6 near 76 s whatever the PB
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='oldstreet'?buildOldStreet(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):v.build==='coast'?buildCoast(v):v.build==='lake'?buildLake(v):buildCity(v);}finally{Math.random=R;}
@@ -1135,7 +1163,7 @@ function run(id){
   S.pre=true;S.preT=0;$('hud').classList.add('pre');
   if(PICK.autoBegin){PICK.autoBegin=false;S.autoT=1.6;ribbon(`${v.ch}　${v.n}`,v.sub);}else showRecap(id,v);
 }
-function toMenu(){S=null;$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
+function toMenu(){S=null;MUS.drums=1;$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function renderChapters(){
   const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.km} 公里</span><b>${v.n}</b><small>${v.desc}</small><span class="go">讀這一章</span></div></button>`;};
   const soon=SOON.map(([c,t,d])=>`<div class="venue soon" aria-disabled="true"><div class="pic"></div><div class="txt"><span class="ch">${c}・${t}</span><b>${d}</b><span class="go">準備中</span></div></div>`).join('');
@@ -1247,7 +1275,7 @@ function update(dt){
     const fade=1-clamp((S.flow-25)/60,0,1);$("hudtop").style.opacity=(.04+.96*fade).toFixed(2);$('say').style.setProperty('--fade',(.18+.82*fade).toFixed(2));
     const k=clamp((S.flow-40)/60,0,1);$('flowfx').style.opacity=(k*.95).toFixed(2); // the world itself fades to white along with the numbers
     $('gl').style.filter=k>0?`saturate(${(1-.65*k).toFixed(2)}) contrast(${(1-.4*k).toFixed(2)}) brightness(${(1+.22*k).toFixed(2)})`:'';
-    const f=$('glyfill');f.style.width=S.flow.toFixed(1)+'%';f.style.background='#9fd8e8';}
+    const f=$('glyfill');f.style.width=S.flow.toFixed(1)+'%';f.style.background='#9fd8e8';MUS.drums=1-clamp((S.flow-30)/50,0,1);}
   if(v.flow&&S.done){$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('flowfx').style.opacity=0;$('gl').style.filter='';}
   const want=S.done?0:Math.min(cap,S.target*(S.bump>0?.55:1));
   S.speed=lerp(S.speed,want,Math.min(1,dt*(S.done?1.2:1.6)));
