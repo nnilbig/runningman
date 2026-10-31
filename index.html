@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2e1f36">
 <title>跑者murmur</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +68,15 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .cb.lr{width:min(120px,28vw);height:min(120px,28vw);border-radius:50%;font-size:34px;font-weight:800;letter-spacing:.04em}
 .ctl{justify-content:space-between!important;gap:12px}
 .hint{position:absolute;left:50%;bottom:max(140px,calc(env(safe-area-inset-bottom,0px) + 134px));transform:translateX(-50%);font-size:13px;font-weight:800;opacity:.85;text-align:center;white-space:nowrap;text-shadow:0 1px 6px rgba(30,15,40,.6)}
+@media (orientation:landscape) and (max-height:500px){
+  .cb{width:46px;height:42px;font-size:20px}.cb.lr{width:24vh;height:24vh;font-size:26px}.ctl .grp.v{gap:6px}
+  .spd b{font-size:26px}.spd small{font-size:12px}.spd .sub{font-size:12px;margin-top:2px}.hrbox{margin-top:4px}.hrbox .bpm{font-size:18px}.zone{font-size:12px;padding:2px 8px}.zbar,.gly{width:120px}
+  .pill{padding:5px 10px;font-size:12px}.pills{gap:5px}
+  .say{top:16vh;padding:8px 14px 10px;width:min(460px,calc(100% - 32px))}.say p{font-size:15px;margin-top:6px}.say .who{font-size:12px}.say.other{top:22vh}.toast{bottom:calc(24vh + 30px)}
+  .recap{max-height:86vh;bottom:8px;padding:10px 14px}.recap>b{font-size:20px}.recap p{font-size:13px;line-height:1.6}
+  .ribbon{top:44%;padding-top:6px;padding-bottom:6px}.ribbon b{font-size:22px}.ribbon small{font-size:12px}
+  .done{max-height:92vh;overflow:auto;padding:14px}.done h2{font-size:24px}
+}
 @media (max-width:520px){.cb{width:58px;height:54px}.cb.lr{width:28vw;height:28vw}.pill{padding:6px 11px;font-size:13px}.pills{gap:6px}.hrbox .bpm{font-size:20px}}
 
 /* ---------- menu & finish ---------- */
@@ -89,6 +99,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .prologue{margin:8px 0 0;font-size:14px;line-height:1.8;color:#4a3d47;font-weight:500}
 .card{align-items:flex-start}
 .venue .ch{font-size:13px;font-weight:800;color:#a0566a;letter-spacing:.08em}
+.donebadge{align-self:flex-start;font-size:12px;font-weight:800;color:#3f7a4a;background:#dcefd8;border-radius:999px;padding:2px 9px}
 .menurow{display:flex;gap:8px;flex-wrap:wrap}
 .note{font-size:13px;opacity:.85;line-height:1.6;font-weight:500}
 .done{width:min(440px,100%);background:#fbf7f0;color:var(--ink);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 14px 40px rgba(30,15,40,.4)}
@@ -135,6 +146,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
     <div class="card"><div class="avatar" aria-hidden="true"></div><div><b>阿傑</b><div class="m">32 歲</div><p class="prologue">三十二歲那年，日子就這樣過著。某個清晨，他穿起跑鞋，走到家附近的河堤。</p></div></div>
     <div class="venues" id="chapters"></div>
     <div class="menurow"><button class="pill" id="m-q">畫質：自動</button><button class="pill" id="m-reset">清除進度</button></div>
+    <p class="note" id="iosnote" hidden>沒有聲音的話：iPhone 請把側邊的靜音開關打開，網頁才會出聲。</p>
     <p class="note">畫面上的距離和時間照真實配速計算，但每一章只要一分鐘左右。按 ＋ － 調整配速（每按一下 5 秒），◀ ▶ 閃開路上的人。心率衝到 Zone 5，阿傑會覺得太快，自動放慢。十個章節都可以直接跑。</p>
   </div>
 </div>
@@ -175,7 +187,8 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="three.min.js"></script>
+<script>if(!window.THREE)document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
 <script>
 /* ================= basics ================= */
 const $=id=>document.getElementById(id);
@@ -1052,16 +1065,17 @@ function run(id){
     S.ghost={p:gp,d:W.startD,v:gv,lat:-1.9,op:.42,pb};}
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra);$('glylab').textContent=v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';$('wallfx').style.opacity=0;
   $('hud').classList.toggle('nowatch',S.noWatch);
-  S.script=v.script.map(l=>l.slice());if(v.buddy)S.script.forEach(l=>{if(l[1]==='{F}')l[1]=buddyName();});
+  S.script=v.script.map(l=>l.slice());
+  if(id==='start'&&!(ANS.done&&ANS.done.start)&&S.script.length>1)S.script.splice(1,0,[(S.script[0][0]+S.script[1][0])/2,'提示','左上角是配速和心率，顏色代表心率區間。按 ＋ － 調整配速，L R 閃開路上的人。']);if(v.buddy)S.script.forEach(l=>{if(l[1]==='{F}')l[1]=buddyName();});
   const p=at(W.path,S.d);camPos.set(p.x-p.tx*7,4,p.z-p.tz*7);camLook.set(p.x,1.2,p.z);
   $('menu').hidden=true;$('done').hidden=true;$('hud').hidden=false;$('say').classList.add('off');
   $('dist').textContent=`0.00 / ${v.km.toFixed(1)} km`;
   S.pre=true;S.preT=0;$('hud').classList.add('pre');
   if(PICK.autoBegin){PICK.autoBegin=false;S.autoT=1.6;ribbon(`${v.ch}　${v.n}`,v.sub);}else showRecap(id,v);
 }
-function toMenu(){S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
+function toMenu(){if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function renderChapters(){
-  const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.km} 公里</span><b>${v.n}</b><small>${v.desc}</small><span class="go">讀這一章</span></div></button>`;};
+  const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.km} 公里</span><b>${v.n}</b><small>${v.desc}</small>${ANS.done&&ANS.done[id]?`<span class="donebadge">✓ 跑過・${ANS.done[id]}</span>`:''}<span class="go">讀這一章</span></div></button>`;};
   $('chapters').innerHTML=card('start')+card('club')+card('habit')+card('track')+card('race')+card('summer')+card('ultra')+card('stall')+card('burnout')+card('end');
   CHAPTERS.forEach(id=>{$('v-'+id).onclick=()=>start(id);paintPreview($('pic-'+id),VENUES[id].build==='boulevard'?'boulevard':VENUES[id].build==='track'?'track':VENUES[id].build==='park'?'park':VENUES[id].build==='race'?'race':VENUES[id].build==='weekend'?'trail':VENUES[id].build==='coast'?'coast':VENUES[id].build==='lake'?'lake':VENUES[id].build==='blossom'?'lava':VENUES[id].build==='oldcity'?'nightrun':'river',VENUES[id]);});
 }
@@ -1136,7 +1150,7 @@ function update(dt){
     if(!S.beyond&&km>=75){S.beyond=true;S.hazeT=0;toast('疲勞不再增加了');}
     if(!S.done)cap=S.beyond?JOG*.92:VMAX-(VMAX-1.9)*S.fat/100;
     // haze: between 45 and 75 km the mind wanders and the body drifts sideways
-    if(!S.done&&!S.beyond&&km>=45){S.hazeCD-=dt;if(S.hazeT<=0&&S.hazeCD<=0){S.hazeT=3.2;S.hazeCD=rnd(3,6);S.drift=(Math.random()<.5?-1:1)*rnd(.7,1.1);toast('意識有點模糊……');}}
+    if(!S.done&&!S.beyond&&km>=45){S.hazeCD-=dt;if(S.hazeT<=0&&S.hazeCD<=0){S.hazeT=3.2;S.hazeN=(S.hazeN||0)+1;S.hazeCD=rnd(3,6);S.drift=(Math.random()<.5?-1:1)*rnd(.7,1.1);toast('意識有點模糊……');}}
     if(S.hazeT>0){S.hazeT-=dt;S.lat=clamp(S.lat+S.drift*dt,v.lat[0],v.lat[1]);if((S.lat<=v.lat[0]+.01||S.lat>=v.lat[1]-.01)&&S.bump<=0){S.bump=.7;S.shake=.2;SFX.bump();toast('差點跑出路面');}
       $('gl').style.filter=`blur(${(1.6*Math.min(1,S.hazeT)).toFixed(2)}px) saturate(.75)`;}else $('gl').style.filter='';
     // the 32-year-old self, briefly, a few metres ahead
@@ -1199,7 +1213,7 @@ function update(dt){
     // bodies don't pass through each other: when close, both get nudged sideways (the NPC a bit more)
     if(Math.abs(rel)<.8){const dl=S.lat-n.lat,ov=.62-Math.abs(dl);if(ov>0){const dir=dl!==0?Math.sign(dl):(Math.random()<.5?-1:1);
       S.lat=clamp(S.lat+dir*ov*.4,v.lat[0],v.lat[1]);n.lat=clamp(n.lat-dir*ov*.6,v.lat[0]-.3,v.lat[1]+.3);}}
-    if(!S.done&&n.cool<=0&&Math.abs(rel)<.6&&Math.abs(n.lat-S.lat)<.55){n.cool=2.5;S.bump=1.1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
+    if(!S.done&&n.cool<=0&&Math.abs(rel)<.6&&Math.abs(n.lat-S.lat)<.55){n.cool=2.5;if(n.kind==='fast')S.fastBumps=(S.fastBumps||0)+1;S.bump=1.1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
     const p=at(path,n.d),obj=n.p?n.p.g:n.b.g;obj.position.set(p.x+p.rx*n.lat,0,p.z+p.rz*n.lat);obj.rotation.y=Math.atan2(p.tx,p.tz)+(n.v<0?Math.PI:0);
     if(n.p)animPerson(n.p,dt,n.kind==='walker'?.9:1.35,n.kind==='walker'?.5:1);
     else{n.b.wheels.forEach(w=>w.rotation.x+=dt*Math.abs(n.v)*3);n.b.phase+=dt*5;n.b.rider.legs.forEach((l,i)=>l.rotation.x=-1.1+Math.sin(n.b.phase+(i?Math.PI:0))*.4);}
@@ -1210,7 +1224,7 @@ function update(dt){
       if(arr[i+4]<0){const x=rnd(-40,40),y=rnd(24,32),z=rnd(-40,40);arr[i]=x;arr[i+1]=y;arr[i+2]=z;arr[i+3]=x-.15;arr[i+4]=y-.9;arr[i+5]=z;}}
     a.needsUpdate=true;W.rain.position.set(rp0.x,0,rp0.z);}
   if(W.puddles&&!S.done)for(const q of W.puddles){if(q.hit)continue;const rel=q.d-S.d;if(rel<-1){q.hit=true;continue;}
-    if(Math.abs(rel)<q.r*1.2&&Math.abs(q.lat-S.lat)<q.r){q.hit=true;S.bump=.8;S.shake=.2;SFX.bump();if(Math.random()<.5)say(CHAR.name,['鞋子濕了……','啪——踩進水坑了。','算了，反正已經濕了。'][Math.floor(Math.random()*3)]);}}
+    if(Math.abs(rel)<q.r*1.2&&Math.abs(q.lat-S.lat)<q.r){q.hit=true;S.splash=(S.splash||0)+1;S.bump=.8;S.shake=.2;SFX.bump();if(Math.random()<.5)say(CHAR.name,['鞋子濕了……','啪——踩進水坑了。','算了，反正已經濕了。'][Math.floor(Math.random()*3)]);}}
   if(W.tick)W.tick(dt);
   if(W.boats)for(const b of W.boats){b.ph+=dt;b.g.position.y=.05+Math.sin(b.ph*1.3)*.08;b.g.rotation.z=Math.sin(b.ph)*.05;}
   // runner
@@ -1230,7 +1244,7 @@ function update(dt){
     const I=clamp(.35+(S.speed-VMIN)/(VMAX-VMIN)*.6,.25,1)+Math.min(.06,S.t*.0006)+(S.bump>0?.05:0)+(S.wall&&!S.done?.08:0)+(v.stall&&!S.letgo&&!S.done&&Math.abs(S.lat-S.ghost.lat)<1.2?.3:0)+(v.ultra&&!S.done?S.fat/100*.08:0);
     const tgt=S.done&&S.speed<.5?HR_REST+40:HR_REST+I*(HR_MAX-HR_REST);S.hr=lerp(S.hr,tgt,Math.min(1,dt/5));
     if(!S.done){S.hrSum+=S.hr*dt;S.hrN+=dt;}
-    const z=zoneOf(S.hr);$('bpm').textContent=Math.round(S.hr);
+    const z=zoneOf(S.hr);$('bpm').textContent=Math.round(S.hr);if(!S.done)S.maxHR=Math.max(S.maxHR||0,S.hr);
     if(z!==S.zone){S.zone=z;$('zone').textContent=`ZONE ${z} ${ZN[z-1]}`;$('zone').style.background=ZC[z-1];
       document.querySelectorAll('#zbar i').forEach((e,i)=>{e.style.background=ZC[i];e.classList.toggle('on',i===z-1);});}
   }
@@ -1246,6 +1260,7 @@ function endLine(v){if(v.stall){if(S.letgo)return '比以前慢了。但今天�
 function showDone(){
   if(S.id==='race'){ANS.pb=Math.round(S.t*S.v.sc);saveAns();}
   const gt=S.t*S.v.sc,km=S.v.km,pace=gt/km;
+  ANS.done=ANS.done||{};ANS.done[S.id]=S.noWatch?'沒看錶':`${Math.floor(gt/3600)?Math.floor(gt/3600)+':':''}${String(Math.floor(gt/60)%60).padStart(Math.floor(gt/3600)?2:1,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;saveAns();
   $('d-line').textContent=endLine(S.v);if(S.v.variants)$('d-km').textContent='';$('d-next').textContent=S.v.next;$('d-next').style.whiteSpace='pre-line';
   $('s-walk').hidden=!S.v.walkCheck;$('d-walk').textContent=S.walked?'中間走了一段':'都是用跑的';['s-time','s-pace','s-hr'].forEach(k=>$(k).hidden=S.noWatch);
   $('s-fuel').hidden=!(S.v.glycogen||S.v.motive||S.v.flow||S.v.stall);$('d-fuel-l').textContent=S.v.motive?'看到的小事':S.v.flow?'忘我的時間':S.v.stall?'三十四歲的自己':'補給站';if(S.v.stall)$('d-fuel').textContent=S.letgo?'沒有在比':'追不上';if(S.v.flow)$('d-fuel').textContent=`${Math.round(100*S.deepT/Math.max(1,S.t))}%`;if(S.v.glycogen)$('d-fuel').textContent=`${S.fuel} / ${W.stations.length}`;if(S.v.motive)$('d-fuel').textContent=`${S.seen} / ${W.moments.length}`;
@@ -1253,6 +1268,9 @@ function showDone(){
   $('d-time').textContent=`${Math.floor(gt/60)}:${String(Math.floor(gt%60)).padStart(2,'0')}`;
   $('d-pace').textContent=`${Math.floor(pace/60)}'${String(Math.floor(pace%60)).padStart(2,'0')}"`;
   $('d-hr').textContent=`${Math.round(S.hrSum/Math.max(1,S.hrN))} bpm`;
+  { const st={start:['最高心率',`${Math.round(S.maxHR||0)} bpm`],club:['一起跑過的人',`${S.friends?S.friends.length:0} 個`],habit:['踩到的水坑',`${S.splash||0} 個`],
+      track:['被快跑者撞到',`${S.fastBumps||0} 次`],ultra:['意識模糊',`${S.hazeN||0} 次`]}[S.id];
+    if(st){$('s-fuel').hidden=false;$('d-fuel-l').textContent=st[0];$('d-fuel').textContent=st[1];} }
   $('done').hidden=false;
 }
 
@@ -1309,6 +1327,7 @@ function paintPreview(el,kind,v){
   el.appendChild(c);
 }
 renderChapters();
+if(typeof navigator!=='undefined'&&/iPhone|iPad|iPod/.test(navigator.userAgent||''))$('iosnote').hidden=false;
 { const qn={auto:'自動',low:'省電',high:'高'},qb=$('m-q');const qt=()=>{qb.textContent='畫質：'+qn[QUAL]+(QUAL==='auto'?(isPhone()?'（省電）':'（高）'):'');};qt();
   qb.onclick=()=>{QUAL=QUAL==='auto'?'low':QUAL==='low'?'high':'auto';try{localStorage.setItem('shimin.quality',QUAL);}catch(_){}applyQuality();resize();qt();};
   const rb=$('m-reset');let armed=false,tm=0;rb.onclick=()=>{if(!armed){armed=true;rb.textContent='再按一次確認清除';clearTimeout(tm);tm=setTimeout(()=>{armed=false;rb.textContent='清除進度';},3000);return;}
@@ -1324,5 +1343,6 @@ function frame(now){
 requestAnimationFrame(frame);
 </script>
 
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>
