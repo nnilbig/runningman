@@ -181,7 +181,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
       <span class="hp-k">＋　－</span><span>調整配速。每按一下快或慢 5 秒，按住會連續調。</span>
       <span class="hp-k">L　R</span><span>往左、往右移動。靠過去拿補給，或看看路邊的東西。</span>
       <span class="hp-k">鍵盤</span><span>↑ ↓ 或 W S 調配速，← → 或 A D 左右移動。</span>
-      <span class="hp-k">心率</span><span>衝進 Zone 5 超過兩秒，阿傑會覺得太快，自己慢下來。</span>
+      <span class="hp-k">心率</span><span>能聊天的速度最舒服。衝到 Zone 5「說不出話」超過兩秒，阿傑會自己慢下來。每跑完一公里，會跳出那一公里的配速。</span>
       <span class="hp-k">時間</span><span>距離和時間照真實配速計算，但每一章只要一分鐘左右。十個章節都可以直接跑。</span>
     </div>
     <div class="foot"><label><input type="checkbox" id="help-skip">下次不要自動跳出</label><button class="btn" id="help-ok">知道了</button></div></div>
@@ -194,7 +194,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 <div class="z5fx" id="z5fx"></div>
 <div class="hud" id="hud" hidden>
   <div class="top" id="hudtop">
-    <div class="spd"><small>配速</small><div class="row"><b id="pace">6'00"</b><span class="unit">/km</span></div><div class="sub" id="dist">0.00 / 4.0 km</div><div class="sub" id="clock">00:00</div><div class="sub" id="gap" hidden></div><div class="hrbox"><span class="bpm"><i>♥</i><b id="bpm" style="font-size:24px">120</b><span>bpm</span></span><span class="zone" id="zone">ZONE 2 燃脂</span></div><div class="zbar" id="zbar"><i></i><i></i><i></i><i></i><i></i></div><div class="gly" id="glybox" hidden><small id="glylab">肝醣</small><div><i id="glyfill"></i></div></div></div>
+    <div class="spd"><small>配速</small><div class="row"><b id="pace">6'00"</b><span class="unit">/km</span></div><div class="sub" id="dist">0.00 / 4.0 km</div><div class="sub" id="clock">00:00</div><div class="sub" id="gap" hidden></div><div class="hrbox"><span class="bpm"><i>♥</i><b id="bpm" style="font-size:24px">120</b><span>bpm</span></span><span class="zone" id="zone">ZONE 2 可以聊天</span></div><div class="zbar" id="zbar"><i></i><i></i><i></i><i></i><i></i></div><div class="gly" id="glybox" hidden><small id="glylab">肝醣</small><div><i id="glyfill"></i></div></div></div>
     <div class="pills"><button class="pill" id="b-pause">暫停</button><button class="pill" id="b-menu">選單</button><button class="pill" id="b-retry">重來</button><button class="pill" id="b-mus">音樂 開</button><button class="pill" id="b-snd">音效 開</button></div>
   </div>
   <div class="say off" id="say" aria-live="polite"><span class="who" id="who">L</span><p id="line"></p></div>
@@ -1081,7 +1081,7 @@ document.querySelectorAll('.cb').forEach(b=>{const k=b.dataset.k;
 /* ================= run state ================= */
 let S=null,runner=null,camPos=new THREE.Vector3(),camLook=new THREE.Vector3();
 const HR_REST=62;let HR_MAX=Math.round(208-.7*32); // re-set per chapter from v.age
-const ZC=['#a9b6d6','#7cc0e6','#7fcf95','#f3bd63','#ef7a6e'],ZN=['恢復','燃脂','有氧','乳酸閾值','最大攝氧'];
+const ZC=['#a9b6d6','#7cc0e6','#7fcf95','#f3bd63','#ef7a6e'],ZN=['很輕鬆','可以聊天','有點喘','很喘','說不出話'];
 function zoneOf(bpm){const p=bpm/HR_MAX;return p<.6?1:p<.7?2:p<.8?3:p<.9?4:5;}
 const JOG=1000/360,VMIN=2.3,VMAX=3.6; // start at 6:00 /km (10 km/h); range ≈ 7'15"–4'38" /km
 let PICK={};
@@ -1333,6 +1333,9 @@ function update(dt){
   }
   { const pc=S.speed>.3?1000/S.speed:0;$('pace').textContent=pc?`${Math.floor(pc/60)}'${String(Math.floor(pc%60)).padStart(2,'0')}"`:'—';}
   $('dist').textContent=`${(Math.min(prog,S.goal)*v.sc/1000).toFixed(2)} / ${v.km.toFixed(1)} km`;
+  // the running app's voice: a split every km (every 5 km on long runs)
+  if(!S.done&&!S.noWatch){const step=v.km>12?5:1,k=Math.floor(prog*v.sc/1000/step)*step;if(S.splitK===undefined){S.splitK=0;S.splitT=0;}
+    if(k>S.splitK&&k<v.km){const lap=(S.t-S.splitT)*v.sc/(k-S.splitK),m=Math.floor(lap/60),sec=Math.floor(lap%60);S.splitK=k;S.splitT=S.t;toast(`第 ${k} 公里・配速 ${m}'${String(sec).padStart(2,'0')}"`);tone(1320,.12,'sine',.035);tone(1760,.16,'sine',.03,.13);}}
   const gt=S.t*v.sc;$('clock').textContent=`${String(Math.floor(gt/60)).padStart(2,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;
   S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0){const q=S.queue.shift();say(q.who,q.text,q.spoken);}
   if(sayT>0){sayT-=dt;if(sayT<=0)$('say').classList.add('off');}
