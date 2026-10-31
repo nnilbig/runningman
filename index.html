@@ -386,10 +386,10 @@ const NAME_M='豪明宏偉翰宇廷哲瑋凱華銘誠霖祥維'.split(''),NAME_F
 function RN(g){const pool=g==='f'?NAME_F:NAME_M;for(let k=0;k<80;k++){const c=pool[Math.floor(Math.random()*pool.length)],n=(Math.random()<.5?'小':'阿')+c;if(!USED.has(c)&&!USED.has(n)){USED.add(c);USED.add(n);return n;}}return '小'+pool[0];}
 const RIVER_SEED=1933; // chapters 1 and 8 run the very same riverbank
 const VENUES={
-  start:{ch:'第一章',n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:48,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
+  start:{ch:'第一章',n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:48,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,bikes:true,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],fog:0xdfdcdc,sun:[-.7,.22,.5],sunCol:0xffe6c8,
     ground:0x8cb46c,grass:0x84aa66,water:0x5f9ad0,leaves:[0x7fae62,0x8cba6c,0x9cc47a],crown:0xf0b6c4,reeds:[0x8aa25e,0x9aa866,0x7d9452],
-    desc:'三十二歲那年春天的清晨，第一次在河堤上跑三公里。右手邊是河和濕地，路邊有幾棵櫻花，遠處有一座紅色的橋。就這樣而已。',
+    desc:'三十二歲那年春天的清晨，第一次在河堤上跑三公里。右手邊是河和濕地，路邊有幾棵櫻花，遠處有一座紅色的橋。河濱的自行車騎得比人快很多，聽到鈴聲，記得閃開。',
     intro:'三十二歲，一個普通的星期六早上。阿傑走到家附近的河堤，手腕上戴著剛買的運動錶，錶帶還有新塑膠的味道。蹲下來綁鞋帶的時候，他問了自己一個問題。',
     ask:true,
     whyLines:{[WHY[0]]:[[0,'三十二歲。想換一種生活。總之，先從換一雙鞋開始。'],[2,'生活要怎麼換，其實還不知道。不過至少今天早上，換了一條路。']],
@@ -945,6 +945,10 @@ function spawnNPCs(id){
     for(let k=0;k<(few?4:9);k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,640),rnd(-1.5,1.5),dir*rnd(.9,1.2),id==='rain'?{umbrella:true}:{}));}
     for(let k=0;k<(few?2:4);k++)N.push(addPerson('jog',rnd(60,640),rnd(-1.3,1.3),-rnd(2.2,2.6)));
     for(let k=0;k<(few?1:2);k++){const dir=Math.random()<.5?1:-1;N.push(addBike(rnd(60,640),dir>0?-.8:.8,dir*rnd(3.6,4.4)));}
+  }else if(id==='bikes'){ // chapter 1: riverside cyclists ride anywhere on the path, much faster than runners, and not all of them swerve
+    for(let k=0;k<9;k++){const dir=Math.random()<.5?1:-1,b=addBike(rnd(25,560),rnd(-2.2,2.2),dir*rnd(5,6.5));b.free=true;b.polite=Math.random()<.3;N.push(b);}
+    for(let k=0;k<5;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,560),rnd(-2.4,-.6),dir*rnd(.9,1.2)));}
+    for(let k=0;k<3;k++)N.push(addPerson('jog',rnd(80,560),rnd(-2,-.4),-rnd(2.2,2.6)));
   }else{
     for(let k=0;k<6;k++){const dir=Math.random()<.5?1:-1;N.push(addBike(rnd(30,560),dir>0?1.1:2.1,dir*rnd(4,5.2)));}
     for(let k=0;k<7;k++){const dir=Math.random()<.5?1:-1;N.push(addPerson('walker',rnd(30,560),rnd(-2.4,-.6),dir*rnd(.9,1.2)));}
@@ -1081,7 +1085,7 @@ function run(id){
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'small':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.bikes?'bikes':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'small':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('gap').hidden=!v.stall;
   if(v.ultra||v.flow||v.motive||v.glycogen)$('glylab').textContent=v.ultra?'疲勞':$('glylab').textContent;$('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra);
   if(v.club){const slots=[[3,-1.2],[3,1.2],[6,0],[-3,-1.2],[-3,1.2],[-6,0]],hairs=[0x1e1a18,0x4a3424,0x2a2420,0x6a4a34];
@@ -1115,7 +1119,7 @@ $('d-nextbtn').onclick=()=>{const i=CHAPTERS.indexOf(S.id);if(i<CHAPTERS.length-
 
 // side task per chapter: state() 1 done / -1 failed / 0 going; ok() decides at the finish
 const TASKS={
-  start:{s:'心率別衝 Zone 5',t:'慢慢跑，心率不要衝進 Zone 5',p:()=>S.z5ever?'衝過了':'目前很穩',state:()=>S.z5ever?-1:0,ok:()=>!S.z5ever},
+  start:{s:'閃過自行車',t:'閃過河濱的自行車（被撞 ≤ 2 次）',p:()=>`被撞 ${S.bikeBumps||0} / 2`,state:()=>(S.bikeBumps||0)>2?-1:0,ok:()=>(S.bikeBumps||0)<=2},
   club:{s:'閃過路人',t:'閃過迎面而來的人（碰撞 ≤ 1 次）',p:()=>`碰撞 ${S.bumpN||0} / 1`,state:()=>(S.bumpN||0)>1?-1:0,ok:()=>(S.bumpN||0)<=1},
   habit:{s:'閃過水坑',t:'閃過水坑（踩到 ≤ 2 個）',p:()=>`踩到 ${S.splash||0} / 2`,state:()=>(S.splash||0)>2?-1:0,ok:()=>(S.splash||0)<=2},
   track:{s:'閃過快跑者',t:'閃過後方來的快跑者（被撞 ≤ 1 次）',p:()=>`被撞 ${S.fastBumps||0} / 1`,state:()=>(S.fastBumps||0)>1?-1:0,ok:()=>(S.fastBumps||0)<=1},
@@ -1251,16 +1255,17 @@ function update(dt){
     if(n.prev!==undefined&&Math.sign(rel)!==Math.sign(n.prev)&&Math.abs(rel)<3&&!n.greeted&&n.kind==='jog'&&GREET[S.id].length&&!S.done&&S.greetCD<=0&&S.greetN<2&&sayT<=.6&&Math.abs(n.lat-S.lat)<(S.id==='track'?8:2.4)&&Math.random()<.3){
       n.greeted=true;S.greetCD=16;S.greetN++;const g=GREET[S.id][Math.floor(Math.random()*GREET[S.id].length)];
       say('跑者',g[0]);S.queue.push({at:S.t+2.3,who:CHAR.name,text:g[1],spoken:true});}
+    if(n.free&&!S.done){if(rel>2||rel<-12)n.warned=false;else if(!n.warned&&n.v>0&&rel<-2&&rel>-10&&Math.abs(n.lat-S.lat)<1.2){n.warned=true;toast('後面：「叮叮——」');SFX.talk();}}
     if(n.kind==='fast'&&!S.done){if(rel>2)n.warned=false;else if(!n.warned&&rel<-1.5&&rel>-8){n.warned=true;if(Math.abs(n.lat-S.lat)<1.1){toast('後面：「借過——」');SFX.step();}}}
     n.prev=rel;
     if(!path.closed&&(rel>140||rel<-60)){ // recycle around the runner on open paths
-      const ahead=n.v<0||rel<-60;n.d=S.d+(ahead?rnd(90,140):-rnd(30,50));if(n.d<2||n.d>path.L-2)n.d=clamp(S.d+rnd(60,120),2,path.L-2);rel=relDist(path,S.d,n.d);n.lat=n.kind==='bike'?(n.v>0?1.1:2.1):n.lat;}
+      const ahead=n.v<0||rel<-60;n.d=S.d+(ahead?rnd(90,140):-rnd(30,50));if(n.d<2||n.d>path.L-2)n.d=clamp(S.d+rnd(60,120),2,path.L-2);rel=relDist(path,S.d,n.d);n.lat=n.kind==='bike'?(n.free?rnd(-2.2,2.2):n.v>0?1.1:2.1):n.lat;}
     const closing=(n.v-S.speed)*Math.sign(rel)<0;
     if((n.polite||v.flow)&&closing&&Math.abs(rel)<(v.flow?10:7)&&Math.abs(n.lat-S.lat)<(v.flow?1.1:.9)){const dir=n.lat>=S.lat?1:-1;n.lat=clamp(n.lat+dir*(n.kind==='bike'?1.4:.6)*dt,v.lat[0]-.2,v.lat[1]+.2);}
     // bodies don't pass through each other: when close, both get nudged sideways (the NPC a bit more)
-    if(Math.abs(rel)<.8){const dl=S.lat-n.lat,ov=.62-Math.abs(dl);if(ov>0){const dir=dl!==0?Math.sign(dl):(Math.random()<.5?-1:1);
+    if(Math.abs(rel)<.8&&!n.free){const dl=S.lat-n.lat,ov=.62-Math.abs(dl);if(ov>0){const dir=dl!==0?Math.sign(dl):(Math.random()<.5?-1:1);
       const sh=v.flow?.08:.4;S.lat=clamp(S.lat+dir*ov*sh,v.lat[0],v.lat[1]);n.lat=clamp(n.lat-dir*ov*(1-sh),v.lat[0]-.3,v.lat[1]+.3);}}
-    if(!S.done&&!v.flow&&n.cool<=0&&Math.abs(rel)<.6&&Math.abs(n.lat-S.lat)<.55){n.cool=2.5;if(n.kind==='fast')S.fastBumps=(S.fastBumps||0)+1;S.bump=1.1;S.bumpN=(S.bumpN||0)+1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
+    if(!S.done&&!v.flow&&n.cool<=0&&Math.abs(rel)<(n.free?1:.6)&&Math.abs(n.lat-S.lat)<(n.free?.6:.55)){n.cool=2.5;if(n.kind==='fast')S.fastBumps=(S.fastBumps||0)+1;if(n.kind==='bike')S.bikeBumps=(S.bikeBumps||0)+1;S.bump=1.1;S.bumpN=(S.bumpN||0)+1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
     const p=at(path,n.d),obj=n.p?n.p.g:n.b.g;obj.position.set(p.x+p.rx*n.lat,0,p.z+p.rz*n.lat);obj.rotation.y=Math.atan2(p.tx,p.tz)+(n.v<0?Math.PI:0);
     if(n.p)animPerson(n.p,dt,n.kind==='walker'?.9:1.35,n.kind==='walker'?.5:1);
     else{n.b.wheels.forEach(w=>w.rotation.x+=dt*Math.abs(n.v)*3);n.b.phase+=dt*5;n.b.rider.legs.forEach((l,i)=>l.rotation.x=-1.1+Math.sin(n.b.phase+(i?Math.PI:0))*.4);}
