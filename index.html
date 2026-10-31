@@ -41,6 +41,16 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .pill{background:var(--pill);border:1.5px solid var(--pill-line);border-radius:999px;padding:9px 18px;font-size:16px;font-weight:800;backdrop-filter:blur(6px)}
 .say{position:absolute;left:50%;top:max(118px,calc(env(safe-area-inset-top,0px) + 108px));transform:translateX(-50%);width:min(560px,calc(100% - 32px));background:#fbf7f0;color:var(--ink);border-radius:22px;padding:14px 20px 18px;box-shadow:0 10px 30px rgba(30,15,40,.35);transition:opacity .35s,transform .35s}
 .say.off{opacity:0;transform:translate(-50%,-8px)}
+.say.self{top:auto;width:auto;max-width:min(240px,calc(100% - 48px));padding:6px 12px 7px;border-radius:16px;background:rgba(251,247,240,.86);box-shadow:0 6px 18px rgba(30,15,40,.25);transform:translate(-50%,0)}
+.say.self.off{transform:translate(-50%,6px)}
+.say.self .who{display:none}
+.say.self p{margin:0;font-size:14px;font-weight:700;line-height:1.5}
+.say.self::after{content:"";position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+/* thought: a softer cloud with a trail of small bubbles instead of a pointer */
+.say.self.think{background:rgba(236,240,248,.8);border:1.5px dashed rgba(120,110,150,.55);border-radius:22px;box-shadow:0 4px 14px rgba(30,15,40,.18)}
+.say.self.think p{font-weight:500;color:#4a4458}
+.say.self.think::after{width:10px;height:10px;bottom:-14px;left:calc(50% - 6px);border-radius:50%;transform:none;background:rgba(236,240,248,.8);border:1.5px dashed rgba(120,110,150,.55)}
+.say.self.think::before{content:"";position:absolute;width:6px;height:6px;bottom:-24px;left:calc(50% - 1px);border-radius:50%;background:rgba(236,240,248,.8);border:1.5px dashed rgba(120,110,150,.55)}
 .who{display:inline-block;background:var(--tag);color:var(--cream);border-radius:8px;padding:3px 10px;font-size:15px;font-weight:800}
 .say p{margin:10px 2px 0;font-size:clamp(18px,4.6vw,24px);font-weight:800;line-height:1.45;text-wrap:balance}
 .ribbon{position:absolute;left:0;top:44%;background:var(--rose);padding:12px max(22px,env(safe-area-inset-left,0px)) 12px max(22px,env(safe-area-inset-left,0px));padding-right:28px;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s}
@@ -336,7 +346,11 @@ const VENUES={
     desc:'三十二歲的春天清晨，第一次在河堤上跑三公里。右手邊是河面和濕地，路邊開了幾棵櫻花，遠處有一座紅色的拱橋。',
     intro:'三十二歲的春天，一個普通的星期六清晨。阿傑走到家附近的河堤，手腕上是剛買的運動錶。綁鞋帶的時候，他問了自己一個問題。',
     ask:true,
-    script:[[0,'阿傑','三十二歲，決定換一種生活。好像也不需要什麼大道理。'],[0,'阿傑','河堤上的風有點涼。櫻花開了幾棵。'],[0,'阿傑','開始一件事，需要理由嗎？也許跑著跑著，理由自己會出來。'],[0,'阿傑','腿有點重，呼吸有點亂。不過，還跑得動。'],[0,'阿傑','遠遠看得到紅色的橋。下次，也許跑到那裡。'],[0,'阿傑','快到了。']],
+    whyLines:{[WHY[0]]:[[0,'三十二歲。想換一種生活，就先從換一雙鞋開始。'],[2,'生活要怎麼換，還不知道。至少今天早上，換了一條路。']],
+      [WHY[1]]:[[0,'三十二歲。健康檢查報告上的紅字，比想像中多。'],[2,'身體很誠實。才跑一下，就開始喘了。']],
+      [WHY[2]]:[[0,'三十二歲。說不上來為什麼，就是想跑跑看。'],[2,'開始一件事，需要理由嗎？也許跑著跑著，理由自己會出來。']]},
+    script:[[0,'阿傑','三十二歲。就是想跑跑看。'],[0,'阿傑','河堤上的風有點涼。櫻花開了幾棵。'],[0,'阿傑','開始一件事，需要理由嗎？也許跑著跑著，理由自己會出來。'],[0,'阿傑','腿有點重，呼吸有點亂。不過，還跑得動。'],[0,'阿傑','遠遠看得到紅色的橋。下次，也許跑到那裡。'],[0,'阿傑','快到了。']],
+    endBy:{[WHY[0]]:'三公里。生活好像沒有變，但今天的早上，不太一樣了。',[WHY[1]]:'三公里。喘得很厲害。但跑完，有一點舒服。',[WHY[2]]:'三公里。理由還說不清楚，但腳好像知道。'},
     end:'三公里。理由還說不清楚，但腳好像知道。',
     next:'第一次跑完三公里的那天晚上，睡得特別好。隔天腿很痠，阿傑還是想，再跑一次看看。'},
   habit:{ch:'第三章',n:'不想跑的日子',sub:'習慣',km:5,build:'boulevard',rain:true,secs:64,age:34,width:4,lat:[-1.7,1.7],startLat:.4,
@@ -1025,8 +1039,13 @@ $('b-snd').onclick=()=>{SND=!SND;$('b-snd').textContent='音效 '+(SND?'開':'�
 
 /* ================= dialogue & ribbon ================= */
 let sayT=0;
-function say(who,text){$('who').textContent=who;$('line').textContent=text;$('say').classList.remove('off');sayT=4.2;SFX.talk();}
+function say(who,text,spoken){const self=who===CHAR.name;$('say').classList.toggle('self',self);$('say').classList.toggle('think',self&&!spoken); // the hero's own lines: thoughts by default, speech when said out loud
+  $('who').textContent=who;$('line').textContent=text;$('say').classList.remove('off');sayT=4.2;SFX.talk();if(self)placeBubble(true);else{$('say').style.left='';$('say').style.bottom='';}}
 let toastT=0;function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('off');toastT=1.8;}
+const _bv=new THREE.Vector3();
+function placeBubble(force){ // speech follows the runner's head; a thought stays where it appeared
+  if(!runner||!$('say').classList.contains('self'))return;if(!force&&$('say').classList.contains('think'))return;_bv.copy(runner.g.position);_bv.y+=2.1;_bv.project(camera);
+  const x=(_bv.x*.5+.5)*innerWidth,y=(-_bv.y*.5+.5)*innerHeight,e=$('say');e.style.left=clamp(x,170,innerWidth-170)+'px';e.style.bottom=clamp(innerHeight-y+(e.classList.contains('think')?24:10),140,innerHeight-160)+'px';}
 function ribbon(t,s){$('rb-t').textContent=t;$('rb-s').textContent=s;const r=$('ribbon');r.classList.remove('off');setTimeout(()=>r.classList.add('off'),3200);}
 
 /* ================= input ================= */
@@ -1065,7 +1084,8 @@ function showRecap(id,v){ // "previously…" over the live scene; the run starts
     ex.innerHTML=`<div class="ask"><b>你為什麼跑？</b>${then}${opts.map((o,i)=>`<button class="opt${o===WHY_LATE?' new':''}" data-i="${i}">${o}</button>`).join('')}</div>`;
     ex.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const a=opts[+b.dataset.i];ANS[id]=a;saveAns();PICK.why=S.why=a;if(v.watch)watch();else go();});}
 }
-function begin(){if(!S||!S.pre)return;S.pre=false;$('recap').hidden=true;$('hud').classList.remove('pre');}
+function begin(){if(!S||!S.pre)return;S.pre=false;
+  if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});$('recap').hidden=true;$('hud').classList.remove('pre');}
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;
 function run(id){
   ac();disposeScene();$('recap').hidden=true;
@@ -1086,7 +1106,7 @@ function run(id){
     S.ghost={p:gp,d:W.startD,v:gv,lat:-1.9,op:.42,pb};}
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra);$('glylab').textContent=v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';$('wallfx').style.opacity=0;
   $('hud').classList.toggle('nowatch',S.noWatch);
-  S.script=v.script;
+  S.script=v.script.map(l=>l.slice());
   const p=at(W.path,S.d);camPos.set(p.x-p.tx*7,4,p.z-p.tz*7);camLook.set(p.x,1.2,p.z);
   $('menu').hidden=true;$('done').hidden=true;$('hud').hidden=false;$('say').classList.add('off');
   $('dist').textContent=`0.00 / ${v.km.toFixed(1)} km`;
@@ -1221,14 +1241,14 @@ function update(dt){
     let rel=relDist(path,S.d,n.d);
     if(n.prev!==undefined&&Math.sign(rel)!==Math.sign(n.prev)&&Math.abs(rel)<3&&!n.greeted&&n.kind==='jog'&&GREET[S.id].length&&!S.done&&S.greetCD<=0&&S.greetN<2&&sayT<=.6&&Math.abs(n.lat-S.lat)<(S.id==='track'?8:2.4)&&Math.random()<.3){
       n.greeted=true;S.greetCD=16;S.greetN++;const g=GREET[S.id][Math.floor(Math.random()*GREET[S.id].length)];
-      say('跑者',g[0]);S.queue.push({at:S.t+2.3,who:CHAR.name,text:g[1]});}
+      say('跑者',g[0]);S.queue.push({at:S.t+2.3,who:CHAR.name,text:g[1],spoken:true});}
     if(n.kind==='fast'&&!S.done){if(rel>2)n.warned=false;else if(!n.warned&&rel<-1.5&&rel>-8){n.warned=true;if(Math.abs(n.lat-S.lat)<1.1){toast('後面：「借過——」');SFX.step();}}}
     n.prev=rel;
     if(!path.closed&&(rel>140||rel<-60)){ // recycle around the runner on open paths
       const ahead=n.v<0||rel<-60;n.d=S.d+(ahead?rnd(90,140):-rnd(30,50));if(n.d<2||n.d>path.L-2)n.d=clamp(S.d+rnd(60,120),2,path.L-2);rel=relDist(path,S.d,n.d);n.lat=n.kind==='bike'?(n.v>0?1.1:2.1):n.lat;}
     const closing=(n.v-S.speed)*Math.sign(rel)<0;
     if(n.polite&&closing&&Math.abs(rel)<7&&Math.abs(n.lat-S.lat)<.9){const dir=n.lat>=S.lat?1:-1;n.lat=clamp(n.lat+dir*(n.kind==='bike'?1.4:.6)*dt,v.lat[0]-.2,v.lat[1]+.2);}
-    if(!S.done&&n.cool<=0&&Math.abs(rel)<.6&&Math.abs(n.lat-S.lat)<.55){n.cool=2.5;S.bump=1.1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)]);}
+    if(!S.done&&n.cool<=0&&Math.abs(rel)<.6&&Math.abs(n.lat-S.lat)<.55){n.cool=2.5;S.bump=1.1;S.shake=.35;SFX.bump();if(Math.random()<.6)say(CHAR.name,REACT[Math.floor(Math.random()*REACT.length)],true);}
     const p=at(path,n.d),obj=n.p?n.p.g:n.b.g;obj.position.set(p.x+p.rx*n.lat,0,p.z+p.rz*n.lat);obj.rotation.y=Math.atan2(p.tx,p.tz)+(n.v<0?Math.PI:0);
     if(n.p)animPerson(n.p,dt,n.kind==='walker'?.9:1.35,n.kind==='walker'?.5:1);
     else{n.b.wheels.forEach(w=>w.rotation.x+=dt*Math.abs(n.v)*3);n.b.phase+=dt*5;n.b.rider.legs.forEach((l,i)=>l.rotation.x=-1.1+Math.sin(n.b.phase+(i?Math.PI:0))*.4);}
@@ -1252,7 +1272,7 @@ function update(dt){
   camPos.lerp(tgt,Math.min(1,dt*3));camLook.lerp(look,Math.min(1,dt*4));
   S.shake=Math.max(0,S.shake-dt);
   camera.position.copy(camPos);if(S.shake>0){camera.position.x+=(Math.random()-.5)*.25;camera.position.y+=(Math.random()-.5)*.2;}
-  camera.lookAt(camLook);
+  camera.lookAt(camLook);placeBubble();
   W.sun.position.set(rp.x+S.v.sun[0]*80,S.v.sun[1]*160+40,rp.z+S.v.sun[2]*80);W.sun.target.position.set(rp.x,0,rp.z);
   // HUD
   { // heart rate follows effort with a lag, drifts up slowly, spikes briefly after a bump
@@ -1266,7 +1286,7 @@ function update(dt){
   { const pc=S.speed>.3?1000/S.speed:0;$('pace').textContent=pc?`${Math.floor(pc/60)}'${String(Math.floor(pc%60)).padStart(2,'0')}"`:'—';}
   $('dist').textContent=`${(Math.min(prog,S.goal)*v.sc/1000).toFixed(2)} / ${v.km.toFixed(1)} km`;
   const gt=S.t*v.sc;$('clock').textContent=`${String(Math.floor(gt/60)).padStart(2,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;
-  S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0){const q=S.queue.shift();say(q.who,q.text);}
+  S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0){const q=S.queue.shift();say(q.who,q.text,q.spoken);}
   if(sayT>0){sayT-=dt;if(sayT<=0)$('say').classList.add('off');}
   if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.add('off');}
 }
