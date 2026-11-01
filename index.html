@@ -1177,7 +1177,7 @@ function run(id){
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:45,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
@@ -1304,7 +1304,7 @@ function update(dt){
     if(!S.done&&S.buddy){const b=S.buddy,rel=b.d-S.d,bv=rel>2.5?JOG*.82:rel<-2?JOG*1.02:JOG*.95;b.d+=bv*dt;b.lat=lerp(b.lat,S.lat>0?S.lat-1.1:S.lat+1.1,Math.min(1,dt*1.5));b.lat=clamp(b.lat,v.lat[0],v.lat[1]);
       S.near=Math.abs(rel)<4;S.mot+=(S.near?1.1:-1.6)*dt;S.mot=clamp(S.mot,0,100);if(!S.near&&!S.farWarn&&rel<-6){S.farWarn=true;toast('跑太快了，朋友被甩在後面');}if(S.near)S.farWarn=false;}
     else if(!S.done){const r=S.target/JOG;
-      if(r>1.04)S.mot-=5*dt;else if(r<.9){if(S.mot<50)S.mot=Math.min(50,S.mot+2*dt);}else S.mot-=.6*dt;
+      if(r>1.04)S.mot-=2.5*dt;else if(r<.9){if(S.mot<55)S.mot=Math.min(55,S.mot+2.5*dt);}else S.mot-=.28*dt;
       S.mot=clamp(S.mot,0,100);}
     if(S.buddy){const b=S.buddy,pp=at(path,b.d);b.p.g.position.set(pp.x+pp.rx*b.lat,0,pp.z+pp.rz*b.lat);b.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(b.p,dt,.9+JOG*.22,S.done?.2:1);}
     for(const m of W.moments){if(m.done)continue;const rel=m.d-S.d;
