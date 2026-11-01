@@ -1208,6 +1208,8 @@ function moodGrade(v,dt){const m=moodTarget(v),k=Math.min(1,dt*1.2);if(!S.mood)S
   g.sat=lerp(g.sat,m.sat,k);g.con=lerp(g.con,m.con,k);g.bri=lerp(g.bri,m.bri,k);for(let i=0;i<4;i++)g.t[i]=lerp(g.t[i],m.t[i],k);
   const f=`saturate(${g.sat.toFixed(2)}) contrast(${g.con.toFixed(2)}) brightness(${g.bri.toFixed(2)}) ${S.fxX||''}`;if(f!==S.fxLast){$('gl').style.filter=f;S.fxLast=f;}
   const t=`rgba(${g.t[0]|0},${g.t[1]|0},${g.t[2]|0},${g.t[3].toFixed(3)})`;if(t!==S.tLast){$('tint').style.background=t;S.tLast=t;}}
+// running time as a watch shows it: 1:05:09 past an hour, 42:15 below
+function fmtT(sec,pad){sec=Math.max(0,Math.floor(sec));const h=Math.floor(sec/3600),m=Math.floor(sec/60)%60,s2=String(sec%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${s2}`:`${pad?String(m).padStart(2,'0'):m}:${s2}`;}
 function toMenu(){$('tint').style.background='transparent';$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function shortDesc(t){const ps=t.split('。').filter(x=>x);let o='';for(const p of ps){o+=p+'。';if(o.length>=18)break;}return o;}
 function renderCont(){const done=ANS.done||{},nx=CHAPTERS.find(id=>!done[id]);const id=nx||'start',v=VENUES[id];
@@ -1416,7 +1418,7 @@ function update(dt){
   // the running app's voice: a split every km (every 5 km on long runs)
   if(!S.done&&!S.noWatch){const step=v.km>12?5:1,k=Math.floor(prog*v.sc/1000/step)*step;if(S.splitK===undefined){S.splitK=0;S.splitT=0;}
     if(k>S.splitK&&k<v.km){const lap=(S.t-S.splitT)*v.sc/(k-S.splitK),m=Math.floor(lap/60),sec=Math.floor(lap%60);S.splitK=k;S.splitT=S.t;toast(`第 ${k} 公里・配速 ${m}'${String(sec).padStart(2,'0')}"`);tone(1320,.12,'sine',.035);tone(1760,.16,'sine',.03,.13);}}
-  const gt=S.t*v.sc;$('clock').textContent=`${String(Math.floor(gt/60)).padStart(2,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;
+  const gt=S.t*v.sc;$('clock').textContent=fmtT(gt,true);
   S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0){const q=S.queue.shift();say(q.who,q.text,q.spoken);}
   if(sayT>0){sayT-=dt;if(sayT<=0)$('say').classList.add('off');}
   if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.add('off');}
@@ -1431,11 +1433,11 @@ function showDone(){
   $('s-walk').hidden=!S.v.walkCheck;$('d-walk').textContent=S.walked?'中間走了一段':'都是用跑的';['s-time','s-pace','s-hr'].forEach(k=>$(k).hidden=S.noWatch);
   $('s-fuel').hidden=!(S.v.glycogen||S.v.motive||S.v.flow||S.v.stall);$('d-fuel-l').textContent=S.v.motive?'看到的小事':S.v.flow?'忘我的時間':S.v.stall?'三十四歲的自己':'補給站';if(S.v.stall)$('d-fuel').textContent=S.letgo?'沒有在比':'追不上';if(S.v.flow)$('d-fuel').textContent=`${Math.round(100*S.deepT/Math.max(1,S.t))}%`;if(S.v.glycogen)$('d-fuel').textContent=`${S.fuel} / ${W.stations.length}`;if(S.v.motive)$('d-fuel').textContent=`${S.seen} / ${W.moments.length}`;
   {const last=CHAPTERS.indexOf(S.id)===CHAPTERS.length-1;$('d-nextbtn').hidden=false;$('d-nextbtn').textContent=last?'尾聲':'下一章';}$('d-km').textContent=`${km.toFixed(1)} km`;
-  $('d-time').textContent=`${Math.floor(gt/60)}:${String(Math.floor(gt%60)).padStart(2,'0')}`;
+  $('d-time').textContent=fmtT(gt);
   $('d-pace').textContent=`${Math.floor(pace/60)}'${String(Math.floor(pace%60)).padStart(2,'0')}"`;
   $('d-hr').textContent=`${Math.round(S.hrSum/Math.max(1,S.hrN))} bpm`;
   { const st={start:['最高心率',`${Math.round(S.maxHR||0)} bpm`],club:['一起跑過的人',`${S.friends?S.friends.length:0} 個`],habit:['踩到的水坑',`${S.splash||0} 個`],
-      track:['前半 ／ 後半',(()=>{const f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,'0')}`,h1=S.h1||S.t/2;return `${f(h1*S.v.sc)} ／ ${f((S.t-h1)*S.v.sc)}`;})()],ultra:['飲水機',`${S.fuel||0} / ${W.stations?W.stations.length:0}`]}[S.id];
+      track:['前半 ／ 後半',(()=>{const f=x=>fmtT(x),h1=S.h1||S.t/2;return `${f(h1*S.v.sc)} ／ ${f((S.t-h1)*S.v.sc)}`;})()],ultra:['飲水機',`${S.fuel||0} / ${W.stations?W.stations.length:0}`]}[S.id];
     if(st){$('s-fuel').hidden=false;$('d-fuel-l').textContent=st[0];$('d-fuel').textContent=st[1];} }
   $('done').hidden=false;
 }
