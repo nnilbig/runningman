@@ -868,8 +868,8 @@ function buildRace(v){W_PHOTO=null; // closed city boulevard on race day: cones,
     placeOnPath(g,path,d,side*(hw+.65),side>0?0:Math.PI);scene.add(g);
     for(let i=0;i<2;i++){const vol=makePerson({shirt:0xf0c060,shorts:0x30303a,legs:0x30303a,hair:0x1e1a18,skin:0xe2b48f});const p=at(path,d-1+i*2),lat=side*(hw+1.35);vol.g.position.set(p.x+p.rx*lat,0,p.z+p.rz*lat);vol.g.rotation.y=Math.atan2(-side*p.rx,-side*p.rz);vol.arms[0].rotation.x=-1.4;scene.add(vol.g);}
     stations.push({d,k,side,taken:false,gone:false});}
-  // a race photographer crouched on the left, about two-thirds of the way
-  { const d=20+Lr*.66,g=new THREE.Group(),ph=makePerson({shirt:0xf3bd63,shorts:0x3a3f47,legs:0x3a3f47,hair:0x1e1a18,skin:0xe2b48f});
+  // a race photographer crouched on the left, just before the finish
+  { const d=20+Lr*.96,g=new THREE.Group(),ph=makePerson({shirt:0xf3bd63,shorts:0x3a3f47,legs:0x3a3f47,hair:0x1e1a18,skin:0xe2b48f});
     ph.g.scale.set(1,.72,1);ph.arms.forEach(a=>a.rotation.x=-1.5);g.add(ph.g);const cam=box(.26,.18,.14,0x14181e);cam.position.set(0,1.05,.32);g.add(cam);
     const lens=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.16,8),mat(0x3a3f47));lens.rotation.x=Math.PI/2;lens.position.set(0,1.05,.46);g.add(lens);
     const vest=textPlane('PHOTO',.5,.14,'#f3bd63','#2b2f36');vest.position.set(0,1.05,-.13);g.add(vest);
