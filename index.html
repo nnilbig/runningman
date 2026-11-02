@@ -474,7 +474,7 @@ const VENUES={
     variants:{
       red:{n:'田徑場',track:0x9c4034,trackOut:0x82362d,night:true,first:'三十三歲。下班後，第一次走進城市裡的田徑場。燈已經亮了。',
         sky:['#1c2448','#3d3f6e','#7a5a7a'],fog:0x3a3a5c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8},
-      blue:{n:'田徑場',track:0x3f6fc8,trackOut:0x2f5ab0,campus:true,first:'三十三歲。下班後，第一次走進山邊那所大學的田徑場。'}},
+      blue:{n:'田徑場',track:0x3a64b0,trackOut:0x2d529a,campus:true,dusk:true,first:'三十三歲。下班後，第一次走進山邊那所大學的田徑場。'}},
     laneLines:['第一道的高中生，穿著釘鞋。每跑完一趟，就彎下腰喘，然後再出發。','第二道的女生在跑間歇。手錶一響，她就咬著牙加速。','第三道的大叔，跑姿有點奇怪。不過，他從我來之前就在跑了。','第四道有人一邊跑，一邊小聲數著圈數。','第五道的阿姨跑得不快，但每一步都很認真。','第六道是剛開始跑的人吧。跟以前的我一樣，喘得很厲害。'],
     script:[[0,'阿傑','三十三歲。下班後，第一次走進田徑場。',null,null,.01],[0,'提示','每一道都有人在跑。第一道最快，越外面越慢。用 L R 換到別的跑道，跟他們並肩一段。',null,null,.03],
       [0,'阿傑','一個人跑的時候，總覺得只有自己在努力。',null,null,.45],[0,'阿傑','原來每個人，都在用自己的速度跑著。',null,null,.9]],
@@ -616,14 +616,14 @@ function baseScene(v){
 
 function buildTrack(v){
   const sun=baseScene(v),path=trackPath(),hw=v.width/2;
-  const ground=new THREE.Mesh(new THREE.PlaneGeometry(2400,2400),mat(v.night?0x1f2a24:0x86a06c));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(2400,2400),mat(v.night?0x1f2a24:v.dusk?0x5c6e4c:0x86a06c));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
   scene.add(strip(path,-hw,hw,v.track||0xc4553f,.02,{step:2}));
   scene.add(strip(path,hw,hw+1.6,v.trackOut||0xb94d38,.02,{step:2}));
   scene.add(strip(path,-hw-.22,-hw,0xf3efe6,.04,{step:2}));
   for(let k=1;k<8;k++)scene.add(strip(path,-hw+k*1.22-.03,-hw+k*1.22+.03,0xf6f1e8,.035,{step:2}));
   // infield
   const inner=[];for(let d=0;d<path.L;d+=3){const p=at(path,d);inner.push(new THREE.Vector2(p.x-p.rx*(hw+.2),-(p.z-p.rz*(hw+.2))));}
-  const infield=new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(inner)),mat(v.night?0x2f4a34:0x6f9a55));infield.rotation.x=-Math.PI/2;infield.position.y=.03;infield.receiveShadow=true;scene.add(infield);
+  const infield=new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(inner)),mat(v.night?0x2f4a34:v.dusk?0x4d6c43:0x6f9a55));infield.rotation.x=-Math.PI/2;infield.position.y=.03;infield.receiveShadow=true;scene.add(infield);
   const lineM=mat(0xeef1e6);const fl=(w,d,x,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,.02,d),lineM);m.position.set(x,.05,z);scene.add(m);};
   fl(100,.15,0,32);fl(100,.15,0,-32);fl(.15,64,50,0);fl(.15,64,-50,0);fl(.15,64,0,0);
   const ring=new THREE.Mesh(new THREE.RingGeometry(9,9.15,32),new THREE.MeshLambertMaterial({color:0xeef1e6,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.05;scene.add(ring);
