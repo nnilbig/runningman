@@ -1228,8 +1228,6 @@ function run(id){
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
   S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?'hike':v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:45,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
-  if(v.quiet){const cv=VENUES.club.variants[ANS.club]||VENUES.club.variants.chat,pp=makePerson({shirt:cv.shirt,shorts:0x2a2a33,hair:0x4a3424,skin:0xe8b894});scene.add(pp.g);
-    S.npcs.push({kind:'jog',d:S.d+70,lat:-.2,v:-2.3,p:pp,cool:0,polite:true,cameo:true,name:ANS.clubFriend||'跑團的老朋友'});}
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
@@ -1447,9 +1445,6 @@ function update(dt){
       n.greeted=true;S.greetCD=16;S.greetN++;const g=GREET[S.id][Math.floor(Math.random()*GREET[S.id].length)];
       say('跑者',g[0]);S.queue.push({at:S.t+2.3,who:CHAR.name,text:g[1],spoken:true});}
     if(n.kind==='fast'&&!S.done){if(rel>2)n.warned=false;else if(!n.warned&&rel<-1.5&&rel>-8){n.warned=true;if(Math.abs(n.lat-S.lat)<1.1){toast('後面：「借過——」');SFX.step();}}}
-    if(n.cameo&&!n.greeted&&!S.done&&n.prev!==undefined&&Math.sign(rel)!==Math.sign(n.prev)&&Math.abs(rel)<4){n.greeted=true;
-      const L={chat:['阿傑？好久不見！下次一起去吃早餐啊！','好啊。……真的好久不見。'],speed:['阿傑！還在跑喔？配速還記得嗎？','早就忘了。現在只記得要跑。'],night:['欸，阿傑！今天也下班來跑？','嗯。……還是一樣。']}[ANS.club]||['阿傑？好久不見！','好久不見。'];
-      say(n.name,L[0]);S.queue.push({at:S.t+2.4,who:CHAR.name,text:L[1],spoken:true});}
     n.prev=rel;
     if(!path.closed&&(rel>140||rel<-60)){ // recycle around the runner on open paths
       const ahead=n.v<0||rel<-60;n.d=S.d+(ahead?rnd(90,140):-rnd(30,50));if(n.d<2||n.d>path.L-2)n.d=clamp(S.d+rnd(60,120),2,path.L-2);rel=relDist(path,S.d,n.d);n.lat=n.kind==='bike'?(n.v>0?1.1:2.1):n.lat;}
@@ -1506,7 +1501,7 @@ function update(dt){
 function endLine(v){if(v.pacing){const h1=S.h1||S.t/2,h2=S.t-h1;return h2<=h1*1.01?'二十一公里。後半段越跑越輕。原來，前面忍住是對的。':'二十一公里。前面衝太快了。最後那幾公里，好長。';}if(v.stall){if(S.letgo)return '比以前慢了。但今天的風景，好像比以前清楚。';const g=S.ghost,m=Math.max(1,Math.round(Math.max(0,(g.d-S.d)/g.v*v.sc)/60));return `比三十四歲慢了 ${m} 分鐘。數字不會說謊。不過，我還是跑完了。`;}
   if(v.flow)return S.deepT/Math.max(1,S.t)>=.2?v.endDeep:v.endShallow;if(v.motive)return S.mot>=60?v.endHigh:v.endLow;return (v.endBy&&S.why&&v.endBy[S.why])||v.end;}
 function showDone(){
-  ANS.picks=ANS.picks||{};if(S.id==='stall')ANS.picks.letgo=S.letgo?'yes':'no';if(S.id==='burnout')ANS.picks.seen=S.seen>=4?'many':'few';if(S.id==='end')ANS.picks.watch=S.noWatch?'off':'on';if(S.id==='club'&&S.friends&&S.friends[0])ANS.clubFriend=S.friends[0].name;saveAns();
+  ANS.picks=ANS.picks||{};if(S.id==='stall')ANS.picks.letgo=S.letgo?'yes':'no';if(S.id==='burnout')ANS.picks.seen=S.seen>=4?'many':'few';if(S.id==='end')ANS.picks.watch=S.noWatch?'off':'on';saveAns();
   if(S.id==='race'){ANS.pb=Math.round(S.t*S.v.sc);saveAns();}if(S.id==='track'){ANS.pb21=Math.round(S.t*S.v.sc);saveAns();}
   const gt=S.t*S.v.sc,km=S.v.km,pace=gt/km;
   ANS.done=ANS.done||{};ANS.done[S.id]=S.noWatch?'沒看錶':`${Math.floor(gt/3600)?Math.floor(gt/3600)+':':''}${String(Math.floor(gt/60)%60).padStart(Math.floor(gt/3600)?2:1,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;saveAns();
