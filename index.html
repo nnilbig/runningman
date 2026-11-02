@@ -535,7 +535,7 @@ const VENUES={
     desc:'四十一歲。成績不再進步之後，忽然什麼都不想跑了。下班後，到家附近的公園隨便繞幾圈。這一章看的是「動機」：不知不覺就會往下掉，光是休息也不一定回得來，路邊的小事才能把它找回來，但要放慢一點才看得見。',
     intro:'四十一歲。成績不再進步之後，好像什麼都不想跑了。跑鞋在鞋櫃裡放了好幾個月。休息了很久，熱情也沒有回來。今天下班早，他換上鞋子，走到家附近的公園。心想，就隨便繞幾圈吧。',
     moments:['一隻柴犬，拉著主人在跑。','長椅上，一對老夫妻在分一顆橘子。','小孩在學騎腳踏車，爸爸在後面追。','夕陽把水面染成了橘色。','籃球場傳來球打在地板上的聲音。','路燈一盞一盞亮起來了。'],
-    script:[[0,'阿傑','下班後的公園。沒有比賽，也沒有目標。只是隨便繞幾圈。'],[0,'提示','這一章看的是左上角的「動機」。不知不覺，它就會往下掉。'],[0,'提示','路邊有些小事。靠過去，放慢一點經過，才看得見。不用停下來。'],
+    script:[[0,'阿傑','下班後的公園。沒有比賽，也沒有目標。只是隨便繞幾圈。'],[0,'提示','這一章看的是左上角的「動機」。不知不覺，它就會往下掉。'],[0,'提示','路邊有些小事。靠過去，放慢到 Zone 2 經過，才看得見。不用停下來。'],
       [0,'阿傑','以前跑步的時候，總是在想下一場要跑多快。'],[0,'阿傑','現在什麼都不想。不是平靜，比較像是空空的。'],[0,'阿傑','原來休息並不是萬能的。有些東西，不是躺著就會自己回來。'],
       [0,'阿傑','熱情消失之後，還剩下什麼呢？'],[0,'阿傑','……剩下的，好像是習慣。還有身體記得的那些事。'],[0,'阿傑','快到了。天已經暗下來了。']],
     endHigh:'以前的熱情沒有找回來。不過，好像撿到了別的東西。小小的，但很確實。',endLow:'熱情沒有回來。但還是跑完了。這樣，應該也算數吧。',
@@ -1212,6 +1212,8 @@ const ZC=['#a9b6d6','#7cc0e6','#7fcf95','#f3bd63','#ef7a6e'],ZN=['很輕鬆','�
 function zoneOf(bpm){const p=bpm/HR_MAX;return p<.6?1:p<.7?2:p<.8?3:p<.9?4:5;}
 const JOG=1000/360,VMIN=2.3,VMAX=3.6; // start at 6:00 /km (10 km/h); range ≈ 7'15"–4'38" /km
 // fitness over the decade: v.thr is the pace (sec/km) where he tips into zone 4. 6'00" on day one, 4'50" at the first marathon, then it slowly gives back.
+// zone 2 for this chapter's fitness and age: f=.65 is the middle of zone 2, f=.695 its top edge
+const z2Of=(v,f)=>{const I=((f||.65)*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return Math.max(v.vmin||VMIN,1000/(v.thr||360)+(I-.72)/.5);};
 const vmaxOf=v=>v.ultra||v.stall||v.motive?VMAX:Math.max(VMAX,1000/(v.thr||360)*1.1);
 let PICK={};
 function start(id){PICK={};run(id);}
@@ -1246,7 +1248,7 @@ const PACER_R=360/355.5;
 function addPacer(){const pp=makePerson({shirt:0xf3bd63,shorts:0x2a2a33,hair:0x2a2420,skin:0xe2b48f});const stick=box(.03,1.6,.03,0xd8d8d8);stick.position.set(.15,1.9,-.1);pp.g.add(stick);
   const bal=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),mat(0xe8574a));bal.position.set(.15,2.85,-.1);pp.g.add(bal);const tg=textPlane('2:05',.5,.22,'#ffffff','#e8574a');tg.position.set(.15,2.85,-.44);pp.g.add(tg);
   scene.add(pp.g);S.pacer={p:pp,d:S.d+3.5,lat:.6};}
-function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.target=JOG*1.2;S.surge=true;setTimeout(()=>{if(S&&S.surge)toast('槍聲一響，大家都衝出去了');},600);}
+function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.surge=true;setTimeout(()=>{if(S&&S.surge)toast('槍聲一響，大家都衝出去了');},600);}
   if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});
   if(S.v.pickLines){const P=ANS.picks||{};for(const key in S.v.pickLines){const L=S.v.pickLines[key][P[key]];if(L)L.forEach(([i,t,w])=>{if(S.script[i]){S.script[i][2]=t;if(w)S.script[i][1]=w;}});}}
   if(S.v.pacing&&(ANS.picks||{}).pacer==='pacer'){S.target=JOG*PACER_R;S.surge=false;addPacer();}$('recap').hidden=true;$('hud').classList.remove('pre');}
@@ -1257,7 +1259,7 @@ function run(id){
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:JOG,t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:z2Of(v),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
@@ -1267,7 +1269,7 @@ function run(id){
     placeFriends(0);}
   if(v.buddy){const bp=makePerson({shirt:0xf0c060,shorts:0x2a2a33,hair:0x2a2420,skin:0xd6a07a});scene.add(bp.g);S.buddy={p:bp,d:S.d+1.2,lat:clamp(S.lat+1.1,v.lat[0],v.lat[1])};}
   if(v.ultra){const y=makePerson(Object.assign({},CHAR));y.g.visible=false;scene.add(y.g);S.young={p:y,d:0,on:false};}
-  if(v.stall){const pb=ANS.pb21||7200,gv=1000/(pb/v.km);S.cap=gv*.96;S.target=S.cap;
+  if(v.stall){const pb=ANS.pb21||7200,gv=1000/(pb/v.km);S.cap=gv*.96;S.target=Math.min(S.cap,z2Of(v));
     const gp=makePerson(Object.assign({},CHAR));gp.g.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.transparent=true;o.material.opacity=.42;o.material.depthWrite=false;o.castShadow=false;}});scene.add(gp.g);
     S.ghost={p:gp,d:W.startD,v:gv,lat:-1.9,op:.42,pb};}
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);$('glylab').textContent=v.pacing?'體力':v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';S.sta=100;$('wallfx').style.opacity=0;
@@ -1377,9 +1379,9 @@ function update(dt){
     else{S.udT=0;S.udHeld=false;}
     // Zone 5 for 2 s or more: he notices he's going too fast and eases off by himself
     S.z5T=S.zone>=5?(S.z5T||0)+dt:0; // only after 2 s in Zone 5
-    if(S.zone>=5&&S.z5T>=2&&!S.z5warn&&!(S.forceT>0)){S.z5warn=true;S.forceT=4;S.target=Math.min(S.target,JOG);say(CHAR.name,['太快了。……慢一點吧。','心臟在抗議了。先放慢一點。','……這樣太快了。'][Math.floor(Math.random()*3)]);}
+    if(S.zone>=5&&S.z5T>=2&&!S.z5warn&&!(S.forceT>0)){S.z5warn=true;S.forceT=4;S.target=Math.min(S.target,z2Of(v));say(CHAR.name,['太快了。……慢一點吧。','心臟在抗議了。先放慢一點。','……這樣太快了。'][Math.floor(Math.random()*3)]);}
     if(S.zone<5)S.z5warn=false;if(S.zone>=5)S.z5ever=true;
-    if(S.forceT>0){S.forceT-=dt;S.target=Math.min(S.target,JOG);}
+    if(S.forceT>0){S.forceT-=dt;S.target=Math.min(S.target,z2Of(v));}
     $('z5fx').style.opacity=S.zone>=5?(.55+.35*Math.sin(S.t*7)).toFixed(2):S.forceT>0?'.25':'0';
     if(v.walkCheck){if(S.target<1.75)S.walkT+=dt;else S.walkT=0;if(S.walkT>1.5&&!S.walked){S.walked=true;say(CHAR.name,'走一下。……走一下就好。沒有人會在意的。');}}
     const lr=(keys.right?1:0)-(keys.left?1:0);S.lat=clamp(S.lat+lr*1.7*dt,v.lat[0],v.lat[1]);
@@ -1417,7 +1419,7 @@ function update(dt){
     for(const m of W.moments){if(m.done)continue;const rel=m.d-S.d;
       if(rel<-1.5){m.done=true;m.ring.visible=false;toast('錯過了');continue;}
       if(Math.abs(rel)<1.6&&Math.abs(m.lat-S.lat)<.75){m.done=true;m.ring.visible=false;
-        if(S.speed<=JOG*.93){m.seen=true;S.mot=Math.min(100,S.mot+17);S.seen++;S.cineP=.7;S.queue.push({at:S.t,who:CHAR.name,text:m.text});toast('動機 +17');}
+        if(S.speed<=z2Of(v,.695)+.02){m.seen=true;S.mot=Math.min(100,S.mot+17);S.seen++;S.cineP=.7;S.queue.push({at:S.t,who:CHAR.name,text:m.text});toast('動機 +17');}
         else toast('跑得太快，什麼都沒看見');}
       m.ring.children[0].material.opacity=.14+.1*Math.sin(S.t*3+m.d);}
     for(const m of W.moments){const f=m.fx||{},t=S.t;if(f.wag)f.wag.rotation.y=Math.sin(t*12)*.6;if(f.ball)f.ball.position.y=.5+Math.abs(Math.sin(t*3.2))*1.1;
