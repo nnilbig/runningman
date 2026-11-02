@@ -1259,10 +1259,10 @@ function showRecap(id,v){ // "previously…" over the live scene; the run starts
     ex.innerHTML=`<div class="ask"><b>你為什麼跑？</b>${then}${opts.map((o,i)=>`<button class="opt${o===WHY_LATE?' new':''}" data-i="${i}">${o}</button>`).join('')}</div>`;
     ex.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const a=opts[+b.dataset.i];ANS[id]=a;saveAns();PICK.why=S.why=a;if(v.watch)watch();else go();});}
 }
-// the pacer holds an easy, even pace for a 2:05 finish (5'55"/km): following him the whole way, you never run dry
-const PACER_V=1000/355.5,PEAK21=7200; // pacer: 2:05 group. PEAK21: fallback for his first half at 34, if ch3 was never run
+// the pacer holds an even pace for a 2:00:00 finish (5'41"/km, zone 2 for him at 34): following him the whole way, you never run dry
+const PACER_V=21097.5/7200,PEAK21=7200; // pacer: 2:00 group. PEAK21: fallback for his first half at 34, if ch3 was never run
 function addPacer(){const pp=makePerson({shirt:0xf3bd63,shorts:0x2a2a33,hair:0x2a2420,skin:0xe2b48f});const stick=box(.03,1.6,.03,0xd8d8d8);stick.position.set(.15,1.9,-.1);pp.g.add(stick);
-  const bal=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),mat(0xe8574a));bal.position.set(.15,2.85,-.1);pp.g.add(bal);const tg=textPlane('2:05',.5,.22,'#ffffff','#e8574a');tg.position.set(.15,2.85,-.44);pp.g.add(tg);
+  const bal=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),mat(0xe8574a));bal.position.set(.15,2.85,-.1);pp.g.add(bal);const tg=textPlane('2:00',.5,.22,'#ffffff','#e8574a');tg.position.set(.15,2.85,-.44);pp.g.add(tg);
   scene.add(pp.g);S.pacer={p:pp,d:S.d+3.5,lat:.6};}
 function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.surge=true;setTimeout(()=>{if(S&&S.surge)toast('槍聲一響，大家都衝出去了');},600);}
   if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});
