@@ -1481,9 +1481,9 @@ function update(dt){
     const pp=at(path,Math.min(g.d,path.L-1));g.p.g.position.set(pp.x+pp.rx*g.lat,0,pp.z+pp.rz*g.lat);g.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(g.p,dt,.9+g.v*.22,1);
     if(!S.letgo){const gapS=Math.max(0,(g.d-S.d)/g.v*v.sc);$('gap').textContent=`34 歲的自己 +${Math.floor(gapS/60)}:${String(Math.floor(gapS%60)).padStart(2,'0')}`;}}
   if(S.pacer){const pc=S.pacer;pc.d+=PACER_V*dt*(S.done?.6:1);const pp=at(path,pc.d);pc.p.g.position.set(pp.x+pp.rx*pc.lat,0,pp.z+pp.rz*pc.lat);pc.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(pc.p,dt,.9+JOG*.22,1);}
-  if(S.friends&&v.grp){if(!S.grp)S.grp={d:S.d,v:0};const G=S.grp;G.v=lerp(G.v,S.done?0:1000/v.grp,Math.min(1,dt*1.2));G.d+=G.v*dt;
+  if(S.friends&&v.grp){if(!S.grp)S.grp={d:S.d,v:0};const G=S.grp;G.v=lerp(G.v,S.done?0:1000/v.grp*(1+clamp((S.d-G.d)*.03,-.2,.2)),Math.min(1,dt*1.2));G.d+=G.v*dt;
     const gap=S.d-G.d;S.withGrp=Math.abs(gap)<7;S.grpCD=(S.grpCD||0)-dt;
-    if(!S.done&&!S.withGrp&&S.grpCD<=0){S.grpCD=7;toast(gap>0?'跑太前面了。慢一點，等等大家。':'大家在前面。快一點，跟上去。');}}
+    if(!S.done&&Math.abs(S.d-G.d)>10&&S.grpCD<=0){S.grpCD=10;toast(gap>0?'跑太前面了。慢一點，等等大家。':'大家在前面。快一點，跟上去。');}}
   if(S.friends){const prog=S.d-W.startD;
     for(const f of S.friends){if(f.gone)continue;
       if(!f.said&&(S.grp?S.grp.d-W.startD:prog)>=f.at&&(!S.grp||S.withGrp)){f.said=true;S.queue.push({at:S.t+.3,who:f.name,text:f.line});if(f.skip)S.queue.push({at:S.t+2.2,who:CHAR.name,text:f.skip,spoken:true});}
