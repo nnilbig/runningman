@@ -148,6 +148,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .tint{position:fixed;inset:0;pointer-events:none;mix-blend-mode:soft-light;background:transparent}
 .cine{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 68% 30%,rgba(255,196,130,.30),transparent 45%),radial-gradient(ellipse at 50% 55%,transparent 52%,rgba(30,15,30,.42) 100%)}
 .wallfx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,transparent 35%,rgba(40,12,34,.85) 100%);opacity:0;transition:opacity .8s}
+.streaks{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 .flowfx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(255,250,236,.38) 0%,rgba(255,250,236,.6) 55%,rgba(255,250,236,.92) 100%);opacity:0;transition:opacity 1.2s}
 #gl{transition:filter 1.2s}
 .top{transition:opacity .6s}
@@ -199,7 +200,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 <div class="tint" id="tint"></div><div class="cine" id="cine"></div>
 <div class="flash" id="flash"></div>
 <div class="wallfx" id="wallfx"></div>
-<div class="flowfx" id="flowfx"></div>
+<div class="flowfx" id="flowfx"></div><canvas class="streaks" id="streaks"></canvas>
 <div class="z5fx" id="z5fx"></div>
 <div class="hud" id="hud" hidden>
   <div class="top" id="hudtop">
@@ -367,12 +368,14 @@ function quietFinish(v,path,hw,finD,style){ // non-race runs end without an arch
 function placeOnPath(obj,path,d,lat,yaw){const p=at(path,d);obj.position.set(p.x+p.rx*lat,obj.position.y,p.z+p.rz*lat);obj.rotation.y=Math.atan2(p.tx,p.tz)+(yaw||0);return obj;}
 
 /* ---------- low-poly person ---------- */
+const EYE_G=new THREE.SphereGeometry(.022,8,6),EYE_M=new THREE.MeshBasicMaterial({color:0x221a1e});
 function makePerson(o){
   const g=new THREE.Group(),body=new THREE.Group();g.add(body);
   const torso=box(.42,.56,.24,o.shirt);torso.position.y=1.22;body.add(torso);
   const HS=1;
   const head=new THREE.Mesh(new THREE.IcosahedronGeometry(.17*HS,0),mat(o.skin));head.position.y=1.49+.17*HS;head.castShadow=true;body.add(head);
   const hair=new THREE.Mesh(new THREE.IcosahedronGeometry(.18*HS,0),mat(o.hair));hair.position.set(0,1.54+.17*HS,-.035*HS);hair.scale.set(1,.78,1);body.add(hair);
+  for(const sd of [-1,1]){const e=new THREE.Mesh(EYE_G,EYE_M);e.position.set(.058*sd*HS,1.675,.152*HS);body.add(e);} // two small dots: just enough to be someone
   if(o.pony){const p=box(.09,.26,.09,o.hair);p.position.set(0,1.55,-.2);body.add(p);}
   const hips=box(.4,.2,.25,o.shorts);hips.position.y=.9;body.add(hips);
   const legs=[],shins=[],arms=[],fore=[];
@@ -434,7 +437,7 @@ const NAME_M='豪明宏偉翰宇廷哲瑋凱華銘誠霖祥維'.split(''),NAME_F
 function RN(g){const pool=g==='f'?NAME_F:NAME_M;for(let k=0;k<80;k++){const c=pool[Math.floor(Math.random()*pool.length)],n=(Math.random()<.5?'小':'阿')+c;if(!USED.has(c)&&!USED.has(n)){USED.add(c);USED.add(n);return n;}}return '小'+pool[0];}
 const RIVER_SEED=1933; // chapters 1 and 8 run the very same riverbank
 const VENUES={
-  start:{ch:'第一章',thr:345,n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:42,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
+  start:{ch:'第一章',startHR:0.62,thr:345,n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:42,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],fog:0xdfdcdc,sun:[-.7,.22,.5],sunCol:0xffe6c8,
     ground:0x8cb46c,grass:0x84aa66,water:0x5f9ad0,leaves:[0x7fae62,0x8cba6c,0x9cc47a],crown:0xf0b6c4,reeds:[0x8aa25e,0x9aa866,0x7d9452],
     desc:'三十二歲那年春天的清晨，第一次在河堤上跑三公里。右手邊是河和濕地，路邊有幾棵櫻花，遠處有一座紅色的橋。就這樣而已。',
@@ -447,7 +450,7 @@ const VENUES={
     endBy:{[WHY[0]]:'三公里。生活看起來沒什麼改變。可是今天早上，確實有一點不一樣。',[WHY[1]]:'三公里。喘得很厲害。但跑完之後，身體裡有某個地方，安靜地舒服了起來。',[WHY[2]]:'三公里。理由還是說不清楚。不過腳好像比我先知道了。'},
     end:'三公里。理由還是說不清楚。不過腳好像比我先知道了。',
     next:'第一次跑完三公里的那天晚上，阿傑睡得像一塊石頭。隔天早上腿很痠。即使如此，他還是想，再跑一次看看好了。'},
-  habit:{ch:'第四章',thr:295,n:'不想跑的日子',heavyStart:true,sub:'習慣',km:5,build:'boulevard',rain:true,secs:48,age:34,width:4,lat:[-1.7,1.7],startLat:.4,
+  habit:{ch:'第四章',startHR:0.61,thr:295,n:'不想跑的日子',heavyStart:true,sub:'習慣',km:5,build:'boulevard',rain:true,secs:48,age:34,width:4,lat:[-1.7,1.7],startLat:.4,
     pick:{key:'music',q:'出門前，耳機裡要放什麼？',opts:[['jazz','一首老爵士'],['rock','一首老搖滾'],['none','什麼都不放']]},
     pickLines:{music:{jazz:[[3,'耳機裡是一首老爵士。鋼琴的聲音，跟雨聲很合。']],rock:[[3,'耳機裡是一首老搖滾。鼓聲一下一下，把腳往前推。']],none:[[3,'耳機裡什麼都沒放。只有雨聲，和自己的呼吸。']]}},
     sky:['#4a5568','#6b7484','#8f95a0'],fog:0x7c8490,sun:[.3,.6,.4],sunCol:0xc9d3e0,
@@ -474,7 +477,7 @@ const VENUES={
     script:[[0,'阿傑','三十三歲。第一次跟一群人一起跑。',null,null,.02],[0,'提示','跟著大家的速度跑，才聽得到他們在聊什麼。',null,null,.05],[0,'阿傑','……一個人跑的時候，從來沒有注意過別人的呼吸。',null,null,.9],[0,'阿傑','快到了。大家都還在。',null,null,.97]],
     end:'五公里。大家一起跑完了。',
     next:'跑完之後，大家又站著聊了很久才散。那是很好的一年。'},
-  track:{ch:'第三章',thr:300,n:'第一場半馬',sub:'配速',km:21.0975,build:'race',khh:true,pacing:true,secs:52,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
+  track:{ch:'第三章',startHR:0.65,thr:300,n:'第一場半馬',sub:'配速',km:21.0975,build:'race',khh:true,pacing:true,secs:52,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
     pick:{key:'pacer',q:'起跑前，要怎麼跑？',opts:[['pacer','跟著配速員的氣球跑'],['self','按自己的節奏跑']]},
     pickLines:{pacer:{pacer:[[1,'配速員會用固定、不會累的速度跑完全程。跟在氣球後面，就不會衝太快。'],[2,'跟好氣球，呼吸跟著步伐。前面別衝。','配速員'],[3,'好。'],[4,'氣球在前面，一上一下。我只要跟著就好。'],[7,'後半段了，大家還跟得上嗎？','配速員']],self:[[4,'別跟。這是我自己的比賽。']]}},
     sky:['#5f9ee0','#b8d8ee','#fbe8c8'],fog:0xdce6ea,sun:[-.5,.55,.4],sunCol:0xfff1dc,
@@ -485,14 +488,14 @@ const VENUES={
       [0,'路邊的人','加油——快到了！',16],[0,'阿傑','最後兩公里。……可以快一點了吧。',19.1],[0,'阿傑','終點的拱門，看得到了。',20.6]],
     end:'二十一公里。跑完了。',
     next:'第一面半馬完賽獎牌，比想像中重。阿傑把它掛在書桌旁邊。秋天來了，雨也跟著來了。'},
-  race:{ch:'第五章',thr:283,n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:50,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
+  race:{ch:'第五章',startHR:0.65,thr:283,n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:50,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
     sky:['#6f90c0','#b8c8dc','#ecdcc8'],fog:0xd6dce4,sun:[-.5,.55,.4],sunCol:0xfff1dc,
     desc:'人生第一場全程馬拉松：十二月的台北馬拉松。從市政府前出發，遠方是台北 101；穿過林蔭大道，沿著基隆河濱跑，再回到市府前。這一章多了肝醣條：每十公里有一個補給站，左右交替出現，靠過去經過就能拿到。過了三十五公里，會撞牆。',
     intro:'三十四歲，跑步的第三年。人生第一場全馬，是十二月的台北馬拉松。前一晚幾乎沒睡，四點就醒了。清晨的空氣有點冷。起跑線上擠滿了人，每個人看起來都比他厲害。',
     script:[[0,'阿傑','第一場全馬。起跑線前，每個人看起來都比我厲害。不過，這也沒辦法。',.4],[0,'提示','左上角多了肝醣條。跑著跑著，就會用掉。',3],[0,'提示','補給站會左右交替出現。靠過去跑，就能拿到水和能量膠。',8.5],[0,'阿傑','前十公里，身體輕得像是跟誰借來的。',10.5],[0,'阿傑','林蔭大道的樹，從兩邊把路輕輕蓋住。有人一下子就跑不見了。別跟。',14.5],[0,'路邊的人','加油——你很棒喔！',18.5],[0,'阿傑','過了半馬，到了河濱。風很冷。從這裡開始，才是真正的馬拉松吧。',25.5],[0,'阿傑','腿開始有自己的意見了。',30.5],[0,'路邊的阿嬤','少年仔，加油喔！',33],[0,'旁邊的跑者','還有六公里……一起撐過去吧。',35.8],[0,'阿傑','……嗯。一起。',36.4,null,null,true],[0,'阿傑','痛，是免不了的。',37.5],[0,'阿傑','不過要不要把它當成苦，好像可以自己選。',39.2],[0,'阿傑','最後兩公里。不知道從哪裡來的力氣。',40.5]],
     end:'四十二點一九五公里。跑完了。最後那幾公里，一直在跟自己吵架。不過，總算吵完了。',
     next:'之後幾天，下樓梯都要扶著扶手。即使如此，阿傑已經開始想，下一次要跑去哪裡了。'},
-  summer:{ch:'第六章',thr:245,n:'旅行的早晨',sub:'空白',km:10,build:'blossom',secs:54,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
+  summer:{ch:'第六章',startHR:0.66,thr:245,n:'旅行的早晨',sub:'空白',km:10,build:'blossom',secs:54,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
     pick:{key:'goal',q:'跑完第一場全馬之後，下一個目標是？',opts:[['faster','跑得更快'],['farther','去更遠的地方跑'],['keep','就這樣繼續跑下去']]},
     pickLines:{goal:{faster:[[0,'三十五歲。旅行的第二天。就算出來玩，課表還是記在腦子裡。']],farther:[[0,'三十五歲。旅行的第二天。想知道在陌生的城市跑步，是什麼感覺。']],keep:[[0,'三十五歲。旅行的第二天。早上六點，一個人出門跑步。']]}},
     sky:['#8ab0dc','#d8dcec','#f6e8ea'],fog:0xe8e0e4,sun:[-.6,.4,.5],sunCol:0xfff2e8,
@@ -503,7 +506,7 @@ const VENUES={
     endDeep:'回過神來，已經回到旅館門口了。好像把什麼東西，留在剛才那片花瓣裡了。',endShallow:'一路上都在想事情。跑到這麼遠的地方，腦袋還是留在家裡。不過，花很漂亮。',
     end:'跑完了。',
     next:'那次之後，阿傑又跑了很多次，身體一年比一年強壯。三十七歲那年，他想知道，自己最遠能跑到哪裡。'},
-  ultra:{ch:'第七章',thr:213,n:'最長的距離',sub:'邊界',km:100,kmLabel:'75 / 100',build:'weekend',secs:58,age:37,width:3.6,lat:[-1.5,1.5],startLat:0,ultra:true,
+  ultra:{ch:'第七章',startHR:0.61,thr:213,n:'最長的距離',sub:'邊界',km:100,kmLabel:'75 / 100',build:'weekend',secs:58,age:37,width:3.6,lat:[-1.5,1.5],startLat:0,ultra:true,
     sky:['#1c2448','#3a4a78','#8a8aa8'],skies:[['#1c2448','#3a4a78','#8a8aa8'],['#6fa2d8','#b8d4ea','#eef0e6'],['#3a2c5c','#b0607a','#f39a5a']],fogs:['#4a5270','#d6e2ea','#c08070'],fog:0x4a5270,sun:[-.6,.3,.4],sunCol:0xfff0dc,
     desc:'三十七歲，人生跑過最長的距離。北方的大湖旁，一場很多跑者都說「一生一定要跑一次」的超級馬拉松：天還沒亮就出發，沿著湖岸、花海和白樺樹林，一直跑到天黑。出發前選擇距離：七十五公里或一百公里。左上角是「疲勞」：只會累積，不會消失。',
     intro:'三十七歲，跑步的第六年。阿傑報名了北方大湖的超級馬拉松，那是很多跑者都說一生一定要跑一次的比賽。凌晨四點半，湖邊的空氣涼涼的，起跑線上擠滿了頭燈。',
@@ -518,7 +521,7 @@ const VENUES={
       [0,'阿傑','好像穿過了某個看不見的地方。',null,null,.76],[0,'阿傑','身體不再說話了。腳只是一直往前移動。',null,null,.82],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',null,null,.88],[0,'阿傑','……剩下來的，就只是跑。',null,null,.93],[0,'阿傑','終點的聲音，從湖的另一邊傳過來。',null,null,.98]],
     end:'跑完了。',
     next:'那之後，阿傑有好一陣子沒有再跑超馬。那一天，好像把身體裡的某樣東西，好好地用完了。\n兩年後，三十九歲。'},
-  stall:{ch:'第八章',thr:222,n:'追不上的人',sub:'停滯',km:21.0975,build:'race',khh:true,secs:52,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
+  stall:{ch:'第八章',startHR:0.65,thr:222,n:'追不上的人',sub:'停滯',km:21.0975,build:'race',khh:true,secs:52,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
     pickLines:{goal:{faster:[[5,'說好要跑得更快的。……現在連以前的自己都追不上。']],farther:[[5,'說好要去更遠的地方。腿卻好像先老了。']],keep:[[5,'說好就這樣繼續跑。但數字往回走，還是會在意。']]}},
     sky:['#8a96a8','#c2c8cf','#e8dccb'],fog:0xd2d4d4,sun:[-.5,.5,.4],sunCol:0xfff0dc,leaves:[0xd8783a,0xc8a040],
     desc:'三十九歲，又站上了第一次跑的那場半馬。成績不再進步，速度也有了上限，再怎麼按 ＋ 都快不起來。手機 App 裡存著兩年前、狀態最好那一年的紀錄，變成旁邊一個透明的跑者。跟在他後面就是追；往右邊靠，就是讓他先走。',
@@ -528,7 +531,7 @@ const VENUES={
       [0,'阿傑','……他又跑遠了一點。',13.9,'路邊的行道樹黃了。以前怎麼都沒有注意到。'],[0,'阿傑','心跳很快，腿很重。還是追不上。',16,'呼吸很穩。原來這個速度，也可以跑得很舒服。'],[0,'阿傑','數字是真的。三十七歲的我，也是真的。',18.1,'三十七歲的我，現在大概已經到終點了吧。'],[0,'阿傑','終點快到了。',20.3]],
     end:'跑完了。',
     next:'之後的一年，阿傑越跑越少。不是受傷，也不是太忙。只是某一天，忽然不想跑了。就像雨停了一樣自然。'},
-  burnout:{ch:'第九章',thr:255,n:'沒有熱情的日子',sub:'倦怠',km:5,build:'park',secs:54,age:41,width:4,lat:[-1.7,1.7],startLat:-.4,vmin:1.2,motive:true,
+  burnout:{ch:'第九章',startHR:0.61,thr:255,n:'沒有熱情的日子',sub:'倦怠',km:5,build:'park',secs:54,age:41,width:4,lat:[-1.7,1.7],startLat:-.4,vmin:1.2,motive:true,
     pickLines:{letgo:{yes:[[3,'那天讓他先走之後，好像把什麼一起放下了。放得有點太多了。']],no:[[3,'那天一直追到最後。追完之後，好像什麼都不剩了。']]}},
     sky:['#4a5f8a','#c08a8a','#f2b07a'],fog:0xc8a49a,sun:[.8,.15,.4],sunCol:0xffb07a,
     desc:'四十一歲。成績不再進步之後，忽然什麼都不想跑了。下班後，到家附近的公園隨便繞幾圈。這一章看的是「動機」：不知不覺就會往下掉，光是休息也不一定回得來，路邊的小事才能把它找回來，但要放慢一點才看得見。',
@@ -540,7 +543,7 @@ const VENUES={
     endHigh:'以前的熱情沒有找回來。不過，好像撿到了別的東西。小小的，但很確實。',endLow:'熱情沒有回來。但還是跑完了。這樣，應該也算數吧。',
     end:'跑完了。',
     next:'之後的一年，阿傑還是繼續跑。只是跑得很慢，也很少比賽。\n四十二歲的秋天，他又回到了那條河堤。'},
-  end:{ch:'第十章',thr:245,n:'秋天的河堤',sub:'終點',km:5,build:'river',seed:RIVER_SEED,secs:50,age:42,width:6,lat:[-2.7,2.7],startLat:-1.2,vmin:1.2,walkCheck:true,quiet:true,hair:0x5e5852,
+  end:{ch:'第十章',startHR:0.64,thr:245,n:'秋天的河堤',sub:'終點',km:5,build:'river',seed:RIVER_SEED,secs:50,age:42,width:6,lat:[-2.7,2.7],startLat:-1.2,vmin:1.2,walkCheck:true,quiet:true,hair:0x5e5852,
     pickLines:{seen:{many:[[1,'路邊的芒草、橋下的釣客、天上的雲。最近，總是會注意到這些。']]},
       letgo:{yes:[[2,'跑得比以前慢。那天讓他先走，大概是對的吧。']],no:[[2,'跑得比以前慢。有一陣子，一直在追以前的自己。']]},
       goal:{faster:[[3,'以前一直想跑得更快。後來發現，慢下來以後，看得到的東西變多了。']],farther:[[3,'去過好幾個城市跑步。最後還是覺得，這條河堤最好。']],keep:[[3,'就這樣一直跑著。原來「繼續」，本身就是一件不容易的事。']]}},
@@ -589,7 +592,8 @@ function applyQuality(){renderer.setPixelRatio(lowQ()?Math.min(devicePixelRatio|
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;applyQuality();
 const camera=new THREE.PerspectiveCamera(55,1,.1,1400);
 let scene=null,W=null; // W = current world
-function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<h?68:55;camera.updateProjectionMatrix();}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;FOV0=w<h?68:55;camera.fov=FOV0;camera.updateProjectionMatrix();const c=$('streaks');if(c){c.width=w;c.height=h;}}
+let FOV0=55;
 addEventListener('resize',resize);resize();
 function skyTexture(c){const cv=document.createElement('canvas');cv.width=4;cv.height=256;const x=cv.getContext('2d');const g=x.createLinearGradient(0,0,0,256);g.addColorStop(0,c[0]);g.addColorStop(.55,c[1]);g.addColorStop(1,c[2]);x.fillStyle=g;x.fillRect(0,0,4,256);const t=new THREE.CanvasTexture(cv);return t;}
 function disposeScene(){if(!scene)return;scene.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(m.map)m.map.dispose();m.dispose();});}});scene=null;}
@@ -1211,10 +1215,12 @@ const ZC=['#a9b6d6','#7cc0e6','#7fcf95','#f3bd63','#ef7a6e'],ZN=['很輕鬆','�
 function zoneOf(bpm){const p=bpm/HR_MAX;return p<.6?1:p<.7?2:p<.8?3:p<.9?4:5;}
 // JOG is this chapter's easy cruising speed (middle of zone 2 for his fitness and age); everything else scales from it
 function jogOf(v){const mx=Math.round(208-.7*(v.age||32)),I=(.65*mx-62)/(mx-62);return 1000/(v.thr||360)+(I-.72)/.5;}
-let JOG=1000/360,VMIN=2.3,VMAX=3.6;
+let JOG=1000/360,VMIN=2.3,VMAX=3.6,S_STEP=5;
 // fitness over the decade: v.thr is the pace (sec/km) where he tips into zone 4. 5'45" on day one, 4'43" at the first marathon (zone 3 all the way ≈ 3:30),
 // 3'33" at his peak at 37 (a 2:30 marathon in him), then it slowly gives back.
 // zone 2 for this chapter's fitness and age: f=.65 is the middle of zone 2, f=.695 its top edge
+// speed at a given share of max heart rate, for this chapter's fitness and age
+const spdAt=(v,f)=>{const I=(f*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return 1000/(v.thr||360)+(I-.72)/.5;};
 const z2Of=(v,f)=>{const I=((f||.65)*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return Math.max(v.vmin||VMIN,1000/(v.thr||360)+(I-.72)/.5);};
 const vmaxOf=v=>VMAX;
 let PICK={};
@@ -1257,11 +1263,11 @@ function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.surge=true;se
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;$('rc-menu1').onclick=toMenu;
 function run(id){
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
-  const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;JOG=jogOf(v);VMIN=JOG*.83;VMAX=1000/(v.thr||360)*1.12;if(v.stall){const gv=1000/(PEAK21/v.km);v.secs=52*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
-  HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
+  const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;JOG=jogOf(v);if(v.stall){const gv=1000/(PEAK21/v.km);v.secs=52*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
+  HR_MAX=Math.round(208-.7*(v.age||32));VMIN=spdAt(v,.55);VMAX=spdAt(v,.95);S_STEP=Math.max(3,Math.round((1000/VMIN-1000/VMAX)/14)); // − / ＋ live between zone 1 and zone 5if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:v.startPace?1000/v.startPace:z2Of(v),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:z2Of(v,v.startHR),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
@@ -1316,9 +1322,17 @@ function moodGrade(v,dt){const m=moodTarget(v),k=Math.min(1,dt*1.2);
   g.sat=lerp(g.sat,m.sat,k);g.con=lerp(g.con,m.con,k);g.bri=lerp(g.bri,m.bri,k);for(let i=0;i<4;i++)g.t[i]=lerp(g.t[i],m.t[i],k);
   const f=`saturate(${g.sat.toFixed(2)}) contrast(${g.con.toFixed(2)}) brightness(${g.bri.toFixed(2)}) sepia(${(.18*c).toFixed(2)}) ${S.fxX||''}`;$('cine').style.opacity=c.toFixed(2);if(f!==S.fxLast){$('gl').style.filter=f;S.fxLast=f;}
   const t=`rgba(${g.t[0]|0},${g.t[1]|0},${g.t[2]|0},${g.t[3].toFixed(3)})`;if(t!==S.tLast){$('tint').style.background=t;S.tLast=t;}}
+// wind streaks at the edges of the screen when he really pushes
+const STK=[];for(let i=0;i<46;i++)STK.push({a:Math.random()*Math.PI*2,r:.5+Math.random()*.6,len:.05+Math.random()*.1,sp:.5+Math.random()*.6});
+function drawStreaks(k,dt){const c=$('streaks'),x=c&&c.getContext&&c.getContext('2d');if(!x)return;if(k<=.01){if(STK.on){x.clearRect(0,0,c.width,c.height);STK.on=false;}return;}STK.on=true;
+  const w=c.width,h=c.height,cx=w/2,cy=h*.46,R0=Math.hypot(w,h)/2;x.clearRect(0,0,w,h);x.lineCap='round';
+  for(const p of STK){p.r+=p.sp*dt*(.7+1.6*k);if(p.r>1.15){p.r=.48+Math.random()*.15;p.a=Math.random()*Math.PI*2;}
+    if(Math.sin(p.a)>.55&&Math.abs(Math.cos(p.a))<.5)continue; // keep the runner clear
+    const r1=p.r*R0,r2=(p.r+p.len*(.5+k))*R0,ca=Math.cos(p.a),sa=Math.sin(p.a);
+    x.strokeStyle=`rgba(255,255,255,${(.5*k*Math.min(1,(p.r-.48)*4)).toFixed(3)})`;x.lineWidth=1+1.5*k;x.beginPath();x.moveTo(cx+ca*r1,cy+sa*r1);x.lineTo(cx+ca*r2,cy+sa*r2);x.stroke();}}
 // running time as a watch shows it: 1:05:09 past an hour, 42:15 below
 function fmtT(sec,pad){sec=Math.max(0,Math.floor(sec));const h=Math.floor(sec/3600),m=Math.floor(sec/60)%60,s2=String(sec%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${s2}`:`${pad?String(m).padStart(2,'0'):m}:${s2}`;}
-function toMenu(){$('tint').style.background='transparent';$('cine').style.opacity=0;$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
+function toMenu(){$('tint').style.background='transparent';$('cine').style.opacity=0;drawStreaks(0,0);camera.fov=FOV0;camera.updateProjectionMatrix();$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function shortDesc(t){const ps=t.split('。').filter(x=>x);let o='';for(const p of ps){o+=p+'。';if(o.length>=18)break;}return o;}
 function renderCont(){const done=ANS.done||{},nx=CHAPTERS.find(id=>!done[id]);const id=nx||'start',v=VENUES[id];
   $('m-cont-l').textContent=!Object.keys(done).length?'開始':nx?'繼續':'全部跑完了・從頭再跑一次';$('m-cont-t').textContent=`${v.ch}　${v.n}`;$('m-cont').onclick=()=>start(id);}
@@ -1375,9 +1389,9 @@ function update(dt){
     return;}
   if(!S.done){
     const vmin=v.vmin||VMIN,ud=(keys.up?1:0)-(keys.down?1:0);
-    // pace control: + / − move the pace 5 s/km per press (holding repeats the step every 0.3 s)
+    // pace control: + / − move the pace one step per press (about 1/14 of the zone 1–5 range) (holding repeats the step every 0.3 s)
     if(ud&&!(ud>0&&S.forceT>0)){S.udT=(S.udT||0)-dt;if(S.udT<=0){S.udT=S.udHeld?.3:.45;S.udHeld=true;if(ud>0&&v.stall&&!S.letgo&&S.cap&&S.target>=S.cap-.005){S.capN=(S.capN||0)+1;if(!(S.capCD>0)){S.capCD=7;toast('速度上不去了');say(CHAR.name,S.capN<3?'……腳已經快不起來了。再怎麼催，也是這個速度。':'這就是現在的我。三十九歲的速度。');}}
-      const pc=1000/S.target-ud*5;S.target=clamp(1000/pc,vmin,v.stall&&!S.letgo&&S.cap?S.cap:vmaxOf(v));if(v.flow)S.flow=Math.max(0,S.flow-8);}}
+      const pc=1000/S.target-ud*S_STEP;S.target=clamp(1000/pc,vmin,v.stall&&!S.letgo&&S.cap?S.cap:vmaxOf(v));if(v.flow)S.flow=Math.max(0,S.flow-8);}}
     else{S.udT=0;S.udHeld=false;}
     // Zone 5 for 2 s or more: he notices he's going too fast and eases off by himself
     S.z5T=S.zone>=5?(S.z5T||0)+dt:0; // only after 2 s in Zone 5
@@ -1529,12 +1543,17 @@ function update(dt){
   runner.g.position.set(p.x+p.rx*S.lat,0,p.z+p.rz*S.lat);runner.g.rotation.y=Math.atan2(p.tx,p.tz);
   animPerson(runner,dt,.9+S.speed*.22,clamp(S.speed/JOG,0,1.15));
   // camera: behind and a little above, like a chase cam
-  const rp=runner.g.position,back=7,ht=3.6;
+  // speed feel: above his easy pace the camera tucks in and the view widens; below it, everything eases back
+  const eu=S.done?0:clamp((S.speed-JOG)/Math.max(.1,VMAX-JOG),0,1),el=S.done?0:clamp((JOG-S.speed)/Math.max(.1,JOG-VMIN),0,1);
+  S.eu=lerp(S.eu||0,eu,Math.min(1,dt*1.5));S.el=lerp(S.el||0,el,Math.min(1,dt*1.5));
+  const rp=runner.g.position,back=7-1.4*S.eu+.6*S.el,ht=3.6-.55*S.eu+.35*S.el;
   const tgt=new THREE.Vector3(rp.x-p.tx*back,ht,rp.z-p.tz*back),look=new THREE.Vector3(rp.x+p.tx*7,1.3,rp.z+p.tz*7);
   camPos.lerp(tgt,Math.min(1,dt*3));camLook.lerp(look,Math.min(1,dt*4));
   S.shake=Math.max(0,S.shake-dt);
   camera.position.copy(camPos);if(S.shake>0){camera.position.x+=(Math.random()-.5)*.25;camera.position.y+=(Math.random()-.5)*.2;}
-  camera.lookAt(camLook);placeBubble();
+  {const ph=runner.phase*2,bob=.015+.07*S.eu*S.eu;camera.position.y+=Math.abs(Math.sin(ph))*bob;camera.position.x+=Math.sin(ph*.5)*.025*S.eu;
+   const fv=FOV0*(1+.13*S.eu-.04*S.el);if(Math.abs(camera.fov-fv)>.02){camera.fov=fv;camera.updateProjectionMatrix();}}
+  camera.lookAt(camLook);placeBubble();drawStreaks(v.flow&&S.flow>40?0:clamp((S.eu-.2)/.6,0,1),dt);
   {const c=S.cine?S.cine.c:0,sv=S.v.sun;W.sun.position.set(rp.x+sv[0]*80*(1+.6*c),lerp(sv[1]*160+40,40,c*.7),rp.z+sv[2]*80*(1+.6*c));W.sun.target.position.set(rp.x,0,rp.z);
    if(W.sunI0===undefined){W.sunI0=W.sun.intensity;W.sunC0=W.sun.color.clone();}W.sun.intensity=W.sunI0*(1+.2*c);W.sun.color.copy(W.sunC0).lerp(_cineSun,c*.7);}
   // HUD
