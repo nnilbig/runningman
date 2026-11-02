@@ -506,7 +506,7 @@ const VENUES={
     endDeep:'回過神來，已經回到旅館門口了。好像把什麼東西，留在剛才那片花瓣裡了。',endShallow:'一路上都在想事情。跑到這麼遠的地方，腦袋還是留在家裡。不過，花很漂亮。',
     end:'跑完了。',
     next:'那次之後，阿傑又跑了很多次，身體一年比一年強壯。三十七歲那年，他想知道，自己最遠能跑到哪裡。'},
-  ultra:{ch:'第七章',startHR:0.61,thr:213,n:'最長的距離',sub:'邊界',km:100,kmLabel:'75 / 100',build:'weekend',secs:58,age:37,width:3.6,lat:[-1.5,1.5],startLat:0,ultra:true,
+  ultra:{ch:'第七章',startPace:370,jogPace:445,vmin:1.2,thr:213,n:'最長的距離',sub:'邊界',km:100,kmLabel:'75 / 100',build:'weekend',secs:58,age:37,width:3.6,lat:[-1.5,1.5],startLat:0,ultra:true,
     sky:['#1c2448','#3a4a78','#8a8aa8'],skies:[['#1c2448','#3a4a78','#8a8aa8'],['#6fa2d8','#b8d4ea','#eef0e6'],['#3a2c5c','#b0607a','#f39a5a']],fogs:['#4a5270','#d6e2ea','#c08070'],fog:0x4a5270,sun:[-.6,.3,.4],sunCol:0xfff0dc,
     desc:'三十七歲，人生跑過最長的距離。北方的大湖旁，一場很多跑者都說「一生一定要跑一次」的超級馬拉松：天還沒亮就出發，沿著湖岸、花海和白樺樹林，一直跑到天黑。出發前選擇距離：七十五公里或一百公里。左上角是「疲勞」：只會累積，不會消失。',
     intro:'三十七歲，跑步的第六年。阿傑報名了北方大湖的超級馬拉松，那是很多跑者都說一生一定要跑一次的比賽。凌晨四點半，湖邊的空氣涼涼的，起跑線上擠滿了頭燈。',
@@ -520,7 +520,7 @@ const VENUES={
       [0,'阿傑','一半了。腳開始不太像是自己的了。',null,null,.5],[0,'阿傑','前面那個人……穿著跟我一樣的衣服。',null,null,.58],[0,'阿傑','……是三十二歲的我嗎？',null,null,.63],
       [0,'阿傑','好像穿過了某個看不見的地方。',null,null,.76],[0,'阿傑','身體不再說話了。腳只是一直往前移動。',null,null,.82],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',null,null,.88],[0,'阿傑','……剩下來的，就只是跑。',null,null,.93],[0,'阿傑','終點的聲音，從湖的另一邊傳過來。',null,null,.98]],
     end:'跑完了。',
-    next:'那之後，阿傑有好一陣子沒有再跑超馬。那一天，好像把身體裡的某樣東西，好好地用完了。\n兩年後，三十九歲。'},
+    next:'兩年後，三十九歲。還是照常地跑，練得也不比以前少。只是有些東西，好像慢慢不一樣了。'},
   stall:{ch:'第八章',startHR:0.65,thr:222,n:'追不上的人',sub:'停滯',km:21.0975,build:'race',khh:true,secs:52,age:39,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
     pickLines:{goal:{faster:[[5,'說好要跑得更快的。……現在連以前的自己都追不上。']],farther:[[5,'說好要去更遠的地方。腿卻好像先老了。']],keep:[[5,'說好就這樣繼續跑。但數字往回走，還是會在意。']]}},
     sky:['#8a96a8','#c2c8cf','#e8dccb'],fog:0xd2d4d4,sun:[-.5,.5,.4],sunCol:0xfff0dc,leaves:[0xd8783a,0xc8a040],
@@ -1214,7 +1214,8 @@ const HR_REST=62;let HR_MAX=Math.round(208-.7*32); // re-set per chapter from v.
 const ZC=['#a9b6d6','#7cc0e6','#7fcf95','#f3bd63','#ef7a6e'],ZN=['很輕鬆','可以聊天','有點喘','很喘','說不出話'];
 function zoneOf(bpm){const p=bpm/HR_MAX;return p<.6?1:p<.7?2:p<.8?3:p<.9?4:5;}
 // JOG is this chapter's easy cruising speed (middle of zone 2 for his fitness and age); everything else scales from it
-function jogOf(v){const mx=Math.round(208-.7*(v.age||32)),I=(.65*mx-62)/(mx-62);return 1000/(v.thr||360)+(I-.72)/.5;}
+function jogOf(v){if(v.jogPace)return 1000/v.jogPace; // the ultra is paced by the day, not by his marathon fitness
+  const mx=Math.round(208-.7*(v.age||32)),I=(.65*mx-62)/(mx-62);return 1000/(v.thr||360)+(I-.72)/.5;}
 let JOG=1000/360,VMIN=2.3,VMAX=3.6,S_STEP=5;
 // fitness over the decade: v.thr is the pace (sec/km) where he tips into zone 4. 5'45" on day one, 4'43" at the first marathon (zone 3 all the way ≈ 3:30),
 // 3'33" at his peak at 37 (a 2:30 marathon in him), then it slowly gives back.
@@ -1264,10 +1265,10 @@ $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;$('rc-menu1').onclick=toMen
 function run(id){
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
   const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;JOG=jogOf(v);if(v.stall){const gv=1000/(PEAK21/v.km);v.secs=52*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
-  HR_MAX=Math.round(208-.7*(v.age||32));VMIN=spdAt(v,.55);VMAX=spdAt(v,.95);S_STEP=Math.max(3,Math.round((1000/VMIN-1000/VMAX)/14)); // − / ＋ live between zone 1 and zone 5if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
+  HR_MAX=Math.round(208-.7*(v.age||32));VMIN=spdAt(v,.55);VMAX=spdAt(v,.95);if(v.jogPace){VMIN=JOG*.75;VMAX=1000/330;}S_STEP=Math.max(3,Math.round((1000/VMIN-1000/VMAX)/14)); // − / ＋ live between zone 1 and zone 5if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:z2Of(v,v.startHR),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:v.startPace?1000/v.startPace:z2Of(v,v.startHR),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
@@ -1558,7 +1559,7 @@ function update(dt){
    if(W.sunI0===undefined){W.sunI0=W.sun.intensity;W.sunC0=W.sun.color.clone();}W.sun.intensity=W.sunI0*(1+.2*c);W.sun.color.copy(W.sunC0).lerp(_cineSun,c*.7);}
   // HUD
   { // heart rate follows effort with a lag, drifts up slowly, spikes briefly after a bump
-    const I=clamp(.69+(S.speed-1000/(v.thr||360))*.5,.25,1.05)+Math.min(.06,S.t*.0006)+(S.bump>0?.05:0)+(S.wall&&!S.done?.08:0)+(v.stall&&!S.letgo&&!S.done&&Math.abs(S.lat-S.ghost.lat)<1.2?.3:0)+(v.ultra&&!S.done?S.fat/100*.08:0);
+    const I=clamp(.69+(S.speed-1000/(v.thr||360))*.5,.25,1.05)+Math.min(.06,S.t*.0006)+(S.bump>0?.05:0)+(S.wall&&!S.done?.08:0)+(v.stall&&!S.letgo&&!S.done&&Math.abs(S.lat-S.ghost.lat)<1.2?.3:0)+(v.ultra&&!S.done?S.fat/100*.55:0);
     const tgt=S.done&&S.speed<.5?HR_REST+40:HR_REST+I*(HR_MAX-HR_REST);S.hr=lerp(S.hr,tgt,Math.min(1,dt/5));
     if(!S.done){S.hrSum+=S.hr*dt;S.hrN+=dt;}
     const z=zoneOf(S.hr);$('bpm').textContent=Math.round(S.hr);if(!S.done)S.maxHR=Math.max(S.maxHR||0,S.hr);
