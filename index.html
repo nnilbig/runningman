@@ -434,7 +434,7 @@ const NAME_M='豪明宏偉翰宇廷哲瑋凱華銘誠霖祥維'.split(''),NAME_F
 function RN(g){const pool=g==='f'?NAME_F:NAME_M;for(let k=0;k<80;k++){const c=pool[Math.floor(Math.random()*pool.length)],n=(Math.random()<.5?'小':'阿')+c;if(!USED.has(c)&&!USED.has(n)){USED.add(c);USED.add(n);return n;}}return '小'+pool[0];}
 const RIVER_SEED=1933; // chapters 1 and 8 run the very same riverbank
 const VENUES={
-  start:{ch:'第一章',thr:360,n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:42,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
+  start:{ch:'第一章',thr:360,startPace:420,n:'春天的河堤',sub:'起點',km:3,build:'river',seed:RIVER_SEED,secs:42,age:32,width:6,lat:[-2.7,2.7],startLat:-1.2,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],fog:0xdfdcdc,sun:[-.7,.22,.5],sunCol:0xffe6c8,
     ground:0x8cb46c,grass:0x84aa66,water:0x5f9ad0,leaves:[0x7fae62,0x8cba6c,0x9cc47a],crown:0xf0b6c4,reeds:[0x8aa25e,0x9aa866,0x7d9452],
     desc:'三十二歲那年春天的清晨，第一次在河堤上跑三公里。右手邊是河和濕地，路邊有幾棵櫻花，遠處有一座紅色的橋。就這樣而已。',
@@ -1259,7 +1259,7 @@ function run(id){
   HR_MAX=Math.round(208-.7*(v.age||32));if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:z2Of(v),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:v.startPace?1000/v.startPace:z2Of(v),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
