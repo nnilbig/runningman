@@ -462,14 +462,14 @@ const VENUES={
     next:'下雨天，也照樣出門。跑步變得像刷牙一樣，一天沒跑，就覺得哪裡怪怪的。那年冬天，阿傑報名了人生第一場全馬。'},
   club:{ch:'第二章',thr:325,n:'參加跑團',sub:'同伴',km:5,build:'park',secs:54,age:33,width:4,lat:[-1.7,1.7],startLat:0,club:true,
     sky:['#86aee0','#cfd8e8','#fbe3c8'],fog:0xdfdcdc,sun:[-.6,.4,.5],sunCol:0xfff0dc,
-    desc:'三十三歲，加入了跑團。城市裡有一片像熱帶雨林的地方，大家繞著一座大蓄水池跑，中間有一段水上木棧道，偶爾會遇到猴子。出發前選一種跑團：認真的競速團、跑完一起吃早餐的聊天團，或是下班後的夜跑團。一群人一起，繞著水池跑完五公里。',
+    desc:'三十三歲，加入了跑團。城市裡有一片像熱帶雨林的地方，大家繞著一座大蓄水池跑，中間有一段水上木棧道，偶爾會遇到猴子。出發前選一種跑團：認真的競速團、下班後的夜跑歡樂團，或是跑完一起吃早餐的早餐團。一群人一起，繞著水池跑完五公里。',
     intro:'跑了一陣子之後，同事問阿傑要不要加入跑團。公司附近剛好有三個團，風格完全不一樣。他想了一下，覺得試試看也沒有什麼損失。',
     shirt:0xf0c060,
-    choose:{q:'要加入哪一種跑團？',opts:[['chat','週六早上的聊天團（跑完一起吃早餐）'],['speed','認真的競速團（課表、配速、目標賽事）'],['night','下班後的夜跑團（跑完拍照打卡）']]},
+    choose:{q:'要加入哪一種跑團？',opts:[['speed','競速的跑團（課表、配速、目標賽事）'],['night','夜跑歡樂團（下班後，跑完拍照打卡）'],['chat','早餐團（週六早上，跑完一起吃早餐）']]},
     variants:{
       chat:{n:'參加跑團',grp:.92,shirt:0xf0c060,first:'三十三歲。第一次跟一群人一起跑。跑完之後，還要一起去吃早餐。蛋餅配豆漿。',
         friends:[[RN('m'),'阿傑，第一次來嗎？跟著我們的速度就好。',0.1,'好，謝謝。'],[RN('f'),'等一下早餐要吃蛋餅，還是蘿蔔糕？',0.23,'……蛋餅吧。'],[RN('f'),'你看，猴子在木棧道上！',0.37,'真的耶。'],[RN('m'),'這個配速剛好，可以一邊跑一邊聊天。',0.51,null],[RN('f'),'阿傑，下個月要不要一起報名路跑？',0.64,'好啊，一起。'],[RN('m'),'最後一段了，大家一起進來！',0.79,null]]},
-      speed:{n:'參加跑團',grp:1.15,shirt:0xe8574a,first:'三十三歲。加入了一個很認真的跑團。每個星期，配速表都會準時貼在群組裡。',
+      speed:{n:'參加跑團',grp:1.15,speedFx:true,shirt:0xe8574a,first:'三十三歲。加入了一個很認真的跑團。每個星期，配速表都會準時貼在群組裡。',
         friends:[[RN('m'),'新來的？配速表看過了吧，今天五分半。',0.1,'看過了。……努力跟。'],[RN('f'),'前面先不要衝，呼吸跟著步伐。',0.23,null],[RN('m'),'阿傑，手臂放鬆，肩膀不要聳起來。',0.37,'……好。'],[RN('f'),'間歇的秒數你先不用管，先跑順。',0.51,'嗯。'],[RN('m'),'後半段了，可以稍微加速。',0.64,null],[RN('m'),'最後一段，跟上來！',0.79,'來了！']]},
       night:{n:'參加跑團',grp:.92,shirt:0x5fa6c8,night:true,first:'三十三歲。加入了一個下班後的夜跑團。跑完之後，大家一定要拍一張合照。',
         sky:['#0c1030','#1f2452','#463a6a'],fog:0x2a2a4c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8,
@@ -1544,8 +1544,8 @@ function update(dt){
   runner.g.position.set(p.x+p.rx*S.lat,0,p.z+p.rz*S.lat);runner.g.rotation.y=Math.atan2(p.tx,p.tz);
   animPerson(runner,dt,.9+S.speed*.22,clamp(S.speed/JOG,0,1.15));
   // camera: behind and a little above, like a chase cam
-  // speed feel: above his easy pace the camera tucks in and the view widens; below it, everything eases back
-  const eu=S.done?0:clamp((S.speed-JOG)/Math.max(.1,VMAX-JOG),0,1),el=S.done?0:clamp((JOG-S.speed)/Math.max(.1,JOG-VMIN),0,1);
+  // speed feel (only with the speed club): above his easy pace the camera tucks in and the view widens; below it, everything eases back
+  const sfx=!!v.speedFx&&!S.done,eu=!sfx?0:clamp((S.speed-JOG)/Math.max(.1,VMAX-JOG),0,1),el=!sfx?0:clamp((JOG-S.speed)/Math.max(.1,JOG-VMIN),0,1);
   S.eu=lerp(S.eu||0,eu,Math.min(1,dt*1.5));S.el=lerp(S.el||0,el,Math.min(1,dt*1.5));
   const rp=runner.g.position,back=7-1.4*S.eu+.6*S.el,ht=3.6-.55*S.eu+.35*S.el;
   const tgt=new THREE.Vector3(rp.x-p.tx*back,ht,rp.z-p.tz*back),look=new THREE.Vector3(rp.x+p.tx*7,1.3,rp.z+p.tz*7);
