@@ -473,11 +473,11 @@ const VENUES={
     shirt:0xf0c060,
     choose:{q:'要加入哪一種跑團？',opts:[['speed','競速的跑團（課表、配速、目標賽事）'],['night','夜跑歡樂團（下班後，一起流流汗）'],['chat','早餐團（週六早上，跑完一起吃早餐）']]},
     variants:{
-      chat:{n:'參加跑團',grp:.92,shirt:0xf0c060,first:'三十三歲。第一次跟一群人一起跑。跑完之後，還要一起去吃早餐。蛋餅配豆漿。',
+      chat:{n:'參加跑團',grp:360,shirt:0xf0c060,first:'三十三歲。第一次跟一群人一起跑。跑完之後，還要一起去吃早餐。蛋餅配豆漿。',
         friends:[[RN('m'),'阿傑，第一次來嗎？跟著我們的速度就好。',0.1,'好，謝謝。'],[RN('f'),'等一下早餐要吃蛋餅，還是蘿蔔糕？',0.23,'……蛋餅吧。'],[RN('f'),'你看，猴子在木棧道上！',0.37,null],[RN('m'),'最後一段了，大家一起進來！',0.79,null]]},
-      speed:{n:'參加跑團',grp:1.15,speedFx:true,shirt:0xe8574a,first:'三十三歲。加入了一個很認真的跑團。每個星期，配速表都會準時貼在群組裡。',
-        friends:[[RN('m'),'新來的？配速表看過了吧，今天五分半。',0.1,'看過了。……努力跟。'],[RN('m'),'阿傑，手臂放鬆，肩膀不要聳起來。',0.37,null],[RN('m'),'後半段了，可以稍微加速。',0.64,null],[RN('m'),'最後一段，跟上來！',0.79,'來了！']]},
-      night:{n:'參加跑團',grp:.92,shirt:0x5fa6c8,night:true,first:'三十三歲。加入了一個下班後的夜跑團。跑完之後，大家一定要拍一張合照。',
+      speed:{n:'參加跑團',grp:300,speedFx:true,shirt:0xe8574a,first:'三十三歲。加入了一個很認真的跑團。每個星期，配速表都會準時貼在群組裡。',
+        friends:[[RN('m'),'新來的？配速表看過了吧，今天五分速。',0.1,'看過了。……努力跟。'],[RN('m'),'阿傑，手臂放鬆，肩膀不要聳起來。',0.37,null],[RN('m'),'後半段了，可以稍微加速。',0.64,null],[RN('m'),'最後一段，跟上來！',0.79,'來了！']]},
+      night:{n:'參加跑團',grp:330,shirt:0x5fa6c8,night:true,first:'三十三歲。加入了一個下班後的夜跑團。跑完之後，大家一定要拍一張合照。',
         sky:['#0c1030','#1f2452','#463a6a'],fog:0x2a2a4c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8,
         friends:[[RN('f'),'下班還能跑步，真好。阿傑，今天辛苦了。',0.1,null],[RN('m'),'路燈下的影子好長。',0.23,null],[RN('m'),'白天的事，跑一跑就忘了。',0.51,'嗯，真的。'],[RN('m'),'最後一圈！跑完去吃豆花？',0.79,'好啊。']]}},
     script:[[0,'阿傑','三十三歲。第一次跟一群人一起跑。',null,null,.02],[0,'提示','跟著大家的速度跑，才聽得到他們在聊什麼。',null,null,.05],[0,'阿傑','……一個人跑的時候，從來沒有注意過別人的呼吸。',null,null,.9]],
@@ -1281,7 +1281,7 @@ function run(id){
   HR_MAX=Math.round(208-.7*(v.age||32));VMIN=spdAt(v,.55);VMAX=spdAt(v,.95);LV=(v.vmin?[0]:[]).concat([.55,.6,.65,.7,.75,.8,.85,.9,.95]); // − / ＋ pick an effort: half a zone per press (0 = walk, where the story allows it)if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
   try{W=v.build==='track'?buildTrack(v):v.build==='river'?buildRiver(v):v.build==='boulevard'?buildBoulevard(v):v.build==='park'?buildPark(v):v.build==='oldcity'?buildOldCity(v):v.build==='blossom'?buildBlossom(v):v.build==='race'?buildRace(v):v.build==='weekend'?buildWeekend(v):buildRiver(v);}finally{Math.random=R;}
   runner=makePerson(Object.assign({},CHAR,v.hair?{hair:v.hair}:{}));scene.add(runner.g);
-  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?JOG*v.grp:v.startPace?1000/v.startPace:z2Of(v,v.startHR),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
+  S={id,v,d:W.startD,lat:v.startLat,speed:0,target:v.club&&v.grp?1000/v.grp:v.startPace?1000/v.startPace:z2Of(v,v.startHR),t:0,done:false,doneT:0,bump:0,shake:0,npcs:spawnNPCs(v.quiet?'quiet':v.build==='boulevard'?'rain':v.build==='oldcity'?(v.ultra?'lake':'small'):v.build==='blossom'?'park':v.build==='nightrun'?'lake':v.build==='weekend'?(v.ultra?'lake':'hike'):v.build),line:0,stepT:0,hr:HR_REST+25,hrSum:0,hrN:0,zone:0,greetCD:7,greetN:0,queue:[],goal:v.km*1000/v.sc,noWatch:!!PICK.noWatch,why:PICK.why||ANS[id],walkT:0,walked:false,gly:100,fuel:0,wall:false,wallAt:0,mot:38,seen:0,flow:0,deepT:0,fat:0,hazeT:0,hazeCD:2,drift:0,beyond:false,skyK:-1,letgo:false,easyT:0};
   { const P=W.path;for(const n of S.npcs){const r=relDist(P,S.d,n.d);if(Math.abs(r)<16)n.d=P.closed?(((n.d+(r>=0?28:-28))%P.L)+P.L)%P.L:S.d+rnd(28,45);const pp=at(P,n.d),ob=n.p?n.p.g:n.b.g;ob.position.set(pp.x+pp.rx*n.lat,0,pp.z+pp.rz*n.lat);ob.rotation.y=Math.atan2(pp.tx,pp.tz)+(n.v<0?Math.PI:0);}} // nobody standing on the start line with 阿傑
   $('flowfx').style.opacity=0;$("hudtop").style.opacity=1;$('say').style.setProperty('--fade','1');$('gl').style.filter='';$('tint').style.background='transparent';$('gap').hidden=!v.stall;
   $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);
@@ -1482,7 +1482,7 @@ function update(dt){
     const pp=at(path,Math.min(g.d,path.L-1));g.p.g.position.set(pp.x+pp.rx*g.lat,0,pp.z+pp.rz*g.lat);g.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(g.p,dt,.9+g.v*.22,1);
     if(!S.letgo){const gapS=Math.max(0,(g.d-S.d)/g.v*v.sc);$('gap').textContent=`34 歲的自己 +${Math.floor(gapS/60)}:${String(Math.floor(gapS%60)).padStart(2,'0')}`;}}
   if(S.pacer){const pc=S.pacer;pc.d+=PACER_V*dt*(S.done?.6:1);const pp=at(path,pc.d);pc.p.g.position.set(pp.x+pp.rx*pc.lat,0,pp.z+pp.rz*pc.lat);pc.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(pc.p,dt,.9+JOG*.22,1);}
-  if(S.friends&&v.grp){if(!S.grp)S.grp={d:S.d,v:0};const G=S.grp;G.v=lerp(G.v,S.done?0:JOG*v.grp,Math.min(1,dt*1.2));G.d+=G.v*dt;
+  if(S.friends&&v.grp){if(!S.grp)S.grp={d:S.d,v:0};const G=S.grp;G.v=lerp(G.v,S.done?0:1000/v.grp,Math.min(1,dt*1.2));G.d+=G.v*dt;
     const gap=S.d-G.d;S.withGrp=Math.abs(gap)<7;S.grpCD=(S.grpCD||0)-dt;
     if(!S.done&&!S.withGrp&&S.grpCD<=0){S.grpCD=7;toast(gap>0?'跑太前面了。慢一點，等等大家。':'大家在前面。快一點，跟上去。');}}
   if(S.friends){const prog=S.d-W.startD;
