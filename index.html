@@ -1581,8 +1581,8 @@ function update(dt){
   }
   { const pc=S.speed>.3?1000/S.speed:0;$('pace').textContent=pc?`${Math.floor(pc/60)}'${String(Math.floor(pc%60)).padStart(2,'0')}"`:'—';}
   $('dist').textContent=`${(Math.min(prog,S.goal)*v.sc/1000).toFixed(2)} / ${v.km.toFixed(1)} km`;
-  // the running app's voice: a split every km (every 10 km on long runs; none on the ultra, where nobody looks)
-  if(!S.done&&!S.noWatch&&!v.ultra){const step=v.km>12?10:1,k=Math.floor(prog*v.sc/1000/step)*step;if(S.splitK===undefined){S.splitK=0;S.splitT=0;}
+  // the running app's voice: only in the first half marathon, every 5 km, where pacing is the whole point
+  if(!S.done&&!S.noWatch&&v.pacing){const step=5,k=Math.floor(prog*v.sc/1000/step)*step;if(S.splitK===undefined){S.splitK=0;S.splitT=0;}
     if(k>S.splitK&&k<v.km){const lap=(S.t-S.splitT)*v.sc/(k-S.splitK),m=Math.floor(lap/60),sec=Math.floor(lap%60);S.splitK=k;S.splitT=S.t;toast(`第 ${k} 公里・配速 ${m}'${String(sec).padStart(2,'0')}"`);tone(1320,.12,'sine',.035);tone(1760,.16,'sine',.03,.13);}}
   const gt=S.t*v.sc;$('clock').textContent=fmtT(gt,true);
   S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0&&toastT<=0){const q=S.queue.shift();say(q.who,q.text,q.spoken);}
