@@ -425,7 +425,7 @@ function makeBike(shirt){
 }
 
 /* ================= venues ================= */
-const CHAPTERS=['start','club','track','habit','race','summer','ultra','stall','burnout','end'];
+const CHAPTERS=['start','habit','track','race','summer','ultra','stall','burnout','end'];
 // the arc: 起 1–2, 承 3–5, 轉 6–7, 合 8. All eight chapters are playable.
 const WHY=['想換一種生活','想讓身體好一點','說不上來，就是想跑'],WHY_LATE='已經不需要理由了';
 const GREET={start:[['早！','早。'],['早安～','早安。']],
@@ -456,7 +456,7 @@ const VENUES={
     endBy:{[WHY[0]]:'三公里。生活看起來沒什麼改變。可是今天早上，確實有一點不一樣。',[WHY[1]]:'三公里。喘得很厲害。但跑完之後，身體裡有某個地方，安靜地舒服了起來。',[WHY[2]]:'三公里。理由還是說不清楚。不過腳好像比我先知道了。'},
     end:'三公里。理由還是說不清楚。不過腳好像比我先知道了。',
     next:'第一次跑完三公里的那天晚上，阿傑睡得像一塊石頭。隔天早上腿很痠。即使如此，他還是想，再跑一次看看好了。'},
-  habit:{ch:'第四章',startHR:0.61,thr:300,n:'不想跑的日子',heavyStart:true,sub:'習慣',km:5,build:'boulevard',rain:true,secs:48,age:34,width:4,lat:[-1.7,1.7],startLat:.4,
+  habit:{ch:'第二章',startHR:0.61,thr:325,n:'不想跑的日子',heavyStart:true,sub:'習慣',km:5,build:'boulevard',rain:true,secs:48,age:33,width:4,lat:[-1.7,1.7],startLat:.4,
     pick:{key:'music',q:'出門前，耳機裡要放什麼？',opts:[['jazz','一首老爵士'],['rock','一首老搖滾'],['none','什麼都不放']]},
     pickLines:{music:{jazz:[[3,'耳機裡是一首老爵士。鋼琴的聲音，跟雨聲很合。']],rock:[[3,'耳機裡是一首老搖滾。鼓聲一下一下，把腳往前推。']],none:[[3,'耳機裡什麼都沒放。只有雨聲，和自己的呼吸。']]}},
     sky:['#4a5568','#6b7484','#8f95a0'],fog:0x7c8490,sun:[.3,.6,.4],sunCol:0xc9d3e0,
@@ -465,21 +465,7 @@ const VENUES={
     week:['一','二','三','四','五','六','日'],weekDone:[0],weekToday:2,
     script:[[0,'阿傑','下雨了。想了大概十個不跑的理由，最後還是穿上了鞋子。'],[0,'阿傑','意志力這種東西，有點像手機的電量。到了晚上，就不太夠用。'],[0,'阿傑','不過習慣不太需要電。鞋帶一綁好，腳就自己動起來了。'],[0,'阿傑','同一條路，同一個轉角。每天看起來都差不多。'],[0,'阿傑','重複並不是在原地打轉。每一次，都會留下一點什麼。'],[0,'阿傑','今天的份，差不多跑完了。']],
     end:'五公里。不想跑的日子，跑完之後反而最舒服。這是一個小小的祕密。',
-    next:'下雨天，也照樣出門。跑步變得像刷牙一樣，一天沒跑，就覺得哪裡怪怪的。那年冬天，阿傑報名了人生第一場全馬。'},
-  club:{ch:'第二章',thr:325,startHR:.64,n:'田徑場',sub:'同伴',km:5,build:'track',lanes:true,secs:54,age:33,width:9.76,lat:[-4.6,4.6],startLat:-.61,
-    sky:['#5f6fa8','#c89aa8','#f6c9a0'],fog:0xd8b8b0,sun:[-.6,.25,.5],sunCol:0xffd8b0,
-    desc:'三十三歲，下班後到田徑場練跑。出發前選一座田徑場：城市裡的紅色跑道，或山邊大學的藍色跑道。第一道的人跑最快，越外圈越慢。換到不同的跑道，就會跟不同的人並肩一段。',
-    intro:'跑了一陣子之後，阿傑想知道，別人是怎麼練跑的。下班後，他走進了田徑場。跑道上已經有好幾個人在跑。',
-    choose:{q:'今天去哪一座田徑場？',opts:[['red','城市裡的紅色跑道'],['blue','山邊大學的藍色跑道']]},
-    variants:{
-      red:{n:'田徑場',track:0x9c4034,trackOut:0x82362d,night:true,first:'三十三歲。下班後，第一次走進城市裡的田徑場。燈已經亮了。',
-        sky:['#1c2448','#3d3f6e','#7a5a7a'],fog:0x3a3a5c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8},
-      blue:{n:'田徑場',track:0x2f5a9e,trackOut:0x284d88,campus:true,night:true,sky:['#1c2448','#3d3f6e','#7a5a7a'],fog:0x3a3a5c,sun:[-.4,.55,-.6],sunCol:0x9fb2e8,first:'三十三歲。下班後，第一次走進山邊那所大學的田徑場。'}},
-    laneLines:['第一道的高中生，穿著釘鞋。每跑完一趟，就彎下腰喘，然後再出發。','第二道的女生在跑間歇。手錶一響，她就咬著牙加速。','第三道的大叔，跑姿有點奇怪。不過，他從我來之前就在跑了。','第四道有人一邊跑，一邊小聲數著圈數。','第五道的阿姨跑得不快，但每一步都很認真。','第六道是剛開始跑的人吧。跟以前的我一樣，喘得很厲害。'],
-    script:[[0,'阿傑','三十三歲。下班後，第一次走進田徑場。',null,null,.01],[0,'提示','每一道都有人在跑。第一道最快，越外面越慢。用 L R 換到別的跑道，跟他們並肩一段。',null,null,.03],
-      [0,'阿傑','一個人跑的時候，總覺得只有自己在努力。',null,null,.45],[0,'阿傑','原來每個人，都在用自己的速度跑著。',null,null,.9]],
-    end:'五公里。跑道上的人，都還在跑。',
-    next:'那之後，阿傑常常去田徑場。不跟誰比，只是覺得在那裡跑步，不會那麼孤單。'},
+    next:'下雨天，也照樣出門。跑步變得像刷牙一樣，一天沒跑，就覺得哪裡怪怪的。三十四歲那年，阿傑報名了人生第一場半馬。'},
   track:{ch:'第三章',startHR:0.65,thr:305,n:'第一場半馬',sub:'配速',km:21.0975,build:'race',khh:true,pacing:true,secs:52,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
     pick:{key:'pacer',q:'起跑前，要怎麼跑？',opts:[['pacer','跟著配速員的氣球跑'],['self','按自己的節奏跑']]},
     pickLines:{pacer:{pacer:[[1,'配速員會用固定、不會累的速度跑完全程。跟在氣球後面，就不會衝太快。'],[2,'跟好氣球，呼吸跟著步伐。前面別衝。','配速員'],[3,'氣球在前面，一上一下。我只要跟著就好。']],self:[[3,'別跟。這是我自己的比賽。']]}},
@@ -490,15 +476,15 @@ const VENUES={
       [0,'旁邊的跑者','第一次跑半馬？前面別衝喔，後面才有力氣。',4],[0,'阿傑','別跟。這是我自己的比賽。',7],[0,'阿傑','河邊的風吹過來，有一點鹹。',12.5],
       [0,'阿傑','終點的拱門，看得到了。',20.6]],
     end:'二十一公里。跑完了。',
-    next:'第一面半馬完賽獎牌，比想像中重。阿傑把它掛在書桌旁邊。秋天來了，雨也跟著來了。'},
-  race:{ch:'第五章',startHR:0.65,thr:283,n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:50,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
+    next:'第一面半馬完賽獎牌，比想像中重。阿傑把它掛在書桌旁邊。那年冬天，他報名了人生第一場全馬。'},
+  race:{ch:'第四章',startHR:0.65,thr:283,n:'第一次全馬',sub:'撞牆',km:42.195,build:'race',taipei:true,secs:50,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,vmin:1.2,glycogen:true,
     sky:['#6f90c0','#b8c8dc','#ecdcc8'],fog:0xd6dce4,sun:[-.5,.55,.4],sunCol:0xfff1dc,
     desc:'人生第一場全程馬拉松，十二月的城市馬拉松。從市中心的廣場出發，遠方是那棟最高的大樓；穿過林蔭大道，沿著河濱跑，再回到起點。這一章多了肝醣條：每十公里有一個補給站，左右交替出現，靠過去經過就能拿到。過了三十五公里，會撞牆。',
     intro:'三十四歲，跑步的第三年。人生第一場全馬，是十二月的城市馬拉松。前一晚幾乎沒睡，四點就醒了。清晨的空氣有點冷。起跑線上擠滿了人，每個人看起來都比他厲害。',
     script:[[0,'阿傑','第一場全馬。起跑線前，每個人看起來都比我厲害。不過，這也沒辦法。',.4],[0,'提示','補給站會左右交替出現。靠過去跑，就能補充肝醣。',6],[0,'阿傑','前十公里，身體輕得像是跟誰借來的。',10.5],[0,'阿傑','過了半馬，到了河濱。風很冷。從這裡開始，才是真正的馬拉松吧。',25.5],[0,'阿傑','腿開始有自己的意見了。',30.5],[0,'阿傑','最後兩公里。不知道從哪裡來的力氣。',40.5]],
     end:'四十二點一九五公里。跑完了。最後那幾公里，一直在跟自己吵架。不過，總算吵完了。',
     next:'之後幾天，下樓梯都要扶著扶手。即使如此，阿傑已經開始想，下一次要跑去哪裡了。'},
-  summer:{ch:'第六章',startHR:0.66,thr:256,n:'旅行的早晨',sub:'空白',km:10,build:'blossom',secs:54,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
+  summer:{ch:'第五章',startHR:0.66,thr:256,n:'旅行的早晨',sub:'空白',km:10,build:'blossom',secs:54,age:35,width:5,lat:[-2.1,2.1],startLat:-.4,flow:true,
     pick:{key:'goal',q:'跑完第一場全馬之後，下一個目標是？',opts:[['faster','跑得更快'],['farther','去更遠的地方跑'],['keep','就這樣繼續跑下去']]},
     pickLines:{goal:{faster:[[0,'三十五歲。旅行的第二天。就算出來玩，課表還是記在腦子裡。']],farther:[[0,'三十五歲。旅行的第二天。想知道在陌生的城市跑步，是什麼感覺。']],keep:[[0,'三十五歲。旅行的第二天。早上六點，一個人出門跑步。']]}},
     sky:['#8ab0dc','#d8dcec','#f6e8ea'],fog:0xe8e0e4,sun:[-.6,.4,.5],sunCol:0xfff2e8,
@@ -509,7 +495,7 @@ const VENUES={
     endDeep:'回過神來，已經回到旅館門口了。剛才那十公里在想什麼，一點也想不起來。大概，什麼都沒想吧。',endShallow:'一路上都在想事情。跑到這麼遠的地方，腦袋還是跟著來了。不過，櫻花很漂亮。',
     end:'跑完了。',
     next:'那一年，是阿傑跑得最快的一年。同一年的夏天，他想知道，自己最遠能跑到哪裡。'},
-  ultra:{ch:'第七章',startHR:.68,vmin:1.2,thr:364,n:'最長的距離',sub:'邊界',km:100,kmLabel:'75 / 100',build:'weekend',secs:58,age:35,width:3.6,lat:[-1.5,1.5],startLat:0,ultra:true,
+  ultra:{ch:'第六章',startHR:.68,vmin:1.2,thr:364,n:'最長的距離',sub:'邊界',km:100,kmLabel:'75 / 100',build:'weekend',secs:58,age:35,width:3.6,lat:[-1.5,1.5],startLat:0,ultra:true,
     sky:['#1c2448','#3a4a78','#8a8aa8'],skies:[['#1c2448','#3a4a78','#8a8aa8'],['#6fa2d8','#b8d4ea','#eef0e6'],['#3a2c5c','#b0607a','#f39a5a']],fogs:['#4a5270','#d6e2ea','#c08070'],fog:0x4a5270,sun:[-.6,.3,.4],sunCol:0xfff0dc,
     desc:'三十五歲，人生跑過最長的距離。北方的大湖旁，一場很多跑者都說「一生一定要跑一次」的超級馬拉松：天還沒亮就出發，沿著湖岸、花海和白樺樹林；跑一百公里的人，要一直跑到天黑。出發前選擇距離：七十五公里或一百公里。左上角是「疲勞」：只會累積，不會消失。',
     intro:'三十五歲，跑步的第四年。阿傑報名了北方大湖的超級馬拉松，那是很多跑者都說一生一定要跑一次的比賽。凌晨四點半，湖邊的空氣涼涼的，起跑線上擠滿了頭燈。',
@@ -523,7 +509,7 @@ const VENUES={
       [0,'阿傑','好像穿過了某個看不見的地方。',null,null,.76],[0,'阿傑','越過極限之後，剩下來的是什麼呢？',null,null,.86],[0,'阿傑','……剩下來的，就只是跑。',null,null,.92]],
     end:'跑完了。',
     next:'挑戰極限之後的五年。依然跑步，偶爾報一場比賽。四十歲那年秋天，阿傑忽然發現，有些東西好像慢慢不一樣了。'},
-  stall:{ch:'第八章',startHR:0.65,thr:325,n:'追不上的人',sub:'停滯',km:21.0975,build:'race',khh:true,secs:52,age:40,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
+  stall:{ch:'第七章',startHR:0.65,thr:325,n:'追不上的人',sub:'停滯',km:21.0975,build:'race',khh:true,secs:52,age:40,width:8,lat:[-3.5,3.5],startLat:-1.0,stall:true,vmin:1.6,
     pickLines:{goal:{faster:[[4,'說好要跑得更快的。……現在連以前的自己都追不上。']],farther:[[4,'說好要去更遠的地方。腿卻好像先老了。']],keep:[[4,'說好就這樣繼續跑。但數字往回走，還是會在意。']]}},
     sky:['#8a96a8','#c2c8cf','#e8dccb'],fog:0xd2d4d4,sun:[-.5,.5,.4],sunCol:0xfff0dc,leaves:[0xd8783a,0xc8a040],
     desc:'四十歲，又站上了第一次跑的那場半馬。成績不再進步，速度也有了上限，再怎麼按 ＋ 都快不起來。手機 App 裡存著六年前，他第一次跑這場半馬的紀錄，變成旁邊一個透明的跑者。跟在他後面就是追；往右邊靠，就是讓他先走。',
@@ -533,7 +519,7 @@ const VENUES={
       [0,'阿傑','心跳很快，腿很重。還是追不上。',16,'呼吸很穩。原來這個速度，也可以跑得很舒服。'],[0,'阿傑','數字是真的。三十四歲的我，也是真的。',18.1,'三十四歲的我，現在大概已經到終點了吧。']],
     end:'跑完了。',
     next:'之後的一年，阿傑越跑越少。不是受傷，也不是太忙。只是某一天，忽然不想跑了。就像雨停了一樣自然。'},
-  burnout:{ch:'第九章',startHR:0.61,thr:340,n:'沒有熱情的日子',sub:'倦怠',km:5,build:'park',secs:54,age:41,width:4,lat:[-1.7,1.7],startLat:-.4,vmin:1.2,motive:true,
+  burnout:{ch:'第八章',startHR:0.61,thr:340,n:'沒有熱情的日子',sub:'倦怠',km:5,build:'park',secs:54,age:41,width:4,lat:[-1.7,1.7],startLat:-.4,vmin:1.2,motive:true,
     pickLines:{letgo:{yes:[[1,'那天讓他先走之後，好像把什麼一起放下了。放得有點太多了。']],no:[[1,'那天一直追到最後。追完之後，好像什麼都不剩了。']]}},
     sky:['#4a5f8a','#c08a8a','#f2b07a'],fog:0xc8a49a,sun:[.8,.15,.4],sunCol:0xffb07a,
     desc:'四十一歲。成績不再進步之後，忽然什麼都不想跑了。下班後，到家附近的公園隨便繞幾圈。這一章看的是「動機」：不知不覺就會往下掉，光是休息也不一定回得來，路邊的小事才能把它找回來，但要放慢一點才看得見。',
@@ -545,7 +531,7 @@ const VENUES={
     endHigh:'以前的熱情沒有找回來。不過，好像撿到了別的東西。小小的，但很確實。',endLow:'熱情沒有回來。但還是跑完了。這樣，應該也算數吧。',
     end:'跑完了。',
     next:'之後的一年，阿傑還是繼續跑。只是跑得很慢，也很少比賽。\n四十二歲的秋天，他又回到了那條河堤。'},
-  end:{ch:'第十章',startHR:0.64,thr:330,n:'秋天的河堤',sub:'終點',km:5,build:'river',seed:RIVER_SEED,secs:50,age:42,width:6,lat:[-2.7,2.7],startLat:-1.2,vmin:1.2,walkCheck:true,quiet:true,hair:0x5e5852,
+  end:{ch:'第九章',startHR:0.64,thr:330,n:'秋天的河堤',sub:'終點',km:5,build:'river',seed:RIVER_SEED,secs:50,age:42,width:6,lat:[-2.7,2.7],startLat:-1.2,vmin:1.2,walkCheck:true,quiet:true,hair:0x5e5852,
     pickLines:{seen:{many:[[1,'路邊的芒草、橋下的釣客、天上的雲。最近，總是會注意到這些。']]},
       letgo:{yes:[[2,'跑得比以前慢。那天讓他先走，大概是對的吧。']],no:[[2,'跑得比以前慢。有一陣子，一直在追以前的自己。']]},
       goal:{faster:[[3,'以前一直想跑得更快。後來發現，慢下來以後，看得到的東西變多了。']],farther:[[3,'去過好幾個城市跑步。最後還是覺得，這條河堤最好。']],keep:[[3,'就這樣一直跑著。原來「繼續」，本身就是一件不容易的事。']]}},
@@ -1236,7 +1222,7 @@ const z2Of=(v,f)=>{const I=((f||.65)*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return Mat
 const vmaxOf=v=>VMAX;
 let PICK={};
 function start(id){PICK={};run(id);}
-function buddyName(){const cv=(VENUES.club.variants||{})[ANS.club];return cv&&cv.friends?cv.friends[2][0]:'朋友';}
+function buddyName(){return '朋友';}
 function recapText(id,v){const i=CHAPTERS.indexOf(id),prev=i>0?VENUES[CHAPTERS[i-1]].next:'';return ((prev?prev+'\n\n':'')+v.intro).replace(/\{F\}/g,buddyName());}
 function showRecap(id,v){ // "previously…" over the live scene; the run starts after it (or after the chapter's choice)
   const ex=$('rc-extra'),gob={set hidden(h){$('rc-barbox').style.visibility=h?'hidden':'';$('rc-go').hidden=h;}};$('rc-ch').textContent=`${v.ch}・${v.sub} ・ ${v.kmLabel||v.km} 公里`;$('rc-t').textContent=v.n;
@@ -1350,7 +1336,7 @@ function renderCont(){const done=ANS.done||{},nx=CHAPTERS.find(id=>!done[id]);co
   $('m-cont-l').textContent=!Object.keys(done).length?'開始':nx?'繼續':'全部跑完了・從頭再跑一次';$('m-cont-t').textContent=`${v.ch}　${v.n}`;$('m-cont').onclick=()=>start(id);}
 function renderChapters(){renderCont();
   const card=id=>{const v=VENUES[id];return `<button class="venue" id="v-${id}"><div class="pic" id="pic-${id}"></div><div class="txt"><span class="ch">${v.ch}・${v.sub} ・ ${v.kmLabel||v.km} 公里</span><b>${v.n}</b><small>${shortDesc(v.desc)}</small>${ANS.done&&ANS.done[id]?`<span class="donebadge">✓ 跑過・${ANS.done[id]}</span>`:''}<span class="go">讀這一章</span></div></button>`;};
-  $('chapters').innerHTML=card('start')+card('club')+card('track')+card('habit')+card('race')+card('summer')+card('ultra')+card('stall')+card('burnout')+card('end');
+  $('chapters').innerHTML=CHAPTERS.map(card).join('');
   CHAPTERS.forEach(id=>{$('v-'+id).onclick=()=>start(id);paintPreview($('pic-'+id),VENUES[id].build==='boulevard'?'boulevard':VENUES[id].build==='track'?'track':VENUES[id].build==='park'?'park':VENUES[id].build==='race'?'race':VENUES[id].build==='weekend'?'trail':VENUES[id].build==='coast'?'coast':VENUES[id].build==='lake'?'lake':VENUES[id].build==='blossom'?'lava':VENUES[id].build==='oldcity'?'nightrun':'river',VENUES[id]);});
 }
 // pause: the button, Esc / P, or leaving the app mid-run
@@ -1366,7 +1352,6 @@ $('d-again').onclick=()=>{if(S)start(S.id);};$('d-menu').onclick=toMenu;
 $('d-nextbtn').onclick=()=>{const i=CHAPTERS.indexOf(S.id);if(i<CHAPTERS.length-1)start(CHAPTERS[i+1]);else showEpi();};
 function yourYears(){const P=ANS.picks||{},L=[];
   L.push({[WHY[0]]:'你為了換一種生活，開始跑步。',[WHY[1]]:'你為了讓身體好一點，開始跑步。',[WHY[2]]:'你說不上來為什麼，就開始跑步了。'}[ANS.start]);
-  L.push({red:'你在城市的紅色跑道上，看過很多人努力。',blue:'你在山邊的藍色跑道上，看過很多人努力。'}[ANS.club]);
   L.push({pacer:'第一場半馬，你跟著配速員的氣球。',self:'第一場半馬，你按自己的節奏跑完。'}[P.pacer]);
   L.push({jazz:'下雨的日子，耳機裡是爵士。',rock:'下雨的日子，耳機裡是老搖滾。',none:'下雨的日子，你只聽雨聲。'}[P.music]);
   L.push({faster:'全馬之後，你想跑得更快。',farther:'全馬之後，你想去更遠的地方。',keep:'全馬之後，你只想繼續跑下去。'}[P.goal]);
