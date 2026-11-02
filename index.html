@@ -1117,7 +1117,8 @@ const PROG={day:[[48,55,59,64],[45,52,55,60],[41,48,52,57],[43,50,55,59]],   // 
   drive:[[45,52,57,60],[41,48,53,57],[48,55,60,64],[43,50,55,59]],            // Am F C G
   jazz:[[50,53,57,60,64],[43,53,57,59,64],[48,52,55,59,62],[45,49,55,58,61]],   // Dm9 G13 Cmaj9 A7b9 (ii-V-I-VI)
   jazzm:[[45,48,52,55,59],[50,54,57,60,64],[43,47,50,54,57],[40,44,50,53,56]],  // Am9 D9 Gmaj7 E7b9
-  rock:[[45,52,57],[43,50,55],[38,45,50],[40,47,52]]};                          // A G D E power chords
+  rock:[[45,52,57],[43,50,55],[38,45,50],[40,47,52]],
+  brit:[[50,57,62,66,69],[45,52,57,61,64],[47,54,59,62,66],[43,50,55,59,62]]};   // D A Bm G: a British ballad (I V vi IV)                          // A G D E power chords
 // one musical setting per chapter; musDyn() bends it with what is happening in the run
 const MCFG={menu:{prog:'warm',bpm:72,pad:.9,arp:.5,bass:.5},
   start:{prog:'day',bpm:90,pad:1,arp:1,bass:1,kick:.7,hat:.8,cut:1700},
@@ -1132,7 +1133,7 @@ const MCFG={menu:{prog:'warm',bpm:72,pad:.9,arp:.5,bass:.5},
   end:{prog:'day',bpm:68,pad:1,arp:.7,bass:.6,cut:1300}};
 function musDyn(){const c=Object.assign({},MCFG[MUS.id]||MCFG.menu),d={tempo:1,cutK:1,wob:0,vol:1};
   {const mu=(ANS.picks||{}).music,ci=CHAPTERS.indexOf(MUS.id);if(mu&&ci>=3){if(mu==='jazz'){c.style='jazz';c.prog=/night/.test(c.prog)?'jazzm':'jazz';c.bpm=Math.round(c.bpm*.82);d.vol=.6;}
-    else if(mu==='rock'){c.style='rock';c.prog='rock';c.bpm=Math.round(c.bpm*1.12);d.vol=.5;}
+    else if(mu==='rock'){c.style='rock';c.prog='brit';c.bpm=Math.round(c.bpm*.92);d.vol=.75;}
     else if(mu==='none'){c.kick=0;c.hat=0;c.arp=0;c.arp2=0;c.bass=(c.bass||0)*.4;d.vol=.55;}}}
   if(!S||S.pre)return [c,d];const v=S.v,km=(S.d-W.startD)*v.sc/1000,frac=clamp(km/v.km,0,1);
   if(MUS.id==='club'&&S.friends){const gone=S.friends.filter(f=>f.leaving).length; // the band thins out as friends leave
@@ -1183,37 +1184,57 @@ function rhodes(f,t,dur,vol){const B=musBus(),car=AC.createOscillator(),mod=AC.c
   tine.frequency.value=f*14.1;tg.gain.setValueAtTime(vol*.12,t);tg.gain.exponentialRampToValueAtTime(.0001,t+.06);tine.connect(tg);tg.connect(g);
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(vol*.4,t+.4);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   car.connect(g);g.connect(MUS.gain);g.connect(B.rev);for(const o of [car,mod,tine]){o.start(t);o.stop(t+dur+.05);}}
-function tenor(f,t,dur,vol){const B=musBus(),o=AC.createOscillator(),o2=AC.createOscillator(),lfo=AC.createOscillator(),lg=AC.createGain(),lp=AC.createBiquadFilter(),g=AC.createGain();
-  o.type='sawtooth';o2.type='square';o.frequency.value=f;o2.frequency.value=f*.998;lfo.frequency.value=5.2;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*.012,t+Math.min(.35,dur*.6));lfo.connect(lg);lg.connect(o.frequency);lg.connect(o2.frequency);
-  lp.type='lowpass';lp.Q.value=2;lp.frequency.setValueAtTime(700,t);lp.frequency.linearRampToValueAtTime(1900,t+.08);lp.frequency.exponentialRampToValueAtTime(1100,t+dur);
-  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.05);g.gain.setValueAtTime(vol,t+dur*.8);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(lp);o2.connect(lp);lp.connect(g);g.connect(MUS.gain);g.connect(B.rev);nz(t,dur*.9,vol*.12,'bandpass',2500,1.2,.04);for(const x of [o,o2,lfo]){x.start(t);x.stop(t+dur+.05);}}
-function jazzStep(c,t,e,spb,ch,nx,cut){const B=musBus(),sw=e%2?spb*.66*.5:0,T=t+sw+hum(),q=Math.floor(e/2)%8,bar=Math.floor(MUS.step/16);
-  // walking bass: chord tones, a chromatic approach into the next bar
+// tenor sax: a scooped attack, breath, a vowel-like body (two formants) and vibrato that blooms on long notes
+function tenor(f,t,dur,vol){const B=musBus(),o=AC.createOscillator(),o2=AC.createOscillator(),lfo=AC.createOscillator(),lg=AC.createGain(),f1=AC.createBiquadFilter(),f2=AC.createBiquadFilter(),lp=AC.createBiquadFilter(),g=AC.createGain(),mix=AC.createGain();
+  o.type='sawtooth';o2.type='square';o.frequency.setValueAtTime(f*.97,t);o.frequency.exponentialRampToValueAtTime(f,t+.06);o2.frequency.setValueAtTime(f*.97*.5,t);o2.frequency.exponentialRampToValueAtTime(f*.5,t+.06);
+  lfo.frequency.value=5.3;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(dur>.5?f*.014:f*.004,t+Math.min(.4,dur*.7));lfo.connect(lg);lg.connect(o.frequency);
+  f1.type='bandpass';f1.frequency.value=560;f1.Q.value=1.6;f2.type='bandpass';f2.frequency.value=1450;f2.Q.value=2.4;lp.type='lowpass';lp.frequency.setValueAtTime(900,t);lp.frequency.linearRampToValueAtTime(2600,t+.05);lp.frequency.exponentialRampToValueAtTime(1500,t+dur);
+  const og=AC.createGain();og.gain.value=.35;o2.connect(og);o.connect(lp);og.connect(lp);lp.connect(f1);lp.connect(f2);lp.connect(mix);f1.connect(g);f2.connect(g);mix.gain.value=.35;mix.connect(g);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.035);g.gain.setValueAtTime(vol*.9,t+Math.max(.05,dur*.75));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  g.connect(MUS.gain);g.connect(B.rev);nz(t,Math.min(dur,.5),vol*.18,'bandpass',3000,1.4,.03,B.rev);for(const x of [o,o2,lfo]){x.start(t);x.stop(t+dur+.05);}}
+// the sax leads: a two-bar phrase, then the Rhodes answers. Notes walk the scale towards chord tones and land long.
+const SAXSC=[0,2,3,5,7,9,10,11];
+function saxPhrase(ch,start,spb){const notes=[],root=ch[0]%12,tones=ch.slice(1).map(n=>n%12),pool=[];for(let m=55;m<=74;m++){const pc=((m-root)%12+12)%12;if(SAXSC.includes(pc))pool.push(m);}
+  let i=pool.findIndex(m=>tones.includes(m%12)&&m>=60);if(i<0)i=6;let step=0;const shapes=[[2,1,1,2,1,1,4],[1,1,1,1,2,2,4],[3,1,2,2,6],[1,1,2,1,1,2,6]],sh=shapes[Math.floor(Math.random()*shapes.length)];
+  for(const len of sh){if(Math.random()<.12){step+=len;continue;}notes.push({at:start+step,len,m:pool[Math.max(0,Math.min(pool.length-1,i))]});i+=[-2,-1,-1,1,1,2][Math.floor(Math.random()*6)];step+=len;}
+  const last=notes[notes.length-1];if(last){let best=last.m,bd=99;for(const m of pool){if(tones.includes(m%12)&&Math.abs(m-last.m)<bd){bd=Math.abs(m-last.m);best=m;}}last.m=best;}return notes;}
+function jazzStep(c,t,e,spb,ch,nx,cut){const B=musBus(),sw=e%2?spb*.33:0,T=t+sw+hum(),q=Math.floor(e/2)%8,bar=Math.floor(MUS.step/16);
   if(e%2===0){const r=ch[0]-12,line=[r,ch[1]-12,ch[2]-12,ch[1]-12,r+12,ch[2]-12,ch[3]-12,nx[0]-12+(Math.random()<.5?-1:1)][q];pluckBass(mf(line-12),T,spb*1.9,vel(.2,.15));}
-  // ride: ding, ding-da-ding (with the swung skip note), hi-hat foot on 2 and 4, brushes swishing
-  if(e%4===0)metal(T,.9,vel(.022,.3),6500,B.rev);if(e%4===3)metal(T,.5,vel(.014,.3),6500,B.rev);
-  if(e%8===4){metal(T,.06,.02,8000);nz(T,.22,vel(.03),'bandpass',3200,.7,.05,B.rev);}
-  if(e%8===0&&Math.random()<.4)nz(T,.12,.05,'lowpass',160,0,.002);
-  // comping: rootless voicings on the Rhodes, a short stab here and a held chord there
-  if(e===3||e===10||(e===14&&Math.random()<.45)){const len=e===10?spb*3.2:spb*1.2;ch.slice(1).forEach((n,i)=>rhodes(mf(n+12),T+i*.008,len,vel(.03,.2)));}
-  if(c.pad&&e===0)ch.slice(1).forEach(n=>musVoice(mf(n),T,spb*16,'sine',.008*c.pad,cut*.7));
-  // a tenor sax plays a short phrase every other bar, rests on the other
-  if(bar%2===1&&e%2===0&&Math.random()<.55){const pool=[ch[1],ch[2],ch[3],ch[4]||ch[3]+3].map(n=>n+12);const n=pool[Math.floor(Math.random()*pool.length)];tenor(mf(n),T,spb*(Math.random()<.3?3:1.7),vel(.05,.2));}}
-function rockStep(c,t,e,spb,ch,cut){const B=musBus(),bar=Math.floor(MUS.step/16),fill=bar%4===3&&e>=12;
-  // guitar through the amp: palm-muted 8ths, an open ringing chord at the top of each bar
-  if(e===0){ch.forEach(n=>{for(const dt of [-4,4]){const o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.value=mf(n+12);o.detune.value=dt;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.5,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+spb*6);o.connect(g);g.connect(B.gtr);o.start(t);o.stop(t+spb*6+.05);}});}
-  else if(e%2===0&&!fill){ch.slice(0,2).forEach(n=>{const o=AC.createOscillator(),g=AC.createGain(),lp=AC.createBiquadFilter();o.type='sawtooth';o.frequency.value=mf(n+12);lp.type='lowpass';lp.frequency.value=900;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.4,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+spb*.7);o.connect(lp);lp.connect(g);g.connect(B.gtr);o.start(t);o.stop(t+spb*.8);});}
-  // bass guitar: picked 8ths on the root
-  if(e%2===0){const o=AC.createOscillator(),o2=AC.createOscillator(),lp=AC.createBiquadFilter(),g=AC.createGain();o.type='sawtooth';o2.type='sine';o.frequency.value=o2.frequency.value=mf(ch[0]-12);lp.type='lowpass';lp.frequency.setValueAtTime(1200,t);lp.frequency.exponentialRampToValueAtTime(380,t+.12);
-    g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.09,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+spb*.95);o.connect(lp);o2.connect(lp);lp.connect(g);g.connect(MUS.gain);o.start(t);o2.start(t);o.stop(t+spb);o2.stop(t+spb);}
-  // kit: kick with a click, snare with body and a room, closed hats, a crash every four bars, a tom fill before it
-  const kick=(v)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(48,t+.12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.28);o.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+.3);nz(t,.02,v*.4,'highpass',2500,0,.001);};
-  const snare=(v)=>{nz(t,.18,v,'bandpass',2200,.7,.001,B.room);const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(170,t+.05);g.gain.setValueAtTime(v*.8,t);g.gain.exponentialRampToValueAtTime(.0001,t+.1);o.connect(g);g.connect(MUS.gain);g.connect(B.room);o.start(t);o.stop(t+.12);};
-  const tom=(f,v)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.6,t+.25);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(MUS.gain);g.connect(B.room);o.start(t);o.stop(t+.32);};
-  if(fill){tom([0,0,0,0,0,0,0,0,0,0,0,0,240,200,150,110][e],.22);if(e===15)snare(.12);}
-  else{if(e===0||e===8||e===11||(e===6&&Math.random()<.3))kick(.3);if(e===4||e===12)snare(vel(.14,.1));if(e%2===0)metal(t,e%4===2?.05:.035,vel(.012,.3),8500);}
-  if(e===0&&bar%4===0){metal(t,1.6,.03,5000,B.room);nz(t,1.4,.04,'highpass',5000,0,.002,B.room);}}
+  if(e%4===0)metal(T,.9,vel(.02,.3),6500,B.rev);if(e%4===3)metal(T,.5,vel(.012,.3),6500,B.rev);
+  if(e%8===4){metal(T,.06,.018,8000);nz(T,.22,vel(.028),'bandpass',3200,.7,.05,B.rev);}
+  if(e%8===0&&Math.random()<.4)nz(T,.12,.045,'lowpass',160,0,.002);
+  const saxBar=bar%4<2;
+  // Rhodes: soft and sparse under the sax, fuller when answering
+  if(saxBar?(e===10&&Math.random()<.6):(e===3||e===10||(e===14&&Math.random()<.5))){const len=e===10?spb*3.2:spb*1.2;ch.slice(1).forEach((n,i)=>rhodes(mf(n+12),T+i*.008,len,vel(saxBar?.018:.03,.2)));}
+  if(c.pad&&e===0)ch.slice(1).forEach(n=>musVoice(mf(n),T,spb*16,'sine',.006*c.pad,cut*.7));
+  if(bar%4===0&&e===0)MUS.sax=saxPhrase(ch,MUS.step,spb);
+  if(MUS.sax&&saxBar)for(const n of MUS.sax)if(n.at===MUS.step){const off=(n.at%2)?spb*.33:0;tenor(mf(n.m),t+off+hum(),spb*n.len*.95,vel(.075,.15));}}
+// British ballad rock: a strummed steel-string guitar (plucked strings), piano, a singing lead through delay, a big roomy kit
+function ksBuf(m){const B=musBus();B.ks=B.ks||{};if(B.ks[m])return B.ks[m];const sr=AC.sampleRate,f=mf(m),N=Math.max(2,Math.round(sr/f)),len=Math.floor(sr*2.2),buf=AC.createBuffer(1,len,sr),d=buf.getChannelData(0),ring=new Float32Array(N);
+  for(let i=0;i<N;i++)ring[i]=Math.random()*2-1;let p=0;for(let i=0;i<len;i++){const nxt=(p+1)%N,v=ring[p];d[i]=v;ring[p]=(v+ring[nxt])*.4985;p=nxt;}return B.ks[m]=buf;}
+function str(m,t,vol,dur,dest){const src=AC.createBufferSource(),g=AC.createGain(),lp=AC.createBiquadFilter();src.buffer=ksBuf(m);lp.type='lowpass';lp.frequency.value=3800;g.gain.setValueAtTime(vol,t);g.gain.setValueAtTime(vol,t+dur*.8);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  src.connect(lp);lp.connect(g);g.connect(dest||MUS.gain);src.start(t);src.stop(t+dur+.05);return g;}
+function musDelay(){const B=musBus();if(B.dly)return B.dly;const i=AC.createGain(),d=AC.createDelay(1),fb=AC.createGain(),lp=AC.createBiquadFilter(),o=AC.createGain();d.delayTime.value=60/80*.75;fb.gain.value=.38;lp.type='lowpass';lp.frequency.value=2400;o.gain.value=.5;
+  i.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(o);o.connect(MUS.gain);o.connect(B.rev);return B.dly=i;}
+function leadGtr(f,t,dur,vol){const B=musBus(),o=AC.createOscillator(),o2=AC.createOscillator(),lfo=AC.createOscillator(),lg=AC.createGain(),sh=AC.createWaveShaper(),lp=AC.createBiquadFilter(),g=AC.createGain(),cv=new Float32Array(512);
+  for(let i=0;i<512;i++){const x=i/255.5-1;cv[i]=Math.tanh(x*3);}sh.curve=cv;o.type='sawtooth';o2.type='triangle';o.frequency.setValueAtTime(f*.944,t);o.frequency.exponentialRampToValueAtTime(f,t+.12);o2.frequency.setValueAtTime(f*2*.944,t);o2.frequency.exponentialRampToValueAtTime(f*2,t+.12);
+  lfo.frequency.value=5.5;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*.012,t+Math.min(.6,dur*.6));lfo.connect(lg);lg.connect(o.frequency);
+  lp.type='lowpass';lp.frequency.value=2600;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(vol*.6,t+dur*.6);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  const og=AC.createGain();og.gain.value=.25;o.connect(sh);o2.connect(og);og.connect(sh);sh.connect(lp);lp.connect(g);g.connect(MUS.gain);g.connect(musDelay());g.connect(B.rev);for(const x of [o,o2,lfo]){x.start(t);x.stop(t+dur+.05);}}
+function rockStep(c,t,e,spb,ch,cut){const B=musBus(),bar=Math.floor(MUS.step/16),sec=Math.floor(bar/8)%2; // 8 bars verse, 8 bars chorus
+  // strummed guitar: down, down-up, up-down-up; the strings roll over a few milliseconds
+  const strum={0:1,4:1,6:-1,10:-1,12:1,14:-1};if(strum[e]){const ns=ch.map(n=>n+12),dir=strum[e],ord=dir>0?ns:[...ns].reverse(),v=(dir>0?.11:.07)*(sec?1.15:.85);ord.forEach((n,i)=>str(n,t+i*.011+hum()*.5,vel(v,.2),spb*(e===0?7:3.5),B.room));}
+  // piano holds the chord in the chorus
+  if(sec&&e===0)ch.slice(1).forEach((n,i)=>rhodes(mf(n),t+i*.01,spb*14,.02));
+  // bass: root on 1, a passing note into the next chord
+  if(e===0||e===8)pluckBass(mf(ch[0]-12),t,spb*7,.16);if(e===14&&Math.random()<.5)pluckBass(mf(ch[0]-10),t,spb*1.6,.1);
+  // drums: kick 1 and the "and" of 3, a big snare on 2 and 4 in a big room, soft 8th hats; a crash to open the chorus
+  const kick=(v)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(45,t+.14);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.35);o.connect(g);g.connect(MUS.gain);o.start(t);o.stop(t+.38);nz(t,.015,v*.25,'highpass',2500,0,.001);};
+  const snare=(v)=>{nz(t,.22,v,'bandpass',1900,.6,.001,B.rev);const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(200,t);o.frequency.exponentialRampToValueAtTime(160,t+.06);g.gain.setValueAtTime(v*.8,t);g.gain.exponentialRampToValueAtTime(.0001,t+.14);o.connect(g);g.connect(MUS.gain);g.connect(B.rev);o.start(t);o.stop(t+.16);};
+  if(bar%8!==0||e>=8||sec){if(e===0||e===10)kick(.26);if(e===4||e===12)snare(vel(sec?.13:.09,.1));if(e%2===0)metal(t,.04,vel(sec?.01:.006,.3),8500);}
+  if(e===0&&bar%8===0&&sec){metal(t,1.8,.028,5000,B.rev);nz(t,1.6,.035,'highpass',5000,0,.002,B.rev);}
+  // a singing lead line over the chorus: long notes on chord tones, slid into
+  if(sec&&bar%2===0&&(e===0||e===6||e===12)){const opts=ch.slice(2).map(n=>n+12);leadGtr(mf(opts[Math.floor(Math.random()*opts.length)]),t,spb*(e===12?4:5.5),.05);}}
 function musTick(){if(!AC||!MUS.on)return;const [c,d]=musDyn();const spb=60/c.bpm/2/d.tempo,cut=(c.cut||1500)*d.cutK,P=PROG[c.prog];
   if(MUS.gain)MUS.gain.gain.setTargetAtTime(.55*d.vol,AC.currentTime,.5);
   musRain(!!c.rain);
