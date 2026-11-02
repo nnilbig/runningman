@@ -520,7 +520,6 @@ const VENUES={
     variants:{
       k75:{n:'最長的距離',km:75,first:'三十五歲。今天要跑七十五公里。這輩子跑過最長的距離。',end:'七十五公里。從天亮以前，跑到午後。'},
       k100:{n:'最長的距離',km:100,first:'三十五歲。今天要跑一百公里。想起來有點好笑。',end:'一百公里。從天亮以前，跑到天黑。'}},
-    pickLines:{music:{jazz:[[1,'天亮了。耳機裡那首爵士，剛好放到第三遍。']],rock:[[1,'天亮了。耳機裡的吉他，比太陽還早起。']],none:[[1,'天亮了。湖面上起了一層薄薄的霧。四周很安靜。']]}},
     script:[[0,'阿傑','三十五歲。今天要跑一百公里。想起來有點好笑。',null,null,.01],[0,'阿傑','天亮了。湖面上起了一層薄薄的霧。',null,null,.12],
       [0,'提示','累的時候，頭會有點暈，身體會往旁邊飄。用 L R 把自己拉回路中間。',null,null,.4],
       [0,'阿傑','前面那個人……穿著跟我一樣的衣服。',null,null,.58],[0,'阿傑','……是三十二歲的我嗎？',null,null,.63],
@@ -1131,7 +1130,7 @@ const MCFG={menu:{prog:'warm',bpm:72,pad:.9,arp:.5,bass:.5},
   burnout:{prog:'night',bpm:74,pad:.55,sparse:1,cut:1200},
   end:{prog:'day',bpm:68,pad:1,arp:.7,bass:.6,cut:1300}};
 function musDyn(){const c=Object.assign({},MCFG[MUS.id]||MCFG.menu),d={tempo:1,cutK:1,wob:0,vol:1};
-  {const mu=(ANS.picks||{}).music,ci=CHAPTERS.indexOf(MUS.id);if(mu&&ci>=3){if(mu==='jazz'){c.style='jazz';c.prog=/night/.test(c.prog)?'jazzm':'jazz';c.bpm=Math.round(c.bpm*.82);}
+  {const mu=(ANS.picks||{}).music;if(mu&&MUS.id==='habit'){if(mu==='jazz'){c.style='jazz';c.prog=/night/.test(c.prog)?'jazzm':'jazz';c.bpm=Math.round(c.bpm*.82);}
     else if(mu==='rock'){c.style='rock';c.prog='rock';c.bpm=Math.round(c.bpm*1.12);}
     else if(mu==='none'){c.kick=0;c.hat=0;c.arp=0;c.arp2=0;c.bass=(c.bass||0)*.4;d.vol=.55;}}}
   if(!S||S.pre)return [c,d];const v=S.v,km=(S.d-W.startD)*v.sc/1000,frac=clamp(km/v.km,0,1);
@@ -1454,7 +1453,7 @@ function update(dt){
       m.ring.children[0].material.opacity=.14+.1*Math.sin(S.t*3+m.d);}
     for(const m of W.moments){const f=m.fx||{},t=S.t;if(f.wag)f.wag.rotation.y=Math.sin(t*12)*.6;if(f.ball)f.ball.position.y=.5+Math.abs(Math.sin(t*3.2))*1.1;
       if(f.bike)f.bike.wheels.forEach(w=>w.rotation.x+=.05);if(m.seen){if(f.sheen)f.sheen.material.opacity=Math.min(.55,f.sheen.material.opacity+.01);if(f.lights){if(!m.st)m.st=t;f.lights.forEach((b,i)=>{if(t-m.st>.4+i*.6)b.material.color.setHex(0xfff0b0);});}}}
-    if(!S.done)cap=JOG*.62+(VMAX-JOG*.62)*clamp(S.mot/70,0,1);
+    if(!S.done)cap=JOG*.9+(VMAX-JOG*.9)*clamp(S.mot/50,0,1); // low motivation takes away the speed, never the running itself
     $('wallfx').style.opacity=S.done?0:(.5*(1-clamp(S.mot/50,0,1))).toFixed(2);
     const f=$('glyfill');f.style.width=S.mot.toFixed(1)+'%';f.style.background=S.mot>60?'#f3bd63':S.mot>30?'#b9a9d6':'#8a8fa8';}
   if(v.ultra){const km=(S.d-W.startD)*v.sc/1000,frac=clamp(km/v.km,0,1);
