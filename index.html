@@ -1224,7 +1224,7 @@ let JOG=1000/360,VMIN=2.3,VMAX=3.6,LV=[];
 const spdAt=(v,f)=>{const I=(f*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return 1000/(v.thr||360)+(I-.69)/.5;};
 const lvSpd=(v,f)=>f===0?v.vmin+.15:spdAt(v,f),lvOf=(v,spd)=>{let b=0,bd=1e9;LV.forEach((f,i)=>{const d=Math.abs(lvSpd(v,f)-spd);if(d<bd){bd=d;b=i;}});return b;};
 const zOfF=f=>f===0?0:f<.6?1:f<.7?2:f<.8?3:f<.9?4:5;
-function markTZ(){const z=S?zOfF(LV[S.zi]):0;document.querySelectorAll('#zbar i').forEach((e,i)=>{e.style.boxShadow=i===z-1?'0 0 0 2px #fff':'';e.style.transform=i===z-1?'scaleY(1.5)':'';});}
+function markTZ(){} // the bar shows only where the heart actually is, same as the label beside it
 const z2Of=(v,f)=>{const I=((f||.65)*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return Math.max(v.vmin||VMIN,1000/(v.thr||360)+(I-.69)/.5);};
 const vmaxOf=v=>VMAX;
 let PICK={};
@@ -1568,7 +1568,7 @@ function update(dt){
     if(!S.done){S.hrSum+=S.hr*dt;S.hrN+=dt;}
     const z=zoneOf(S.hr);$('bpm').textContent=Math.round(S.hr);if(!S.done)S.maxHR=Math.max(S.maxHR||0,S.hr);
     if(z!==S.zone){S.zone=z;$('zone').textContent=`ZONE ${z} ${ZN[z-1]}`;$('zone').style.background=ZC[z-1];
-      document.querySelectorAll('#zbar i').forEach((e,i)=>{e.style.background=ZC[i];e.classList.toggle('on',i===z-1);});}
+      document.querySelectorAll('#zbar i').forEach((e,i)=>{e.style.background=ZC[i];e.classList.toggle('on',i===z-1);e.style.boxShadow=i===z-1?`0 0 8px ${ZC[i]}`:'';});}
   }
   { const pc=S.speed>.3?1000/S.speed:0;$('pace').textContent=pc?`${Math.floor(pc/60)}'${String(Math.floor(pc%60)).padStart(2,'0')}"`:'—';}
   $('dist').textContent=`${(Math.min(prog,S.goal)*v.sc/1000).toFixed(2)} / ${v.km.toFixed(1)} km`;
