@@ -41,7 +41,8 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .zone{border-radius:999px;padding:3px 11px;font-size:14px;font-weight:800;color:#2b2230;transition:background .4s}
 .zbar{display:flex;gap:3px;margin-top:6px;width:170px}.zbar i{flex:1;height:6px;border-radius:3px;opacity:.3;transition:opacity .3s}.zbar i.on{opacity:1}
 .spd .sub{font-size:15px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;opacity:.95}
-.pills{display:flex;gap:8px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end}
+.pills{display:flex;gap:8px;pointer-events:auto;flex-direction:column;align-items:flex-end}
+.pill.ic{width:42px;height:42px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%}.pill.ic svg{width:21px;height:21px}.pill.offb{opacity:.6}
 .pill{background:var(--pill);border:1.5px solid var(--pill-line);border-radius:999px;padding:9px 18px;font-size:16px;font-weight:800;backdrop-filter:blur(6px)}
 .say{position:absolute;left:50%;top:max(118px,calc(env(safe-area-inset-top,0px) + 108px),24vh);transform:translateX(-50%);width:min(560px,calc(100% - 32px));background:#fbf7f0;color:var(--ink);border-radius:22px;padding:14px 20px 18px;box-shadow:0 10px 30px rgba(30,15,40,.35);transition:opacity .35s,transform .35s}
 .say.off{opacity:0;transform:translate(-50%,-8px)}
@@ -77,7 +78,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   .ctl{grid-template-columns:auto auto 1fr auto auto;grid-template-areas:"l m . p r";column-gap:10px}
   .cb{width:46px;height:42px;font-size:20px}.cb.lr{width:24vh;height:24vh;font-size:26px}
   .spd b{font-size:24px}.spd small{font-size:12px}.spd .sub{font-size:12px;margin-top:2px}.hrbox{margin-top:4px}.hrbox .bpm{font-size:18px}.zone{font-size:12px;padding:2px 8px}.zbar,.gly{width:120px}
-  .pill{padding:5px 10px;font-size:12px}.pills{gap:5px}
+  .pill{padding:5px 10px;font-size:12px}.pills{gap:5px}.pill.ic{width:34px;height:34px}.pill.ic svg{width:18px;height:18px}
   .say{top:16vh;padding:8px 14px 10px;width:min(460px,calc(100% - 32px))}.say p{font-size:15px;margin-top:6px}.say .who{font-size:12px}.say.other{top:22vh}.toast{bottom:calc(24vh + 30px)}
   .recap{max-height:86vh;bottom:8px;padding:10px 14px}.recap>b{font-size:20px}.recap p{font-size:13px;line-height:1.6}
   .ribbon{top:44%;padding-top:6px;padding-bottom:6px}.ribbon b{font-size:22px}.ribbon small{font-size:12px}
@@ -205,7 +206,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 <div class="hud" id="hud" hidden>
   <div class="top" id="hudtop">
     <div class="spd"><small>配速</small><div class="row"><b id="pace">6'00"</b><span class="unit">/km</span></div><div class="sub" id="dist">0.00 / 4.0 km</div><div class="sub" id="clock">00:00</div><div class="sub" id="gap" hidden></div><div class="hrbox"><span class="bpm"><i>♥</i><b id="bpm" style="font-size:24px">120</b><span>bpm</span></span><span class="zone" id="zone">ZONE 2 可以聊天</span></div><div class="zbar" id="zbar"><i></i><i></i><i></i><i></i><i></i></div><div class="gly" id="glybox" hidden><small id="glylab">肝醣</small><div><i id="glyfill"></i></div></div></div>
-    <div class="pills"><button class="pill" id="b-pause">暫停</button><button class="pill" id="b-menu">選單</button><button class="pill" id="b-retry">重來</button><button class="pill" id="b-mus">音樂 開</button><button class="pill" id="b-snd">音效 開</button></div>
+    <div class="pills"><button class="pill ic" id="b-pause" aria-label="暫停" title="暫停"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill ic" id="b-menu" aria-label="選單" title="選單"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button><button class="pill ic" id="b-retry" aria-label="重來" title="重來"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></button><button class="pill ic" id="b-mus" aria-label="音樂" title="音樂"></button><button class="pill ic" id="b-snd" aria-label="音效" title="音效"></button></div>
   </div>
   <div class="say off" id="say" aria-live="polite"><span class="who" id="who">L</span><p id="line"></p></div>
   <div class="toast off" id="toast"></div>
@@ -1099,7 +1100,8 @@ function tone(f,d,type,vol,when,slide){if(!AC||!SND)return;try{const t=AC.curren
 const SFX={talk:()=>tone(880,.06,'triangle',.04),step:()=>tone(110,.05,'triangle',.025),bump:()=>tone(180,.22,'sine',.09,0,90),
   done:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.4,'triangle',.06,i*.14))};
 addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
-$('b-snd').onclick=()=>{SND=!SND;$('b-snd').textContent='音效 '+(SND?'開':'關');};
+const IC_MUS=on=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/>'+(on?'':'<path d="M3 3l18 18"/>')+'</svg>',IC_SND=on=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+'<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/>'+(on?'<path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/>':'<path d="M16 9.5l5 5M21 9.5l-5 5"/>')+'</svg>';
+$('b-snd').innerHTML=IC_SND(SND);$('b-snd').onclick=()=>{SND=!SND;$('b-snd').innerHTML=IC_SND(SND);$('b-snd').classList.toggle('offb',!SND);};
 // generative background music: warm pads, a light arpeggio, a soft bass and a quiet beat (all WebAudio, no files)
 const MUS={on:true,timer:null,next:0,step:0,gain:null,id:'menu',drums:1};
 try{MUS.on=localStorage.getItem('shimin.music')!=='off';}catch(_){}
@@ -1184,8 +1186,8 @@ function musicStart(){if(!AC||!MUS.on||MUS.timer)return;if(!MUS.gain){MUS.gain=A
   MUS.gain.gain.setTargetAtTime(.55,AC.currentTime,.4);MUS.next=AC.currentTime+.1;MUS.timer=setInterval(musTick,90);}
 function musicStop(){if(MUS.timer){clearInterval(MUS.timer);MUS.timer=null;}if(MUS.gain&&AC)MUS.gain.gain.setTargetAtTime(0,AC.currentTime,.3);}
 function musicMood(id){MUS.id=id;MUS.step=MUS.step-(MUS.step%16);}
-$('b-mus').textContent='音樂 '+(MUS.on?'開':'關');
-$('b-mus').onclick=()=>{MUS.on=!MUS.on;try{localStorage.setItem('shimin.music',MUS.on?'on':'off');}catch(_){}$('b-mus').textContent='音樂 '+(MUS.on?'開':'關');if(MUS.on){ac();musicStart();}else musicStop();};
+$('b-mus').innerHTML=IC_MUS(MUS.on);$('b-mus').classList.toggle('offb',!MUS.on);
+$('b-mus').onclick=()=>{MUS.on=!MUS.on;try{localStorage.setItem('shimin.music',MUS.on?'on':'off');}catch(_){}$('b-mus').innerHTML=IC_MUS(MUS.on);$('b-mus').classList.toggle('offb',!MUS.on);if(MUS.on){ac();musicStart();}else musicStop();};
 addEventListener('pointerdown',()=>{if(AC&&MUS.on)musicStart();},{passive:true});
 
 /* ================= dialogue & ribbon ================= */
