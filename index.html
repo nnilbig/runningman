@@ -555,7 +555,7 @@ const VENUES={
     script:[[0,'阿傑','同一條河堤。十年了，路樹長高了，長椅也換過了。'],[0,'阿傑','以前每一公里都要看一次錶。現在，比較常看天空。'],[0,'阿傑','跑得比以前慢。一開始，老實說有點不甘心。'],[0,'阿傑','後來發現，慢下來以後，看得到的東西變多了。'],[0,'阿傑','那座紅色的橋，後來跑過了好多好多次。'],[0,'阿傑','夕陽跟三十二歲那年一樣，一點一點地落下去。']],
     endBy:{[WHY[0]]:'生活換過好幾次。跑步一直都在。',[WHY[1]]:'身體會老。不過今天，還是跑完了。',[WHY[2]]:'還是說不上來。不過這樣也很好。',[WHY_LATE]:'跑步就是跑步。今天，也跑完了。'},
     end:'五公里。跑完了。',
-    next:'明天大概也會去跑吧。如果沒下雨的話。（完）'}
+    next:''}
 };
 // Each chapter lasts ~40–100 s of real play. The on-screen km/time stay true to a 6'00" jog;
 // v.sc = how many real metres one world metre represents for that chapter.
@@ -1591,7 +1591,7 @@ function showDone(){
   if(S.id==='race'){ANS.pb=Math.round(S.t*S.v.sc);saveAns();}if(S.id==='track'){ANS.pb21=Math.round(S.t*S.v.sc);saveAns();}
   const gt=S.t*S.v.sc,km=S.v.km,pace=gt/km;
   ANS.done=ANS.done||{};ANS.done[S.id]=S.noWatch?'沒看錶':`${Math.floor(gt/3600)?Math.floor(gt/3600)+':':''}${String(Math.floor(gt/60)%60).padStart(Math.floor(gt/3600)?2:1,'0')}:${String(Math.floor(gt%60)).padStart(2,'0')}`;saveAns();
-  $('d-line').textContent=endLine(S.v);if(S.v.variants)$('d-km').textContent='';$('d-next').textContent=S.v.next;$('d-next').style.whiteSpace='pre-line';
+  $('d-line').textContent=endLine(S.v);if(S.v.variants)$('d-km').textContent='';$('d-next').textContent=S.v.next;$('d-next').hidden=!S.v.next;$('d-next').style.whiteSpace='pre-line';
   $('s-walk').hidden=!S.v.walkCheck;$('d-walk').textContent=S.walked?'中間走了一段':'都是用跑的';['s-time','s-pace','s-hr'].forEach(k=>$(k).hidden=S.noWatch);
   $('s-fuel').hidden=!(S.v.glycogen||S.v.motive||S.v.flow||S.v.stall);$('d-fuel-l').textContent=S.v.motive?'看到的小事':S.v.flow?'忘我的時間':S.v.stall?'三十四歲的自己':'補給站';if(S.v.stall)$('d-fuel').textContent=S.letgo?'沒有在比':'追不上';if(S.v.flow)$('d-fuel').textContent=`${Math.round(100*S.deepT/Math.max(1,S.t))}%`;if(S.v.glycogen)$('d-fuel').textContent=`${S.fuel} / ${W.stations.length}`;if(S.v.motive)$('d-fuel').textContent=`${S.seen} / ${W.moments.length}`;
   {const last=CHAPTERS.indexOf(S.id)===CHAPTERS.length-1;$('d-nextbtn').hidden=false;$('d-nextbtn').textContent=last?'尾聲':'下一章';}$('d-km').textContent=`${km.toFixed(1)} km`;
