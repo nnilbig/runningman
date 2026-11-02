@@ -1361,8 +1361,8 @@ $('b-pause').onclick=()=>setPause(true);$('p-go').onclick=()=>setPause(false);
 $('p-retry').onclick=()=>{setPause(false);PICK.autoBegin=true;run(S.id);};$('p-menu').onclick=()=>{setPause(false);toMenu();};
 addEventListener('keydown',e=>{if(e.code==='Escape'||e.code==='KeyP'){if(S&&S.paused)setPause(false);else setPause(true);}});
 if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('visibilitychange',()=>{if(document.hidden)setPause(true);});
-$('b-menu').onclick=toMenu;$('b-retry').onclick=()=>{if(S){PICK.autoBegin=true;run(S.id);}};
-$('d-again').onclick=()=>{if(S){PICK.autoBegin=true;run(S.id);}};$('d-menu').onclick=toMenu;
+$('b-menu').onclick=toMenu;$('b-retry').onclick=()=>{if(S)start(S.id);}; // back to the chapter's opening, so the choices can be made again
+$('d-again').onclick=()=>{if(S)start(S.id);};$('d-menu').onclick=toMenu;
 $('d-nextbtn').onclick=()=>{const i=CHAPTERS.indexOf(S.id);if(i<CHAPTERS.length-1)start(CHAPTERS[i+1]);else showEpi();};
 function yourYears(){const P=ANS.picks||{},L=[];
   L.push({[WHY[0]]:'你為了換一種生活，開始跑步。',[WHY[1]]:'你為了讓身體好一點，開始跑步。',[WHY[2]]:'你說不上來為什麼，就開始跑步了。'}[ANS.start]);
