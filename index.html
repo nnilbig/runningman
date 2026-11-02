@@ -1221,11 +1221,11 @@ let JOG=1000/360,VMIN=2.3,VMAX=3.6,LV=[];
 // 4'16" at his peak at 37 (a sub-3 marathon in him: an ordinary runner's best year), then it slowly gives back.
 // zone 2 for this chapter's fitness and age: f=.65 is the middle of zone 2, f=.695 its top edge
 // speed at a given share of max heart rate, for this chapter's fitness and age
-const spdAt=(v,f)=>{const I=(f*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return 1000/(v.thr||360)+(I-.72)/.5;};
+const spdAt=(v,f)=>{const I=(f*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return 1000/(v.thr||360)+(I-.69)/.5;};
 const lvSpd=(v,f)=>f===0?v.vmin+.15:spdAt(v,f),lvOf=(v,spd)=>{let b=0,bd=1e9;LV.forEach((f,i)=>{const d=Math.abs(lvSpd(v,f)-spd);if(d<bd){bd=d;b=i;}});return b;};
 const zOfF=f=>f===0?0:f<.6?1:f<.7?2:f<.8?3:f<.9?4:5;
-function markTZ(){const z=S?zOfF(LV[S.zi]):0;document.querySelectorAll('#zbar i').forEach((e,i)=>{e.style.boxShadow=i===z-1?'0 0 0 1.5px #fff':'';});}
-const z2Of=(v,f)=>{const I=((f||.65)*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return Math.max(v.vmin||VMIN,1000/(v.thr||360)+(I-.72)/.5);};
+function markTZ(){const z=S?zOfF(LV[S.zi]):0;document.querySelectorAll('#zbar i').forEach((e,i)=>{e.style.boxShadow=i===z-1?'0 0 0 2px #fff':'';e.style.transform=i===z-1?'scaleY(1.5)':'';});}
+const z2Of=(v,f)=>{const I=((f||.65)*HR_MAX-HR_REST)/(HR_MAX-HR_REST);return Math.max(v.vmin||VMIN,1000/(v.thr||360)+(I-.69)/.5);};
 const vmaxOf=v=>VMAX;
 let PICK={};
 function start(id){PICK={};run(id);}
@@ -1284,7 +1284,7 @@ function run(id){
   if(v.stall){const pb=PEAK21,gv=1000/(pb/v.km);S.cap=gv*.96;S.target=Math.min(S.cap,z2Of(v));
     const gp=makePerson(Object.assign({},CHAR));gp.g.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.transparent=true;o.material.opacity=.42;o.material.depthWrite=false;o.castShadow=false;}});scene.add(gp.g);
     S.ghost={p:gp,d:W.startD,v:gv,lat:-1.9,op:.42,pb};}
-  $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);$('glylab').textContent=v.pacing?'體力':v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';S.sta=100;$('wallfx').style.opacity=0;S.zi=lvOf(v,S.target);markTZ();
+  $('glybox').hidden=!(v.glycogen||v.motive||v.flow||v.ultra||v.pacing);$('glylab').textContent=v.pacing?'體力':v.ultra?'疲勞':v.motive?'動機':v.flow?'心流':'肝醣';S.sta=100;$('wallfx').style.opacity=0;S.zi=lvOf(v,S.target);S.hr=HR_REST+clamp(.69+(S.target-1000/(v.thr||360))*.5,.25,1.05)*(HR_MAX-HR_REST);markTZ(); // start the watch already at the chosen effort, so the bar and the label agree
   $('hud').classList.toggle('nowatch',S.noWatch);
   S.script=v.script.map(l=>l.slice());
   if(id==='start'&&!(ANS.done&&ANS.done.start)&&S.script.length>1)S.script.splice(1,0,[(S.script[0][0]+S.script[1][0])/2,'提示','左上角是配速和心率，顏色代表心率區間。按 ＋ － 調整用力的程度，L R 左右移動。']);if(v.buddy)S.script.forEach(l=>{if(l[1]==='{F}')l[1]=buddyName();});
@@ -1563,8 +1563,8 @@ function update(dt){
    if(W.sunI0===undefined){W.sunI0=W.sun.intensity;W.sunC0=W.sun.color.clone();}W.sun.intensity=W.sunI0*(1+.2*c);W.sun.color.copy(W.sunC0).lerp(_cineSun,c*.7);}
   // HUD
   { // heart rate follows effort with a lag, drifts up slowly, spikes briefly after a bump
-    const I=clamp(.69+(S.speed-1000/(v.thr||360))*.5,.25,1.05)+Math.min(.06,S.t*.0006)+(S.bump>0?.05:0)+(S.wall&&!S.done?.08:0)+(v.stall&&!S.letgo&&!S.done&&Math.abs(S.lat-S.ghost.lat)<1.2?.3:0)+(v.ultra&&!S.done?S.fat/100*.55:0);
-    const tgt=S.done&&S.speed<.5?HR_REST+40:HR_REST+I*(HR_MAX-HR_REST);S.hr=lerp(S.hr,tgt,Math.min(1,dt/5));
+    const I=clamp(.69+(S.speed-1000/(v.thr||360))*.5,.25,1.05)+Math.min(.025,S.t*.0004)+(S.bump>0?.05:0)+(S.wall&&!S.done?.08:0)+(v.stall&&!S.letgo&&!S.done&&Math.abs(S.lat-S.ghost.lat)<1.2?.3:0)+(v.ultra&&!S.done?S.fat/100*.55:0);
+    const tgt=S.done&&S.speed<.5?HR_REST+40:HR_REST+I*(HR_MAX-HR_REST);S.hr=lerp(S.hr,tgt,Math.min(1,dt/2.5));
     if(!S.done){S.hrSum+=S.hr*dt;S.hrN+=dt;}
     const z=zoneOf(S.hr);$('bpm').textContent=Math.round(S.hr);if(!S.done)S.maxHR=Math.max(S.maxHR||0,S.hr);
     if(z!==S.zone){S.zone=z;$('zone').textContent=`ZONE ${z} ${ZN[z-1]}`;$('zone').style.background=ZC[z-1];
