@@ -157,6 +157,11 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .toast{position:absolute;left:50%;bottom:max(166px,calc(env(safe-area-inset-bottom,0px) + 160px));transform:translateX(-50%);background:var(--pill);border:1.5px solid var(--pill-line);border-radius:999px;padding:7px 16px;font-size:15px;font-weight:800;white-space:nowrap;transition:opacity .3s}
 .toast.off{opacity:0}
 @media (prefers-reduced-motion:reduce){.say,.ribbon{transition:none}}
+/* one text size for everything on the running HUD */
+.hud{--hudfs:17px}
+.spd small,.spd b,#pace,.spd .unit,.spd .sub,.hrbox .bpm,.hrbox .bpm b,#bpm,.hrbox .bpm span,.hrbox .bpm i,.zone,.gly small,#gap{font-size:var(--hudfs)!important;font-weight:800!important;letter-spacing:0!important}
+.spd .sub{margin-top:2px}
+@media (max-height:500px) and (orientation:landscape){.hud{--hudfs:13px}}
 </style>
 </head>
 <body>
