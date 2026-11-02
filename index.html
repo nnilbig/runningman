@@ -93,7 +93,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
 .brand h1{margin:0;font-family:"Noto Sans TC",sans-serif;font-weight:900;font-size:clamp(40px,10vw,64px);letter-spacing:.04em}
 .brand p{margin:0;font-weight:800;opacity:.9}
 .card{background:#fbf7f0;color:var(--ink);border-radius:22px;padding:16px 18px;display:flex;gap:16px;align-items:center;box-shadow:0 10px 30px rgba(30,15,40,.25)}
-.avatar{width:64px;height:64px;border-radius:50%;flex:none;background:radial-gradient(circle at 50% 38%,#e8b894 0 28%,transparent 29%),radial-gradient(circle at 50% 30%,#1e1a18 0 34%,transparent 35%),linear-gradient(#3c6fd8,#3c6fd8);background-color:#3c6fd8}
+.avatar{width:64px;height:64px;border-radius:50%;flex:none;overflow:hidden;background:#cfd9e8}.avatar svg{display:block;width:100%;height:100%}
 .card b{font-size:20px}.card .m{font-size:14px;color:#6b5b66;font-weight:800}
 .cont{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;background:#e8857e;color:#2e1f36;border-radius:20px;padding:14px 20px;box-shadow:0 10px 30px rgba(30,15,40,.25)}.cont small{font-size:13px;font-weight:800;letter-spacing:.08em;opacity:.8}.cont b{font-family:"Noto Sans TC",sans-serif;font-size:22px;font-weight:900}.cont:active{transform:scale(.98)}
 .venues{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
@@ -167,7 +167,7 @@ button:focus-visible{outline:3px solid var(--dusk);outline-offset:2px}
   <div class="inner">
     <div class="menurow top"><button class="pill" id="m-help">怎麼玩</button><button class="pill" id="m-q">畫質：自動</button><button class="pill" id="m-reset">清除進度</button></div>
     <div class="brand"><h1>跑者阿傑</h1><p>跑步，然後繼續生活。</p></div>
-    <div class="card"><div class="avatar" aria-hidden="true"></div><div><b>阿傑</b><div class="m">32 歲</div><p class="prologue">三十二歲那年，日子就這樣過著。某個清晨，他穿起跑鞋，走到家附近的河堤。</p></div></div>
+    <div class="card"><div class="avatar" aria-hidden="true"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#cfd9e8"/><polygon points="0,0 100,0 100,46 0,70" fill="#e2e8f1"/><polygon points="14,100 24,80 50,74 76,80 86,100" fill="#3c6fd8"/><polygon points="14,100 24,80 50,74 50,100" fill="#2f5ab8"/><polygon points="44,66 56,66 55,76 45,76" fill="#c48d6a"/><polygon points="50,46 50,22 69,33" fill="#e8b894"/><polygon points="50,46 69,33 69,57" fill="#d6a07a"/><polygon points="50,46 69,57 50,68" fill="#c48d6a"/><polygon points="50,46 50,68 31,57" fill="#d6a07a"/><polygon points="50,46 31,57 31,33" fill="#e8b894"/><polygon points="50,46 31,33 50,22" fill="#f0c8a4"/><polygon points="29,38 31,27 42,18 58,17 68,24 71,37 62,30 47,29 36,31" fill="#1e1a18"/><polygon points="42,18 58,17 68,24 55,24" fill="#3a302a"/><polygon points="45.7,47.5 42.8,49.2 39.9,47.5 39.9,44.1 42.8,42.4 45.7,44.1" fill="#221a1e"/><polygon points="60.1,47.5 57.2,49.2 54.3,47.5 54.3,44.1 57.2,42.4 60.1,44.1" fill="#221a1e"/></svg></div><div><b>阿傑</b><div class="m">32 歲</div><p class="prologue">三十二歲那年，日子就這樣過著。某個清晨，他穿起跑鞋，走到家附近的河堤。</p></div></div>
     <button class="cont" id="m-cont"><small id="m-cont-l">開始</small><b id="m-cont-t"></b></button>
     <div class="venues" id="chapters"></div>
     <p class="note" id="iosnote" hidden>沒有聲音的話：iPhone 請把側邊的靜音開關打開，網頁才會出聲。</p>
@@ -368,7 +368,7 @@ function quietFinish(v,path,hw,finD,style){ // non-race runs end without an arch
 function placeOnPath(obj,path,d,lat,yaw){const p=at(path,d);obj.position.set(p.x+p.rx*lat,obj.position.y,p.z+p.rz*lat);obj.rotation.y=Math.atan2(p.tx,p.tz)+(yaw||0);return obj;}
 
 /* ---------- low-poly person ---------- */
-const EYE_G=new THREE.SphereGeometry(.022,8,6),EYE_M=new THREE.MeshBasicMaterial({color:0x221a1e});
+const EYE_G=new THREE.IcosahedronGeometry(.024,0),EYE_M=new THREE.MeshBasicMaterial({color:0x221a1e});
 function makePerson(o){
   const g=new THREE.Group(),body=new THREE.Group();g.add(body);
   const torso=box(.42,.56,.24,o.shirt);torso.position.y=1.22;body.add(torso);
