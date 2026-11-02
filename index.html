@@ -1191,8 +1191,10 @@ addEventListener('pointerdown',()=>{if(AC&&MUS.on)musicStart();},{passive:true})
 /* ================= dialogue & ribbon ================= */
 let sayT=0;
 function say(who,text,spoken){const self=who===CHAR.name,other=!self&&who!=='提示';$('say').classList.toggle('self',self);$('say').classList.toggle('other',other);$('say').classList.toggle('think',self&&!spoken); // the hero's own lines: thoughts by default, speech when said out loud
-  $('who').textContent=who;$('line').textContent=text;$('say').classList.remove('off');sayT=clamp(1.8+String(text).length*.16,3.2,7);SFX.talk();if(self)placeBubble(true);else{$('say').style.left='';$('say').style.bottom='';}}
-let toastT=0;function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('off');toastT=1.8;}
+  $('who').textContent=who;$('line').textContent=text;$('say').classList.remove('off');sayT=clamp(1.8+String(text).length*.16,3.2,7);if(toastT>0){toastT=0;$('toast').classList.add('off');}SFX.talk();if(self)placeBubble(true);else{$('say').style.left='';$('say').style.bottom='';}}
+// one voice at a time: a toast waits until the line on screen has finished, and the next line waits for the toast
+let toastT=0;const TQ=[];function toast(t){if(!TQ.includes(t))TQ.push(t);if(TQ.length>3)TQ.shift();pumpToast();}
+function pumpToast(){if(toastT>0||sayT>0||!TQ.length)return;const e=$('toast');e.textContent=TQ.shift();e.classList.remove('off');toastT=1.8;}
 const _bv=new THREE.Vector3();
 function placeBubble(force){ // speech follows the runner's head; a thought stays where it appeared
   if(!runner||!$('say').classList.contains('self'))return;if(!force&&$('say').classList.contains('think'))return;_bv.copy(runner.g.position);_bv.y+=2.1;_bv.project(camera);
@@ -1266,6 +1268,7 @@ function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.surge=true;se
   if(S.v.pacing&&(ANS.picks||{}).pacer==='pacer'){S.target=PACER_V;S.zi=lvOf(S.v,S.target);markTZ();S.surge=false;addPacer();}$('recap').hidden=true;$('hud').classList.remove('pre');}
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;$('rc-menu1').onclick=toMenu;
 function run(id){
+  TQ.length=0;toastT=0;$('toast').classList.add('off');
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
   const v=VENUES[id].variants?variantOf(id,PICK.variant||ANS[id]):VENUES[id],R=Math.random;JOG=jogOf(v);if(v.stall){const gv=1000/(PEAK21/v.km);v.secs=52*(gv*.96)/JOG;prep(v);} // keep the chapter near 64 s whatever the PB
   HR_MAX=Math.round(208-.7*(v.age||32));VMIN=spdAt(v,.55);VMAX=spdAt(v,.95);LV=(v.vmin?[0]:[]).concat([.55,.6,.65,.7,.75,.8,.85,.9,.95]); // − / ＋ pick an effort: half a zone per press (0 = walk, where the story allows it)if(v.seed)Math.random=seeded(v.seed); // same seed => same trees, bridge, benches
@@ -1336,7 +1339,7 @@ function drawStreaks(k,dt){const c=$('streaks'),x=c&&c.getContext&&c.getContext(
     x.strokeStyle=`rgba(255,255,255,${(.5*k*Math.min(1,(p.r-.48)*4)).toFixed(3)})`;x.lineWidth=1+1.5*k;x.beginPath();x.moveTo(cx+ca*r1,cy+sa*r1);x.lineTo(cx+ca*r2,cy+sa*r2);x.stroke();}}
 // running time as a watch shows it: 1:05:09 past an hour, 42:15 below
 function fmtT(sec,pad){sec=Math.max(0,Math.floor(sec));const h=Math.floor(sec/3600),m=Math.floor(sec/60)%60,s2=String(sec%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${s2}`:`${pad?String(m).padStart(2,'0'):m}:${s2}`;}
-function toMenu(){$('tint').style.background='transparent';$('cine').style.opacity=0;drawStreaks(0,0);camera.fov=FOV0;camera.updateProjectionMatrix();$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
+function toMenu(){TQ.length=0;toastT=0;$('toast').classList.add('off');$('tint').style.background='transparent';$('cine').style.opacity=0;drawStreaks(0,0);camera.fov=FOV0;camera.updateProjectionMatrix();$('pause').hidden=true;if(AC&&AC.state==='suspended'){try{AC.resume();}catch(_){}}if(S)renderChapters();S=null;MUS.drums=1;musicMood('menu');$('recap').hidden=true;$('z5fx').style.opacity=0;$('gl').style.filter='';$('wallfx').style.opacity=0;$('flowfx').style.opacity=0;$('hud').hidden=true;$('done').hidden=true;$('menu').hidden=false;}
 function shortDesc(t){const ps=t.split('。').filter(x=>x);let o='';for(const p of ps){o+=p+'。';if(o.length>=18)break;}return o;}
 function renderCont(){const done=ANS.done||{},nx=CHAPTERS.find(id=>!done[id]);const id=nx||'start',v=VENUES[id];
   $('m-cont-l').textContent=!Object.keys(done).length?'開始':nx?'繼續':'全部跑完了・從頭再跑一次';$('m-cont-t').textContent=`${v.ch}　${v.n}`;$('m-cont').onclick=()=>start(id);}
@@ -1501,7 +1504,7 @@ function update(dt){
   S.stepT-=dt*S.speed*1.2;if(S.stepT<=0){S.stepT=1;if(S.speed>.5)SFX.step();}
   // story
   const prog=S.d-W.startD;
-  if(S.line<S.script.length&&prog>=S.script[S.line][0]&&sayT<=.4&&S.t>=(S.quiet||0)){const [,w,t,,alt,,spk]=S.script[S.line];say(w,(alt&&((v.flow&&S.flow>=80)||(v.stall&&S.letgo)))?alt:t,spk);S.line++;
+  if(S.line<S.script.length&&prog>=S.script[S.line][0]&&sayT<=.4&&toastT<=0&&S.t>=(S.quiet||0)){const [,w,t,,alt,,spk]=S.script[S.line];say(w,(alt&&((v.flow&&S.flow>=80)||(v.stall&&S.letgo)))?alt:t,spk);S.line++;
     {const rem=S.script.length-S.line,remT=(S.goal-prog)/Math.max(.5,S.speed);S.quiet=S.t+sayT+(rem?clamp((remT-sayT-rem*5.5)/rem,0,3):0);}} // a few seconds of nothing between lines, when there is room for it
   if(!S.done&&prog>=S.goal){S.done=true;SFX.done();S.endWait=Math.max(0,sayT-.3);if(!S.endWait)say(CHAR.name,endLine(v));}
   if(S.done&&S.endWait>0){S.endWait-=dt;if(S.endWait<=0){S.endWait=0;S.endLate=true;say(CHAR.name,endLine(v));}}
@@ -1576,9 +1579,9 @@ function update(dt){
   if(!S.done&&!S.noWatch&&!v.ultra){const step=v.km>12?10:1,k=Math.floor(prog*v.sc/1000/step)*step;if(S.splitK===undefined){S.splitK=0;S.splitT=0;}
     if(k>S.splitK&&k<v.km){const lap=(S.t-S.splitT)*v.sc/(k-S.splitK),m=Math.floor(lap/60),sec=Math.floor(lap%60);S.splitK=k;S.splitT=S.t;toast(`第 ${k} 公里・配速 ${m}'${String(sec).padStart(2,'0')}"`);tone(1320,.12,'sine',.035);tone(1760,.16,'sine',.03,.13);}}
   const gt=S.t*v.sc;$('clock').textContent=fmtT(gt,true);
-  S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0){const q=S.queue.shift();say(q.who,q.text,q.spoken);}
+  S.greetCD-=dt;if(S.queue.length&&S.t>=S.queue[0].at&&sayT<=1.0&&toastT<=0){const q=S.queue.shift();say(q.who,q.text,q.spoken);}
   if(sayT>0){sayT-=dt;if(sayT<=0)$('say').classList.add('off');}
-  if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.add('off');}
+  if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.add('off');}else pumpToast();
 }
 function endLine(v){if(v.grp&&S.grp){const gap=S.d-S.grp.d;if(gap>7)return '五公里。一個人先跑到了。……回頭等大家。';if(gap<-7)return '五公里。最後，被大家等了一下。';return '五公里。大家一起跑完了。';}if(v.pacing){const h1=S.h1||S.t/2,h2=S.t-h1;return h2<=h1*1.01?'二十一公里。後半段越跑越輕。原來，前面忍住是對的。':'二十一公里。前面衝太快了。最後那幾公里，好長。';}if(v.stall){if(S.letgo)return '比以前慢了。但今天的風景，好像比以前清楚。';const g=S.ghost,m=Math.max(1,Math.round(Math.max(0,(g.d-S.d)/g.v*v.sc)/60));return `比三十七歲慢了 ${m} 分鐘。數字不會說謊。不過，我還是跑完了。`;}
   if(v.flow)return S.deepT/Math.max(1,S.t)>=.2?v.endDeep:v.endShallow;if(v.motive)return S.mot>=60?v.endHigh:v.endLow;return (v.endBy&&S.why&&v.endBy[S.why])||v.end;}
