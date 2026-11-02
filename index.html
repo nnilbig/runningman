@@ -473,7 +473,7 @@ const VENUES={
     next:'跑完之後，大家又站著聊了很久才散。那是很好的一年。'},
   track:{ch:'第三章',n:'第一場半馬',sub:'配速',km:21.0975,build:'race',khh:true,pacing:true,secs:52,age:34,width:8,lat:[-3.5,3.5],startLat:-.5,
     pick:{key:'pacer',q:'起跑前，要怎麼跑？',opts:[['pacer','跟著配速員的氣球跑'],['self','按自己的節奏跑']]},
-    pickLines:{pacer:{pacer:[[1,'配速員會用固定的速度跑。跟在氣球後面，就不會衝太快。'],[3,'氣球在前面，一上一下。我只要跟著就好。']],self:[[3,'別跟。這是我自己的比賽。']]}},
+    pickLines:{pacer:{pacer:[[1,'配速員會用固定、不會累的速度跑完全程。跟在氣球後面，就不會衝太快。'],[3,'氣球在前面，一上一下。我只要跟著就好。']],self:[[3,'別跟。這是我自己的比賽。']]}},
     sky:['#5f9ee0','#b8d8ee','#fbe8c8'],fog:0xdce6ea,sun:[-.5,.55,.4],sunCol:0xfff1dc,
     desc:'三十四歲，第一場半程馬拉松，在南部的港都。從體育場旁出發，椰子樹排在大馬路兩邊，經過港邊的摩天輪，沿著河岸跑，遠方是那棟高高的大樓。起跑線擠滿了人。槍聲一響，大家都衝了出去。左上角是「體力」：前面衝太快，後面會撐不住。',
     intro:'跑了一年多，阿傑報名了人生第一場半馬：二十一公里。前一晚把號碼布別在衣服上，別了三次才對齊。清晨的港都，空氣已經有一點暖。起跑線擠滿了人。',
@@ -1189,13 +1189,15 @@ function showRecap(id,v){ // "previously…" over the live scene; the run starts
     ex.innerHTML=`<div class="ask"><b>你為什麼跑？</b>${then}${opts.map((o,i)=>`<button class="opt${o===WHY_LATE?' new':''}" data-i="${i}">${o}</button>`).join('')}</div>`;
     ex.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const a=opts[+b.dataset.i];ANS[id]=a;saveAns();PICK.why=S.why=a;if(v.watch)watch();else go();});}
 }
+// the pacer holds an easy, even pace for a 2:05 finish (5'55"/km): following him the whole way, you never run dry
+const PACER_R=360/355.5;
 function addPacer(){const pp=makePerson({shirt:0xf3bd63,shorts:0x2a2a33,hair:0x2a2420,skin:0xe2b48f});const stick=box(.03,1.6,.03,0xd8d8d8);stick.position.set(.15,1.9,-.1);pp.g.add(stick);
-  const bal=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),mat(0xe8574a));bal.position.set(.15,2.85,-.1);pp.g.add(bal);const tg=textPlane('2:00',.5,.22,'#ffffff','#e8574a');tg.position.set(.15,2.85,-.44);pp.g.add(tg);
+  const bal=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),mat(0xe8574a));bal.position.set(.15,2.85,-.1);pp.g.add(bal);const tg=textPlane('2:05',.5,.22,'#ffffff','#e8574a');tg.position.set(.15,2.85,-.44);pp.g.add(tg);
   scene.add(pp.g);S.pacer={p:pp,d:S.d+3.5,lat:.6};}
 function begin(){if(!S||!S.pre)return;S.pre=false;if(S.v.pacing){S.target=JOG*1.2;S.surge=true;setTimeout(()=>{if(S&&S.surge)toast('槍聲一響，大家都衝出去了');},600);}
   if(S.v.whyLines&&S.why&&S.v.whyLines[S.why])S.v.whyLines[S.why].forEach(([i,t])=>{S.script[i][2]=t;});
   if(S.v.pickLines){const P=ANS.picks||{};for(const key in S.v.pickLines){const L=S.v.pickLines[key][P[key]];if(L)L.forEach(([i,t])=>{if(S.script[i])S.script[i][2]=t;});}}
-  if(S.v.pacing&&(ANS.picks||{}).pacer==='pacer'){S.target=JOG*1.05;S.surge=false;addPacer();}$('recap').hidden=true;$('hud').classList.remove('pre');}
+  if(S.v.pacing&&(ANS.picks||{}).pacer==='pacer'){S.target=JOG*PACER_R;S.surge=false;addPacer();}$('recap').hidden=true;$('hud').classList.remove('pre');}
 $('rc-go').onclick=begin;$('rc-menu').onclick=toMenu;$('rc-menu1').onclick=toMenu;
 function run(id){
   ac();disposeScene();$('recap').hidden=true;musicMood(id);musicStart();
@@ -1378,7 +1380,7 @@ function update(dt){
     g.op=lerp(g.op,S.letgo?0:.42,Math.min(1,dt*.8));g.p.g.traverse(o=>{if(o.isMesh)o.material.opacity=g.op;});g.p.g.visible=g.op>.02;
     const pp=at(path,Math.min(g.d,path.L-1));g.p.g.position.set(pp.x+pp.rx*g.lat,0,pp.z+pp.rz*g.lat);g.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(g.p,dt,.9+g.v*.22,1);
     if(!S.letgo){const gapS=Math.max(0,(g.d-S.d)/g.v*v.sc);$('gap').textContent=`34 歲的自己 +${Math.floor(gapS/60)}:${String(Math.floor(gapS%60)).padStart(2,'0')}`;}}
-  if(S.pacer){const pc=S.pacer;pc.d+=JOG*1.05*dt*(S.done?.6:1);const pp=at(path,pc.d);pc.p.g.position.set(pp.x+pp.rx*pc.lat,0,pp.z+pp.rz*pc.lat);pc.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(pc.p,dt,.9+JOG*.22,1);}
+  if(S.pacer){const pc=S.pacer;pc.d+=JOG*PACER_R*dt*(S.done?.6:1);const pp=at(path,pc.d);pc.p.g.position.set(pp.x+pp.rx*pc.lat,0,pp.z+pp.rz*pc.lat);pc.p.g.rotation.y=Math.atan2(pp.tx,pp.tz);animPerson(pc.p,dt,.9+JOG*.22,1);}
   if(S.friends){const prog=S.d-W.startD;
     for(const f of S.friends){if(f.gone)continue;
       if(!f.said&&prog>=f.at){f.said=true;S.queue.push({at:S.t+.3,who:f.name,text:f.line});}
